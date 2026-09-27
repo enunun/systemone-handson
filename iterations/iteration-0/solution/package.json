@@ -1,0 +1,15 @@
+{
+  "name": "triage-solution-iteration-0",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iteration 0(解答例)：返金を求めているかを判定する",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}

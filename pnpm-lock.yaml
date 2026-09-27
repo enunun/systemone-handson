@@ -60,6 +60,18 @@ importers:
         specifier: 0.1.2
         version: 0.1.2
 
+  iterations/iteration-0/exercise:
+    dependencies:
+      '@typesafe-ai/sdk':
+        specifier: 0.6.0
+        version: 0.6.0
+
+  iterations/iteration-0/solution:
+    dependencies:
+      '@typesafe-ai/sdk':
+        specifier: 0.6.0
+        version: 0.6.0
+
   tools/mermaid:
     dependencies:
       jsdom:
@@ -838,6 +850,10 @@ packages:
 
   '@types/unist@2.0.11':
     resolution: {integrity: sha512-CmBKiL6NNo/OqgmMn95Fk9Whlp2mtvIv+KNpQKN2F4SjvrEesubTRWGYSg+BnWZOnlCaSTU1sMpsBOzgbYhnsA==}
+
+  '@typesafe-ai/sdk@0.6.0':
+    resolution: {integrity: sha512-IddX+Q0XM+VagOUZFeP7wZjaO4SHMdvnh2zEBdrZZnXedWI3BNK1lKhMx3ayrkFWvVLbVcUHJy6AVZlY+e6Jaw==}
+    engines: {node: '>=20'}
 
   '@upsetjs/venn.js@2.0.0':
     resolution: {integrity: sha512-WbBhLrooyePuQ1VZxrJjtLvTc4NVfpOyKx0sKqioq9bX1C1m7Jgykkn8gLrtwumBioXIqam8DLxp88Adbue6Hw==}
@@ -3663,6 +3679,8 @@ snapshots:
     optional: true
 
   '@types/unist@2.0.11': {}
+
+  '@typesafe-ai/sdk@0.6.0': {}
 
   '@upsetjs/venn.js@2.0.0':
     optionalDependencies:

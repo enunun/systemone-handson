@@ -76,11 +76,11 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 ## Iteration 0：返金を求めているかを判定する
 
 - 要求：件名と本文を引数に渡すと，返金を求めているかを判定し，確率とともに表示する．確率が0.5以上なら`yes`とする．
-- 使い方：`triage "Refund not received" "Where is my refund?"`で`refund: yes (0.93)`と表示する．
+- 使い方：`triage "Refund not received" "Where is my refund?"`で`refund: yes (0.86)`と表示する．
 - モジュール：`refund`(`refundQuestion`，`formatRefund`)，`app`(`run`)，`main`(プログラムの入口)．
 - 設計書で更新するもの：5つの設計書を初めて書く．Contextは利用者・triage・laya-server，Containerはtriageの実行ファイルとlaya-server，Componentは3つのモジュール，Codeは型と関数の流れ，シーケンス図は`run`からlaya-serverへの1回の問い合わせ．
 - 学ぶこと：System Oneと大規模言語モデルの違い，noulの質問と答え，TypeSafeのSDK(`TypeSafeClient`，`systemOne`)，Vitest，TDDの1周．
-- 学習者が行う作業：`pnpm install`，SDKの追加(`pnpm add`)，テストの実行(すべて・単体テストだけ)，型検査，実行，curlでlaya-serverに直接問い合わせる．
+- 学習者が行う作業：`pnpm install`，テストの実行(すべて・単体テスト・結合テスト)，型検査，実行，curlでlaya-serverに直接問い合わせる．
 
 ## Iteration 1：担当部署を判定する
 

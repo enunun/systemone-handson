@@ -78,7 +78,6 @@ tools/                           mermaidの検査，Componentの照合
 | 目的 | コマンド | 初出 |
 | --- | --- | --- |
 | 依存の導入 | `pnpm install`(リポジトリの直下) | 0 |
-| 依存の追加 | `pnpm add <パッケージ>` | 0 |
 | すべてのテスト | `pnpm test` | 0 |
 | 単体テストだけ | `pnpm test --project unit` | 0 |
 | 1つのファイルのテスト | `pnpm test <ファイル>` | 1 |
@@ -90,7 +89,7 @@ tools/                           mermaidの検査，Componentの照合
 
 ### 学習者が行う作業
 
-- Iteration 0：`pnpm install`，SDK(`@typesafe-ai/sdk`)の追加，テストの実行(すべて・単体だけ)，型検査，実行，curlでの問い合わせ．
+- Iteration 0：`pnpm install`，テストの実行(すべて・単体テスト・結合テスト)，型検査，実行，curlでの問い合わせ．
 - Iteration 3：モジュールをディレクトリ(`ports/`，`adapters/`)に分ける．
 - Iteration 5：`.env`の作成．
 - それ以降の作業はROADMAPの各Iterationに書く．
@@ -101,9 +100,10 @@ tools/                           mermaidの検査，Componentの照合
 
 ## Iteration 0の演習の形
 
-- `src/refund.ts`・`src/app.ts`：シグネチャだけを持ち，本体は`throw new Error("TODO")`のスタブ．型検査は通る．
+- `src/refund.ts`：`formatRefund`のスタブ(本体は`throw new Error("TODO: …")`)．`refundQuestion`は学習者が足す．
+- `src/app.ts`：`run`のスタブと，型`RunResult`．型検査は通る．
 - `src/main.ts`：完成品(`run`を呼んで結果を表示する)．
-- SDKへの依存は`package.json`にない．学習者が追加する．そのため，スタブはSDKの型を使わない．
+- SDK(`@typesafe-ai/sdk`)は，`package.json`の依存に入れておく(`main.ts`が使う)．
 - `test/unit/`・`test/integration/`：空(`.gitkeep`)．`vitest.config.ts`に`passWithNoTests`を付ける．
 - `design/`：5つのファイルに見出しと，描くものを説明するコメントだけを置く．
 - `TESTLIST.md`：単体テストと結合テストの見出しだけ．
@@ -113,4 +113,4 @@ tools/                           mermaidの検査，Componentの照合
 - 環境によっては，Nodeの組み込みの`fetch`がプロキシの環境変数を読まない．プロキシ越しにlaya-serverがモデルを取得するときは，`NODE_USE_ENV_PROXY=1`を付ける(Node 22.21以降)．
 - onnxruntime-nodeのインストール時スクリプトはGPU用のバイナリを取得するだけで，CPUでは不要である．`pnpm-workspace.yaml`の`allowBuilds`で止めている．
 - Layaの確信度(`confidence`)は，1から答えの分布の正規化エントロピーを引いた値である．確率とは尺度が違い，低く出やすい(例：3択で，もっとも確からしい選択肢の確率が0.45のとき，確信度は0.03)．Iteration 4のしきい値は，この尺度に合わせて決める．
-- Layaの推論は，この環境のCPUで3問あたり約0.55秒かかる．
+- Layaの推論は，3問のリクエストで約0.55秒かかる(クラウドの開発環境のCPUで測った値)．
