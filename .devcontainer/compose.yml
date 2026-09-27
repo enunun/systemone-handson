@@ -13,7 +13,7 @@ services:
   laya:
     build:
       context: ..
-      dockerfile: packages/laya-server/Dockerfile
+      dockerfile: infra/laya-server/Dockerfile
     volumes:
       - laya-models:/models
     ports:

@@ -1,0 +1,11 @@
+{
+  "name": "@systemone-handson/mermaid-check",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Markdownの中のmermaidの図の構文を検査する",
+  "type": "module",
+  "dependencies": {
+    "jsdom": "^30.1.1",
+    "mermaid": "^12.0.0"
+  }
+}

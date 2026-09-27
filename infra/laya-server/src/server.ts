@@ -51,7 +51,9 @@ export const createLayaServer = ({ engine, modelName = "laya" }: ServerOptions):
 
       if (req.method === "GET" && path === "/v1/models") {
         return send(res, 200, {
-          models: [{ name: modelName, description: "Laya (convaiinnovations/laya) via ONNX Runtime", release_date: "" }],
+          models: [
+            { name: modelName, description: "Laya (convaiinnovations/laya) via ONNX Runtime", release_date: "" },
+          ],
         });
       }
 

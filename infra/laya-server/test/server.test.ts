@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import type { AddressInfo } from "node:net";
-import { after, before, test } from "node:test";
+import { afterAll, beforeAll, test } from "vitest";
 import { createLayaServer, type Engine } from "../src/server.ts";
 
 // モデルを読み込まずに試すため，決まった答えを返すエンジンを使う．
@@ -16,12 +16,12 @@ let engine: Engine | null = null;
 const server = createLayaServer({ engine: () => engine });
 let baseURL = "";
 
-before(async () => {
+beforeAll(async () => {
   await new Promise<void>((resolve) => server.listen(0, resolve));
   baseURL = `http://127.0.0.1:${(server.address() as AddressInfo).port}`;
 });
 
-after(() => server.close());
+afterAll(() => server.close());
 
 const post = (body: unknown): Promise<Response> =>
   fetch(`${baseURL}/v1/systemone`, {

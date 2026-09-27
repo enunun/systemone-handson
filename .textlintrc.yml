@@ -1,5 +1,5 @@
 plugins:
-  '@textlint/markdown': true
+  "@textlint/markdown": true
 
 rules:
   # 技術文書の文体(文の長さ，読点の数，常体の統一，弱い表現など)．
@@ -10,18 +10,18 @@ rules:
 
     # 本文と箇条書きを，常体(である調)にそろえる．見出しは指定しない．
     no-mix-dearu-desumasu:
-      preferInHeader: ''
-      preferInBody: 'である'
-      preferInList: 'である'
+      preferInHeader: ""
+      preferInBody: "である"
+      preferInList: "である"
       strict: false
 
     # 読点は「，」，句点は「．」を使う．
     max-ten:
-      touten: '，'
-      kuten: '．'
+      touten: "，"
+      kuten: "．"
 
     ja-no-mixed-period:
-      periodMark: '．'
+      periodMark: "．"
 
   # 和文の中のコロンを全角にし，読点と句点を「，」と「．」にする．辞書は.textlint-prh.ymlに書く．
   prh:
@@ -38,4 +38,4 @@ rules:
       after: false
 
   # AIが書いたように見える表現(機械的な箇条書き，誇張，強調の乱用など)．
-  '@textlint-ja/preset-ai-writing': true
+  "@textlint-ja/preset-ai-writing": true

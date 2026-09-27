@@ -30,7 +30,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 
 どのIterationも，次の順に進める．
 
-1. 演習用パッケージ(`iterations/iteration-N/exercise`)を`pnpm-workspace.yaml`に登録し，テストを実行する．
+1. 演習用パッケージ(`iterations/iteration-N/exercise`)に移り，引き継いだテストがすべて通ることを確かめる．
 2. 資料(`docs/iteration-N.md`)の「要求」を読み，単体テストと結合テストのテストリストを`TESTLIST.md`に書く．
 3. テストリストの振る舞いを実現する型・関数・モジュールを決め，`design/`の設計書を更新する．
 4. テストリストから1つずつ選び，テストを書いて失敗させ(Red)，実装して通す(Green)．必要ならテストが通ったまま整理する(Refactor)．
@@ -55,7 +55,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 | テスト | 置き場所 | 確かめること |
 | --- | --- | --- |
 | 単体テスト | `test/unit/` | 1つのモジュールの関数を，単独で呼んで確かめる．Iteration 3からは，判断エンジンを偽物(fake)に差し替えて確かめる． |
-| 結合テスト | `test/integration/` | プログラムの入口(`run`)を呼び，複数のモジュールを組み合わせた振る舞いを確かめる．判断エンジンには，テストの中で起動する`/v1/systemone`の偽のサーバを使う． |
+| 結合テスト | `test/integration/` | プログラムの入口(`run`)を呼び，複数のモジュールを組み合わせた振る舞いを確かめる．判断エンジンとの通信は，SDKに偽の`fetch`を渡して差し替える． |
 
 モデルを読み込むテストはない．どのテストも，laya-serverを起動せずに実行できる．
 
@@ -63,7 +63,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 
 | Iteration | 作る機能 | 学ぶこと |
 | --- | --- | --- |
-| 0 | 返金を求めているかを判定する | System One，noul(はい・いいえ)，TypeSafeのSDK，Vitest，pnpmのワークスペース |
+| 0 | 返金を求めているかを判定する | System One，noul(はい・いいえ)，TypeSafeのSDK，Vitest，pnpm |
 | 1 | 担当部署を判定する | choice(選択)，確率の分布，選択肢の説明文，1回の問い合わせで複数の質問 |
 | 2 | 緊急度を判定する．判断と表示を分ける | score(段階評価)，期待値，判断と表示の分離 |
 | 3 | 判断エンジンをアプリから切り離す | ポートとアダプタ，依存性の逆転，テストダブル(fakeとstub) |
@@ -80,7 +80,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 - モジュール：`refund`(`refundQuestion`，`formatRefund`)，`app`(`run`)，`main`(プログラムの入口)．
 - 設計書で更新するもの：5つの設計書を初めて書く．Contextは利用者・triage・laya-server，Containerはtriageの実行ファイルとlaya-server，Componentは3つのモジュール，Codeは型と関数の流れ，シーケンス図は`run`からlaya-serverへの1回の問い合わせ．
 - 学ぶこと：System Oneと大規模言語モデルの違い，noulの質問と答え，TypeSafeのSDK(`TypeSafeClient`，`systemOne`)，Vitest，TDDの1周．
-- 学習者が行う作業：`pnpm-workspace.yaml`への登録，`pnpm install`，SDKの追加(`pnpm add`)，単体テストと結合テストの実行，curlでlaya-serverに直接問い合わせる．
+- 学習者が行う作業：`pnpm install`，SDKの追加(`pnpm add`)，テストの実行(すべて・単体テストだけ)，型検査，実行，curlでlaya-serverに直接問い合わせる．
 
 ## Iteration 1：担当部署を判定する
 
@@ -107,7 +107,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 - リファクタリング：アプリが判断を頼む窓口`DecisionEngine`(ポート)を定め，`triage`はこの型だけに依存させる．TypeSafeのSDKを使うアダプタ(`systemone-engine`)と，決まった答えを返すアダプタ(`fake-engine`)を作る．
 - 設計書で更新するもの：Componentに，ポートと2つのアダプタを描き，`triage`からSDKへの依存がなくなったことを示す．シーケンス図にアダプタを挟む．
 - 学ぶこと：ポートとアダプタ，依存性の逆転，テストダブル(fakeとstub)の使い分け．
-- 既存のテストへの影響：`triage`の単体テストを，偽のサーバからfakeに置き換える．
+- 既存のテストへの影響：`triage`の単体テストで，偽の`fetch`をfakeに置き換える．
 
 ## Iteration 4：迷っている問い合わせを人の確認に回す
 

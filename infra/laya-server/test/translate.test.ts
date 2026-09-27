@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { test } from "node:test";
+import { test } from "vitest";
 import { parseRequest, RequestError, toResponse } from "../src/translate.ts";
 
 test("Jevのリクエストを，Layaが受け付ける形に変換する", () => {

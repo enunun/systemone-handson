@@ -1,6 +1,8 @@
 # systemone-handson
 
-System One(型付きの判断だけを返すモデル)のハンズオン用リポジトリ．ローカルではLaya，本番ではTypeSafe Jevを使い，`.env`の接続先だけで切り替える．詳しくは`README.md`を参照．
+Hands-on material in which learners grow `triage`, a CLI that routes customer inquiries by asking a System One model (typed, calibrated decisions) through a Jev-compatible HTTP API.
+Each Iteration has an exercise package and a solution package (pnpm packages), all in one pnpm workspace.
+The learner-facing material is written in Japanese. The course plan is in `COURSE.md`; the content of each Iteration is defined in `docs/ROADMAP.md`.
 
 # RTK (Rust Token Killer)
 
@@ -8,22 +10,33 @@ Prefix every shell command with `rtk`, including each command in an `&&` chain �
 
 ## Working conventions
 
-- TypeScriptはビルドせず，Nodeの型の除去機能でそのまま実行する．そのため，型の除去で消せない構文(enum，constructorの引数プロパティなど)は使わず，相対importには`.ts`の拡張子を付ける．
-- アプリ(`packages/triage`)は`ports/decision-engine.ts`の型だけに依存させる．Jevの型やSDKは`adapters/`の外に出さない．
-- laya-serverはJevの`/v1/systemone`と同じ形で答える．Jevとの違いは`packages/laya-server/src/translate.ts`で吸収する．
-- 単体テストでモデルを読み込まない．エンジンや通信は差し替える．
-- 文書は常体で書き，読点は「，」，句点は「．」を使う(textlintで検査する)．
-
-- `git commit` runs the lefthook hooks. If they fail, fix the reported issues. Do not use `--no-verify`.
-
-- Run `mise run check` after making changes.
+- When creating or fixing an Iteration, follow the `build-handson` skill (`enunun/system-development-skills`). Read `COURSE.md` first; it holds the layout, commands, and pitfalls.
+- Change the exercise and solution of the same Iteration together in the same commit.
+- All solution tests must pass. Exercises must pass type checking and their carried-over tests before the learner adds anything.
+- The code, tests and design documents (`design/`) of Iteration N's (N ≥ 1) exercise are identical to Iteration N-1's solution.
+- Design documents are mermaid diagrams (`design/01-context.md` to `05-sequence.md`; see `docs/design.md`). Arrows in the Component diagram must match the implementation's `import`s (`tools/check-component.mjs` checks solutions).
+- TypeScript runs without a build step (Node type stripping): use only erasable syntax and add `.ts` to relative imports.
+- No test may use laya-server or the model. Output shown in the material must come from real runs against laya-server.
+- Write prose in the plain style (である調) with `，` and `．`; textlint checks it.
+- `git commit` runs lefthook hooks. If they fail, fix the reported issues. Do not use `--no-verify`.
+- After making changes, run `mise run check`.
 
 ## Code map
 
-- `packages/laya-server/`：LayaをJev互換のHTTP APIで公開するサーバ．`Dockerfile`でイメージにする．
-- `packages/triage/`：問い合わせを振り分けるサンプルアプリ．`domain/`(判断の解釈)，`ports/`(DecisionEngine)，`adapters/`(systemone-http，fake)，`config.ts`(環境変数からエンジンを選ぶ)．
-- `.devcontainer/`：開発用コンテナ．`compose.yml`でlaya-serverも一緒に起動する．
-- `.env.example`：アプリの接続先の見本．
+```text
+iterations/iteration-N/
+  exercise/    Exercise package (triage-iteration-N): docs/iteration-N.md (steps), TESTLIST.md (template), design/.
+  solution/    Solution package (triage-solution-iteration-N): walkthrough, model TESTLIST.md, model design/.
+docs/
+  ROADMAP.md   Requirements, modules and topics of each Iteration.
+  tdd.md       Test-driven development and test lists.
+  design.md    How to write the design documents (C4 model, sequence diagram, mermaid).
+  systemone/   Per-Iteration notes on System One concepts, APIs and tools.
+infra/laya-server/  Jev-compatible HTTP server (POST /v1/systemone) running Laya on CPU. Provided finished.
+tools/mermaid/      Checks the syntax of mermaid diagrams in Markdown.
+tools/check-component.mjs  Compares Component diagrams with imports.
+.devcontainer/      Dev container; compose.yml also starts laya-server as `laya`.
+```
 
 # Artifact Cleanup
 
