@@ -8,6 +8,7 @@
 // - LAYA_CACHE：ダウンロードしたモデルの置き場所
 
 import { Laya, type LayaOptions } from "@receptron/laya";
+import { progressLogger } from "./progress.ts";
 import { createLayaServer, type Engine } from "./server.ts";
 
 const port = Number(process.env.PORT ?? 8080);
@@ -16,11 +17,8 @@ let engine: Engine | null = null;
 const server = createLayaServer({ engine: () => engine });
 server.listen(port, () => console.log(`laya-server listening on :${port}`));
 
-const options: LayaOptions = {
-  onProgress: ({ file, received, total }) => {
-    if (total && received === total) console.log(`downloaded ${file}`);
-  },
-};
+const progress = progressLogger({ log: console.log });
+const options: LayaOptions = { onProgress: progress.onProgress };
 if (process.env.LAYA_MODEL_DIR) options.modelDir = process.env.LAYA_MODEL_DIR;
 if (process.env.LAYA_SUBFOLDER) options.subfolder = process.env.LAYA_SUBFOLDER;
 
@@ -30,6 +28,7 @@ const laya = await Laya.load(options).catch((err: unknown) => {
   process.exit(1);
 });
 engine = (state, questions) => laya.systemOne(state, questions);
+progress.done();
 console.log("laya model loaded");
 
 const shutdown = (): void => {
