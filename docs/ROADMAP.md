@@ -136,8 +136,9 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 ## Iteration 7：ラベル付きデータで精度を測る
 
 - 要求：`triage eval <ファイル>`で，正解の部署が付いた問い合わせを振り分け，自動で振り分けた件数とその正解率，人の確認に回した割合を表示する．`--sweep`を付けると，しきい値を0.1刻みで変えた結果を表で表示する．
-- 使い方：`triage eval data/labeled.jsonl --min-confidence 0.5`
-- モジュール：`evaluate`(`evaluate`，`confusionMatrix`，`sweep`)を足す．
+- 使い方：`triage eval data/labeled.jsonl`で`accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37`と混同行列を表示する．
+- モジュール：`evaluate`(`parseLabeledTickets`，`evaluate`，`confusionMatrix`，`sweep`)を足す．`triage`の結果に部署の確信度を足す．
+- リファクタリング：JSON Linesの読み方を`batch`の`parseJsonLines`にまとめ，`parseTickets`と`parseLabeledTickets`で使う．
 - 設計書で更新するもの：Componentに`evaluate`を足す．Codeに評価の流れを足す．
 - 学ぶこと：評価用データ，正解率，混同行列，しきい値と「人の確認に回る割合」の関係，Jevへ替える前に精度を測る意味．
 
