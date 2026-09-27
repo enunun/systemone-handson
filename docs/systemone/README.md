@@ -11,5 +11,6 @@
 | [Iteration 2：scoreの質問と，判断と表示の分離](iteration-2.md) | scoreの質問，期待値ともっとも確率の高い段階，段階の数と並び順，`ScoreQuestion`，`as const`とタプル，判断と表示を分ける，振る舞いを変えないリファクタリング |
 | [Iteration 3：ポートとアダプタ](iteration-3.md) | 依存の向き，ポートとアダプタ，依存性の逆転，アプリの言葉で型を書く，条件型・マップ型・`const`型引数，判別可能なユニオンと`switch`，オブジェクトでインターフェースを実装する，テストダブル(stub・fake) |
 | [Iteration 4：確信度としきい値，引数の解析](iteration-4.md) | 確率と確信度，確信度の計算式，しきい値で人の確認に回す，`util.parseArgs`，文字列を数にする(`Number`と`NaN`) |
+| [Iteration 5：環境変数による設定と，Jevへの切り替え](iteration-5.md) | 設定をコードの外に出す，`process.env`，`.env`と`--env-file`，環境変数の優先順位，設定を読む関数のテスト，組み立ての場所，本家Jevへの切り替え |
 
 テスト駆動開発とテストリストの書き方は[tdd.md](../tdd.md)に，設計書の書き方は[design.md](../design.md)にまとめている．
