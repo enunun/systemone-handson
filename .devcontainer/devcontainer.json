@@ -1,5 +1,5 @@
 {
-	"name": "PROJECT_NAME-dev",
+	"name": "systemone-handson-dev",
 	"dockerComposeFile": "./compose.yml",
 	"service": "app",
 	"workspaceFolder": "/workspaces",

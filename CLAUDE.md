@@ -1,6 +1,6 @@
-# PROJECT_NAME
+# systemone-handson
 
-TODO: Describe the project overview.
+System One(型付きの判断だけを返すモデル)のハンズオン用リポジトリ．ローカルではLaya，本番ではTypeSafe Jevを使い，`.env`の接続先だけで切り替える．詳しくは`README.md`を参照．
 
 # RTK (Rust Token Killer)
 
@@ -8,7 +8,11 @@ Prefix every shell command with `rtk`, including each command in an `&&` chain �
 
 ## Working conventions
 
-TODO: Describe the development conventions for this project (branching strategy, commit granularity, whether reviews are required, etc.).
+- TypeScriptはビルドせず，Nodeの型の除去機能でそのまま実行する．そのため，型の除去で消せない構文(enum，constructorの引数プロパティなど)は使わず，相対importには`.ts`の拡張子を付ける．
+- アプリ(`packages/triage`)は`ports/decision-engine.ts`の型だけに依存させる．Jevの型やSDKは`adapters/`の外に出さない．
+- laya-serverはJevの`/v1/systemone`と同じ形で答える．Jevとの違いは`packages/laya-server/src/translate.ts`で吸収する．
+- 単体テストでモデルを読み込まない．エンジンや通信は差し替える．
+- 文書は常体で書き，読点は「，」，句点は「．」を使う(textlintで検査する)．
 
 - `git commit` runs the lefthook hooks. If they fail, fix the reported issues. Do not use `--no-verify`.
 
@@ -16,7 +20,10 @@ TODO: Describe the development conventions for this project (branching strategy,
 
 ## Code map
 
-TODO: Describe the main directory structure and the purpose of each directory.
+- `packages/laya-server/`：LayaをJev互換のHTTP APIで公開するサーバ．`Dockerfile`でイメージにする．
+- `packages/triage/`：問い合わせを振り分けるサンプルアプリ．`domain/`(判断の解釈)，`ports/`(DecisionEngine)，`adapters/`(systemone-http，fake)，`config.ts`(環境変数からエンジンを選ぶ)．
+- `.devcontainer/`：開発用コンテナ．`compose.yml`でlaya-serverも一緒に起動する．
+- `.env.example`：アプリの接続先の見本．
 
 # Artifact Cleanup
 

@@ -20,14 +20,28 @@ depends = ["install"]
 run = "echo 'TODO: add your formatter'"
 
 [tasks.lint]
-description = "すべてのリントを実行する"
+description = "すべてのリントと型検査を実行する"
 depends = ["install"]
-run = "pnpm lint"
+run = ["pnpm lint", "pnpm typecheck"]
 
 [tasks.test]
 description = "単体テストを実行する"
 depends = ["install"]
-run = "echo 'TODO: add your test command'"
+run = "pnpm test"
+
+[tasks.env]
+description = ".envがなければ.env.exampleから作る"
+run = "test -f .env || cp .env.example .env"
+
+[tasks.laya]
+description = "laya-serverをホストで直接起動する(devcontainerを使わない場合)"
+depends = ["install"]
+run = "pnpm --filter @systemone-handson/laya-server start"
+
+[tasks.triage]
+description = "問い合わせを1件振り分ける(例：mise run triage \"件名\" \"本文\")"
+depends = ["install"]
+run = "pnpm --filter @systemone-handson/triage start"
 
 [tasks.hooks]
 description = "Gitのフック(コミット時の検査)を設定する"
@@ -35,7 +49,7 @@ run = "lefthook install"
 
 [tasks.setup]
 description = "開発環境を整える(依存パッケージ，Gitのフックなど)"
-depends = ["install", "hooks"]
+depends = ["install", "hooks", "env"]
 
 [tasks.check]
 description = "整形の検査，リント，単体テストなどをまとめて実行する(CIと同じ)"

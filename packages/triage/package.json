@@ -1,0 +1,15 @@
+{
+  "name": "@systemone-handson/triage",
+  "version": "0.1.0",
+  "private": true,
+  "description": "問い合わせを振り分けるサンプルアプリ．判断はSystem Oneモデル(LayaまたはJev)に任せる",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=../../.env src/cli.ts",
+    "test": "node --test \"test/**/*.test.ts\"",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}

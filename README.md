@@ -1,54 +1,82 @@
-# claude-docker-template
+# systemone-handson
 
-Claude Code for VSCode + Docker(mise) + rtkで開発するときの，最小構成のテンプレート．
-言語や作るものは特に決めず，devcontainer・mise・rtk・lefthookの土台だけを提供する．
+System One(型付きの判断だけを返すモデル)を使ったアプリを，ノートPCで作ってからクラウドへ出すまでのハンズオン．
+ローカルではOSSの[Laya](https://github.com/NandhaKishorM/laya)を，本番ではTypeSafe AIの[Jev](https://typesafe.ai)を使い，アプリのコードを変えずに切り替える．
 
 ## 構成
 
-``` text
-.devcontainer/
-  devcontainer.json  VSCode Dev Containersの設定．claude-home/rtk-homeを
-                      ホストにバインドマウントし，資格情報や履歴をコンテナの
-                      再作成後も保つ．
-  Dockerfile          mise公式イメージをベースに，rtk/lefthookをmiseで入れる．
-                      プロジェクト固有のパッケージ・ツールチェーンはここに追加する．
-  compose.yml         コンテナを起動したままにする(sleep infinity)だけの設定．
-.claude/
-  settings.json        Bashツール呼び出しをrtk経由に書き換えるフック．
-                        enunun/system-development-skillsを参照するプラグイン設定も含む．
-.rtk/
-  filters.toml          プロジェクト固有のrtkフィルタ(雛形のみ)．
-mise.toml               ツールの版とタスク(install/fmt/lint/test/check/setup)の雛形．
-lefthook.yml             コミット時の検査の雛形．
-CLAUDE.md                プロジェクト向けのClaude Code指示の雛形．
-.gitignore
+```text
+┌─────────────── packages/triage(アプリ) ───────────────┐
+│ domain/   問い合わせの振り分け(部署・緊急度・返金の要否)      │
+│ ports/    DecisionEngine：アプリが判断を頼む窓口              │
+│ adapters/ systemone-http：/v1/systemoneを話すサーバにつなぐ   │
+│           fake：決まった答えを返す(テスト用)                  │
+└──────────────────────┬──────────────────────────┘
+                       │ POST /v1/systemone(TypeSafe Jevと同じAPI)
+         ┌─────────────┴─────────────┐
+         ▼                           ▼
+packages/laya-server          api.typesafe.ai
+(ローカル：Laya，CPUで動く)      (本番：Jev)
 ```
 
-## 使い方
+モデルの違いは，2か所で吸収する．
 
-1. このフォルダの中身を，新しいプロジェクトのリポジトリのルートにコピーする．
-2. `PROJECT_NAME`という文字列を，プロジェクト名に置き換える(`devcontainer.json`，`compose.yml`，`CLAUDE.md`)．
-3. `mise.toml`の`[tools]`に，プロジェクトが使う言語・ツールを追加する．
-4. `mise.toml`の各タスク(`install`/`fmt`/`lint`/`test`)と，`lefthook.yml`の`format`コマンドを，実際のコマンドに置き換える．
-5. `Dockerfile`に，プロジェクトのビルドに必要なシステムパッケージがあれば追加する．
-6. VSCodeで「Reopen in Container」を実行する．初回は`mise run setup`が走る．
-7. `.gitignore`から`pnpm-lock.yaml`を削除し，lockファイルがコミットされるようにする．
-8. `mise.toml`の`[settings]`と`lockfile = true`の行のコメントを解除し，lockファイルを使用するようにする．
+- `packages/laya-server`は，LayaをJevと同じHTTP API(`POST /v1/systemone`)で公開する．Jevとの細かな違い(`instructions`にnullを許すか，回答の余分なフィールドなど)は，このサーバが変換する．
+- アプリは自前の`DecisionEngine`だけに依存する．Jevの型や通信方式は`adapters/systemone-http.ts`に閉じ込めてある．将来，別のモデルに替えるときはアダプタを1つ足す．
 
-## rtk(Rust Token Killer)について
+接続先は`.env`の3つの変数で決まる．
 
-シェルコマンドの出力を絞り込み，トークン消費を抑えるCLIプロキシ．
-`.claude/settings.json`のフックが，Claude CodeのBashツール呼び出しを自動的に`rtk`経由に書き換える．
-コマンドの詳しい対応表は[rtkのリポジトリ](https://github.com/rtk-ai/rtk)を参照．
-`~/.claude/CLAUDE.md`からrtkの使い方を読み込ませておくと，全プロジェクトで効く．
+| 変数 | ローカル(Laya) | 本番(Jev) |
+| --- | --- | --- |
+| `SYSTEMONE_BASE_URL` | `http://laya:8080` | `https://api.typesafe.ai` |
+| `SYSTEMONE_MODEL` | `laya` | `jev-latest` |
+| `SYSTEMONE_API_KEY` | 任意(例：`local`) | TypeSafeのAPIキー |
 
-## 共有スキルについて
+## 動かし方
 
-`.claude/settings.json`は，[enunun/system-development-skills](https://github.com/enunun/system-development-skills)をプラグインのマーケットプレイスとして参照する設定を含む．成果物を仕上げる`finalize-artifacts`スキルなど，プロジェクトを問わず使うスキルはそちらに集約されている．
+### devcontainerを使う場合
 
-## claude-home / rtk-home について
+1. VSCodeで「Reopen in Container」を実行する．
+   アプリのコンテナと`laya`コンテナ(laya-server)が起動し，`mise run setup`が`.env`を作る．
+2. `laya`コンテナは，初回の起動時にモデル(約1.7GB)をHugging Faceからダウンロードする．終わるまでは503を返す．
+3. 問い合わせを振り分ける．
 
-`.devcontainer/claude-home/`と`.devcontainer/rtk-home/`は，コンテナ作成時に
-`initializeCommand`が自動生成し，
-コンテナ内の`/root/.claude`や`/root/.config/rtk`などにバインドマウントされる．
-資格情報や履歴を含むため，`.gitignore`で除外している．
+```sh
+mise run triage "Refund not received" "I cancelled but got no refund."
+```
+
+### devcontainerを使わない場合
+
+Node.js(`mise.toml`の版)とpnpmがあれば動く．Layaの推論はApple SiliconのCPUで1回あたり約140ms(`@receptron/laya`の公表値)で，メモリは2GBほど使う．
+
+```sh
+pnpm install
+mise run laya   # 別のターミナルで，laya-serverを起動する
+cp .env.example .env   # SYSTEMONE_BASE_URLをhttp://localhost:8080に書き換える
+mise run triage "Refund not received" "I cancelled but got no refund."
+```
+
+モデルを使わずに試すときは，`DECISION_ENGINE=fake`をつける．
+
+## 開発
+
+```sh
+mise run check   # リント，型検査，単体テスト
+```
+
+単体テストはモデルを読み込まない．laya-serverは差し替えたエンジンで，アプリは`fake`アダプタと通信の差し替えで検証する．
+
+## ハンズオンの流れ(予定)
+
+1. 環境構築：devcontainerとlaya-serverを起動し，最初の判断を出す．
+2. ポートとアダプタ：`DecisionEngine`と`systemone-http`アダプタを読む．
+3. 問い合わせの振り分け：質問(choice・score・noul)を組み立て，答えを解釈する．
+4. 迷いへの対処：確信度が低いものを人の確認に回す．
+5. Jevへの切り替え：`.env`を書き換えて本家Jevにつなぎ，クラウドへデプロイする．
+
+## ライセンスについて
+
+- このリポジトリ：MIT
+- Laya(モデルの重み)：Apache 2.0(Convai Innovations)
+- `@receptron/laya`，`@typesafe-ai/sdk`：MIT
+- Jevは有償のAPIである．商用利用の条件は，リリース前にTypeSafe AIの利用規約で確かめる．
