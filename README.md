@@ -51,7 +51,7 @@ listening on http://localhost:3000
 | [3](iterations/iteration-3/exercise/) | 判断エンジンをアプリから切り離す | ポートとアダプタ，依存性の逆転，テストダブル |
 | [4](iterations/iteration-4/exercise/) | 迷っている問い合わせを人の確認に回す | 確信度，しきい値，コマンドラインのオプション |
 | [5](iterations/iteration-5/exercise/) | 接続先を環境変数で選ぶ | 環境変数による設定，組み立ての場所，Jevへの切り替え |
-| 6 | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
+| [6](iterations/iteration-6/exercise/) | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
 | 7 | ラベル付きデータで精度を測る | 評価，混同行列，しきい値と人の確認に回る割合の関係 |
 | 8 | 振り分けをHTTP APIで公開する | `node:http`，入口側のアダプタ |
 

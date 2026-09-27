@@ -64,6 +64,7 @@ tools/                           mermaidの検査，Componentの照合
 - `pnpm-workspace.yaml`は，`infra/*`・`tools/*`・`iterations/*/*`をすべて含む．学習者がパッケージを登録する作業はない．
 - パッケージの中身：`README.md`，`TESTLIST.md`，`design/`，`docs/iteration-N.md`，`package.json`，`tsconfig.json`，`vitest.config.ts`，`src/`，`test/unit/`，`test/integration/`．
 - 相対importには`.ts`を付ける(Nodeの型の除去で実行するため)．
+- 演習で使うデータのファイル(`data/`)は，それを初めて使うIterationの演習用パッケージに，解答例と同じものを置く．
 
 ### テスト
 
