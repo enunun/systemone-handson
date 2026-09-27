@@ -1,0 +1,22 @@
+{"subject": "Refund not received", "body": "I cancelled two weeks ago and still have no refund."}
+{"subject": "Charged twice", "body": "I was charged twice this month, please give me my money back."}
+{"subject": "Invoice", "body": "Please send me the invoice for September."}
+{"subject": "Wrong amount", "body": "My last invoice shows 120 dollars but my plan costs 100."}
+{"subject": "Card declined", "body": "My credit card was declined when renewing the subscription. How can I update it?"}
+{"subject": "Tax receipt", "body": "Can you add our company tax number to the receipts?"}
+{"subject": "Login problem", "body": "I cannot log in since yesterday."}
+{"subject": "App crashes", "body": "The app crashes every time I open the settings page."}
+{"subject": "Password reset", "body": "The password reset email never arrives."}
+{"subject": "Export to CSV", "body": "How do I export my reports to CSV?"}
+{"subject": "Sync error", "body": "My files do not sync between my laptop and my phone anymore."}
+{"subject": "Production down", "body": "Since the last update the app crashes on login. Our whole company cannot work."}
+{"subject": "Team plan", "body": "We are 20 people and want to upgrade to the team plan. What does it cost?"}
+{"subject": "Discount", "body": "Do you offer a discount for non-profit organizations?"}
+{"subject": "Enterprise", "body": "We would like to talk to someone about an enterprise contract."}
+{"subject": "Trial extension", "body": "Our trial ends tomorrow. Can we extend it for a week before we buy?"}
+{"subject": "More seats", "body": "We need five more seats for new employees next month."}
+{"subject": "Hello", "body": "I have a question about my account."}
+{"subject": "Question", "body": "Can you help me?"}
+{"subject": "Cancel", "body": "I want to cancel my subscription."}
+this line is not JSON
+{"subject": "Feedback", "body": "Great product, thank you!"}

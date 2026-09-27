@@ -1,0 +1,15 @@
+{
+  "name": "triage-iteration-6",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iteration 6(演習用)：ファイルの問い合わせをまとめて振り分ける",
+  "type": "module",
+  "scripts": {
+    "start": "node --env-file-if-exists=.env src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}

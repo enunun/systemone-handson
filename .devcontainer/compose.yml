@@ -3,8 +3,21 @@ services:
     build:
       context: ..
       dockerfile: .devcontainer/Dockerfile
-    container_name: PROJECT_NAME-container
+    container_name: systemone-handson-container
     volumes:
       - ..:/workspaces:cached
     working_dir: /workspaces
     command: ["sleep", "infinity"]
+
+  # Jev互換のAPIでLayaを公開するサーバ．初回の起動時にモデル(約1.7GB)をダウンロードする．
+  laya:
+    build:
+      context: ..
+      dockerfile: infra/laya-server/Dockerfile
+    volumes:
+      - laya-models:/models
+    ports:
+      - "8080:8080"
+
+volumes:
+  laya-models:

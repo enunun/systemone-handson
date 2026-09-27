@@ -1,0 +1,15 @@
+{
+  "name": "triage-solution-iteration-3",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iteration 3(解答例)：判断エンジンをアプリから切り離す",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}

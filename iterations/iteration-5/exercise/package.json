@@ -1,0 +1,15 @@
+{
+  "name": "triage-iteration-5",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iteration 5(演習用)：接続先を環境変数で選ぶ",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}

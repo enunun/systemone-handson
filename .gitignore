@@ -74,5 +74,6 @@ tmp/
 
 # node
 node_modules/
-# 実際に使用する場合には、pnpm-lock.yamlをコミットすることが推奨される
-pnpm-lock.yaml
+
+# tools/check-advanced.mjsが作る，発展課題を入れた版の一時ディレクトリ
+.solution-advanced/

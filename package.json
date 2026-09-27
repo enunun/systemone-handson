@@ -1,20 +1,29 @@
 {
-  "name": "workspaces",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "name": "systemone-handson",
+  "version": "0.1.0",
+  "private": true,
+  "description": "System One(型付きの判断を返すモデル)を使うプログラムを，TDDと設計書で育てるハンズオン",
+  "license": "MIT",
+  "type": "module",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "lint:text": "git ls-files '*.md' -z | xargs -0 -r textlint",
-    "lint:markdown": "git ls-files '*.md' -z | xargs -0 -r markdownlint-cli2",
-    "lint": "pnpm run lint:text && pnpm run lint:markdown"
+    "test": "pnpm -r --workspace-concurrency=1 run test && pnpm run test:advanced",
+    "test:advanced": "node tools/check-advanced.mjs iterations/iteration-*",
+    "typecheck": "pnpm -r run typecheck",
+    "fmt": "oxfmt",
+    "fmt:check": "oxfmt --check",
+    "lint:code": "oxlint",
+    "lint:text": "git ls-files -z --cached --others --exclude-standard '*.md' | xargs -0 -r textlint",
+    "lint:markdown": "git ls-files -z --cached --others --exclude-standard '*.md' | xargs -0 -r markdownlint-cli2",
+    "lint:mermaid": "git ls-files -z --cached --others --exclude-standard '*.md' | xargs -0 -r node tools/mermaid/check.mjs",
+    "lint:component": "node tools/check-component.mjs iterations/*/solution",
+    "lint": "pnpm run fmt:check && pnpm run lint:code && pnpm run lint:text && pnpm run lint:markdown && pnpm run lint:mermaid && pnpm run lint:component"
   },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
   "devDependencies": {
     "@textlint-ja/textlint-rule-preset-ai-writing": "^1.7.0",
+    "@types/node": "^24.0.0",
     "markdownlint-cli2": "^0.23.3",
+    "oxfmt": "^0.70.0",
+    "oxlint": "^1.85.0",
     "textlint": "^15.8.0",
     "textlint-filter-rule-comments": "^1.3.0",
     "textlint-plugin-mdx": "^1.1.0",
@@ -22,6 +31,8 @@
     "textlint-rule-ja-space-between-half-and-full-width": "^3.0.3",
     "textlint-rule-preset-ja-spacing": "^3.0.3",
     "textlint-rule-preset-ja-technical-writing": "^12.0.2",
-    "textlint-rule-prh": "^6.1.0"
+    "textlint-rule-prh": "^6.1.0",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.2"
   }
 }

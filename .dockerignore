@@ -1,0 +1,4 @@
+**/node_modules
+.git
+.devcontainer/claude-home
+.devcontainer/rtk-home

@@ -1,0 +1,15 @@
+{
+  "name": "triage-solution-iteration-2",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iteration 2(解答例)：緊急度を判定する．判断と表示を分ける",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}

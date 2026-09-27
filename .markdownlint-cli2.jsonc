@@ -1,13 +1,9 @@
 {
-	"config": {
-		"default": true
-	},
-	"globs": [
-		"**/*.md"
-	],
-	"ignores": [
-		"**/node_modules/**",
-		"CLAUDE.md",
-		"**/.claude/**"
-	]
+  "config": {
+    "default": true,
+    // 和文やコマンドの例は1行が長くなるので，行の長さは検査しない．
+    "MD013": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": ["**/node_modules/**", "CLAUDE.md", "**/.claude/**"],
 }

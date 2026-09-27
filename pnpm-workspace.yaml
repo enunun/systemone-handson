@@ -1,0 +1,9 @@
+packages:
+  - infra/*
+  - tools/*
+  - iterations/*/*
+
+# onnxruntime-nodeのインストール時スクリプトは，GPU(CUDA)用のバイナリを追加で取得するだけである．
+# CPU用のバイナリはパッケージに同梱されており，このハンズオンはCPUで動かすので，スクリプトは実行しない．
+allowBuilds:
+  onnxruntime-node: false
