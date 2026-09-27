@@ -111,9 +111,9 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 
 ## Iteration 4：迷っている問い合わせを人の確認に回す
 
-- 要求：部署の判定の確信度がしきい値(既定0.5)を下回ったら，部署の行の末尾に`-> needs review`を付ける．しきい値は`--min-confidence`で変えられる．
-- 使い方：`triage --min-confidence 0.7 "Hello" "I have a question."`
-- モジュール：`triage`に`needsReview`を足す．`app`で引数を解析する．
+- 要求：部署の判定の確信度がしきい値(既定0.2)を下回ったら，部署の行の末尾に`-> needs review`を付ける．しきい値は`--min-confidence`で変えられる．0から1の数でなければ，使い方を表示する．
+- 使い方：`triage --min-confidence 0.1 "Hello" "I have a question about my account."`
+- モジュール：`triage`の結果に`needsReview`を足し，`triage`がしきい値を受け取る．`format`の部署の行に印を付ける．`app`で引数を解析する．
 - 設計書で更新するもの：Codeに，確信度としきい値による分岐を足す．
 - 学ぶこと：確率と確信度の違い，しきい値の決め方，`util.parseArgs`．
 

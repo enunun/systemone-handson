@@ -1,0 +1,15 @@
+{
+  "name": "triage-iteration-4",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Iteration 4(演習用)：迷っている問い合わせを人の確認に回す",
+  "type": "module",
+  "scripts": {
+    "start": "node src/main.ts",
+    "test": "vitest run",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "dependencies": {
+    "@typesafe-ai/sdk": "0.6.0"
+  }
+}
