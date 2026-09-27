@@ -39,4 +39,5 @@ depends = ["install", "hooks"]
 
 [tasks.check]
 description = "整形の検査，リント，型検査，すべてのパッケージのテストをまとめて実行する"
-depends = ["lint", "test"]
+# lintとtestを並行させると，lintが失敗したときに止め損ねたtestが残り，終わらなくなる．順に実行する．
+run = [{ task = "lint" }, { task = "test" }]
