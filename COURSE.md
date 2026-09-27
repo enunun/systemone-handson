@@ -91,9 +91,11 @@ tools/                           mermaidの検査，Componentの照合
 ### 学習者が行う作業
 
 - Iteration 0：`pnpm install`，テストの実行(すべて・単体テスト・結合テスト)，型検査，実行，curlでの問い合わせ．
+- Iteration 1：1つのファイルのテストだけを実行する．
 - Iteration 3：モジュールをディレクトリ(`ports/`，`adapters/`)に分ける．
-- Iteration 5：`.env`の作成．
-- それ以降の作業はROADMAPの各Iterationに書く．
+- Iteration 5：`.env.example`から`.env`を作る．
+- Iteration 6・7：`data/`のファイルでサブコマンドを実行する．`time`で実行時間を測る．
+- Iteration 8：サーバを起動し，別のターミナルからcurlでリクエストを送る．
 
 ### Iterationごとの解説
 
@@ -115,3 +117,6 @@ tools/                           mermaidの検査，Componentの照合
 - onnxruntime-nodeのインストール時スクリプトはGPU用のバイナリを取得するだけで，CPUでは不要である．`pnpm-workspace.yaml`の`allowBuilds`で止めている．
 - Layaの確信度(`confidence`)は，1から答えの分布の正規化エントロピーを引いた値である．確率とは尺度が違い，低く出やすい(例：3択で，もっとも確からしい選択肢の確率が0.45のとき，確信度は0.03)．Iteration 4のしきい値は，この尺度に合わせて決める．
 - Layaの推論は，3問のリクエストで約0.55秒かかる(クラウドの開発環境のCPUで測った値)．
+- laya-serverは1件ずつ推論するので，同時に送る数を増やしても速くならない(Iteration 6で21件が約11秒)．教材では，同時に送る数の制限を「判断エンジンに送りすぎないため」と説明する．
+- 表の期待値を空白の数まで手で書くと，数え間違えやすい．実装の出力で列がそろっていることを確かめてから期待値にする．
+- 同じ問い合わせには，laya-serverは同じ確率を返す．教材の出力を作り直すときは，同じ問い合わせを使う．

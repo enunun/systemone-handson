@@ -5,26 +5,37 @@
 判断はSystem One(文章を生成せず，型の決まった答えを確率つきで返すモデル)に任せる．
 手元ではOSSのLayaを，本番ではTypeSafe AIのJevを使う想定で，接続先を替えてもアプリのコードが変わらない設計を身につける．
 
-完成すると，次のように使える(確率などの数値は例である)．
+完成すると，次のように使える(判断エンジンはlaya-server)．
 
 ```console
 $ triage "Refund not received" "I cancelled two weeks ago and still have no refund."
-department: billing (0.94)
-urgency: urgent (2.1)
-refund: yes (0.93)
+department: billing (0.69)
+urgency: somewhat urgent (1.1)
+refund: yes (0.87)
 $ triage "Hello" "I have a question about my account."
-department: support (0.41) -> needs review
-urgency: not urgent (0.3)
-refund: no (0.08)
+department: support (0.59) -> needs review
+urgency: somewhat urgent (1.1)
+refund: no (0.10)
 $ triage batch data/tickets.jsonl
-billing: 12, support: 8, sales: 3, needs review: 4
-$ triage eval data/labeled.jsonl --min-confidence 0.5
-accuracy: 0.86 (auto-routed 24 / 30), review rate: 0.20
+line 21: skipped (not a JSON object with subject and body)
+billing: 4, support: 6, sales: 0, needs review: 11
+$ triage eval data/labeled.jsonl
+accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+
+actual \ predicted   billing   support     sales
+billing                   10         1         0
+support                    0        11         0
+sales                      1         2         5
 $ triage serve --port 3000
 listening on http://localhost:3000
-$ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refund?"}'
-{"department":"billing","urgency":1.8,"refund":true,"needsReview":false}
 ```
+
+```console
+$ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "Where is my refund?"}'
+{"department":"billing","departmentProbability":0.7253,"departmentConfidence":0.318,"needsReview":false,"urgency":1.4061,"refundProbability":0.8631}
+```
+
+`triage`は，各Iterationのパッケージのディレクトリで`pnpm start`として実行する(`pnpm start batch data/tickets.jsonl`など)．
 
 ## 進め方
 
@@ -85,7 +96,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 ## Iteration 1：担当部署を判定する
 
 - 要求：担当部署(billing・support・sales)を判定し，もっとも確からしい部署とその確率を表示する．返金の判定と同じ1回の問い合わせで尋ねる．
-- 使い方：1行目に`department: billing (0.94)`を表示し，2行目に返金の判定を表示する．
+- 使い方：1行目に`department: billing (0.73)`を表示し，2行目に返金の判定を表示する．
 - モジュール：`department`(`departmentQuestion`，`formatDepartment`)を足す．`app`の`run`は，2つの質問をまとめて送る．
 - 設計書で更新するもの：Componentに`department`を足す．Codeにchoiceの答えの流れを足す．シーケンス図の問い合わせに質問を足す．
 - 学ぶこと：choiceの質問と答え，確率の分布，選択肢の説明文による結果の違い，1回の問い合わせで複数の質問に答えさせる理由．
@@ -128,10 +139,10 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 ## Iteration 6：ファイルの問い合わせをまとめて振り分ける
 
 - 要求：`triage batch <ファイル>`で，JSON Lines形式のファイルに並んだ問い合わせを振り分け，部署ごとの件数と，人の確認に回した件数を表示する．読めない行は，行番号とともに知らせて飛ばす．同時に送る問い合わせは4件までにする．
-- 使い方：`triage batch data/tickets.jsonl`で`billing: 12, support: 8, sales: 3, needs review: 4`．
-- モジュール：`batch`(`readTickets`，`summarize`)を足す．`app`をサブコマンドに対応させる．
+- 使い方：`triage batch data/tickets.jsonl`で`billing: 4, support: 6, sales: 0, needs review: 11`．
+- モジュール：`batch`(`parseTickets`，`mapWithConcurrency`，`summarize`)を足す．`format`に`formatSummary`を，`triage`に`departmentNames`を足す．`app`をサブコマンドに対応させ，ファイルを読む．
 - 設計書で更新するもの：Containerにファイルを足す．Componentに`batch`を足す．シーケンス図に，複数の問い合わせを並行して送る流れを足す．
-- 学ぶこと：`node:fs/promises`と`node:readline`，JSON Lines，サブコマンド，`Promise.all`と同時に送る数の制限．
+- 学ぶこと：`node:fs/promises`，JSON Linesと型ガード，サブコマンド，`Promise.all`と同時に送る数の制限，テストでの一時ファイル．
 
 ## Iteration 7：ラベル付きデータで精度を測る
 
@@ -145,7 +156,7 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 ## Iteration 8：振り分けをHTTP APIで公開する
 
 - 要求：`triage serve --port <番号>`でHTTPサーバを起動する．`POST /triage`に件名と本文のJSONを送ると，振り分けの結果をJSONで返す．入力が誤っていれば400を返す．
-- 使い方：冒頭の`curl`の例．
-- モジュール：`http-api`(`createApi`)を足す．CLIとHTTP APIは，同じ`triage`を使う．
+- 使い方：冒頭の`triage serve`と`curl`の例．
+- モジュール：`adapters/http-api`(`createApi`)を足す．`app`に`serve`サブコマンドを足す．CLIとHTTP APIは，同じ`triage`を使う．
 - 設計書で更新するもの：ContextにAPIの利用者を，ContainerにHTTP APIを足す．Componentで，入口側のアダプタ(CLI・HTTP API)と出口側のアダプタ(判断エンジン)を描き分ける．シーケンス図にHTTPのリクエストからの流れを足す．
 - 学ぶこと：`node:http`，入力の検証，入口側と出口側のアダプタ，HTTPサーバの結合テスト．

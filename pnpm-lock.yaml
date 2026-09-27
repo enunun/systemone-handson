@@ -156,6 +156,18 @@ importers:
         specifier: 0.6.0
         version: 0.6.0
 
+  iterations/iteration-8/exercise:
+    dependencies:
+      '@typesafe-ai/sdk':
+        specifier: 0.6.0
+        version: 0.6.0
+
+  iterations/iteration-8/solution:
+    dependencies:
+      '@typesafe-ai/sdk':
+        specifier: 0.6.0
+        version: 0.6.0
+
   tools/mermaid:
     dependencies:
       jsdom:

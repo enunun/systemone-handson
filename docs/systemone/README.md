@@ -14,5 +14,6 @@
 | [Iteration 5：環境変数による設定と，Jevへの切り替え](iteration-5.md) | 設定をコードの外に出す，`process.env`，`.env`と`--env-file`，環境変数の優先順位，設定を読む関数のテスト，組み立ての場所，本家Jevへの切り替え |
 | [Iteration 6：ファイル，JSON Lines，並行処理](iteration-6.md) | JSON Lines，`JSON.parse`と型ガード，`readFile`，サブコマンド，`Promise.all`，同時に送る数の制限，並行しても速くならないとき，テストでの一時ファイル |
 | [Iteration 7：評価と，しきい値の選び方](iteration-7.md) | なぜ評価するのか，評価用のデータ，正解率と人の確認に回る割合，混同行列，しきい値ごとの評価，しきい値の選び方，割り算と`n/a`，`padStart`・`padEnd` |
+| [Iteration 8：HTTP APIと，入口側のアダプタ](iteration-8.md) | `node:http`の`createServer`，リクエストの本文を読む，ステータスコード，curlでHTTP APIを試す，入口側と出口側のアダプタ，HTTPサーバの結合テスト |
 
 テスト駆動開発とテストリストの書き方は[tdd.md](../tdd.md)に，設計書の書き方は[design.md](../design.md)にまとめている．

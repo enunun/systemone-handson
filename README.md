@@ -7,15 +7,16 @@ TypeScriptを読み書きでき，大規模言語モデルのAPIを使ったこ�
 
 問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から8までの9回に分けて少しずつ育てる．
 最初は「返金を求めているか」を判定するだけのプログラムから始め，担当部署・緊急度の判定，人の確認への振り分け，まとめての処理，精度の評価，HTTP APIを足していく．
-完成すると，次のように使える(確率などの数値は例である)．
+完成すると，次のように使える．
 
 ```console
 $ triage "Refund not received" "I cancelled two weeks ago and still have no refund."
-department: billing (0.94)
-urgency: urgent (2.1)
-refund: yes (0.93)
+department: billing (0.69)
+urgency: somewhat urgent (1.1)
+refund: yes (0.87)
 $ triage batch data/tickets.jsonl
-billing: 12, support: 8, sales: 3, needs review: 4
+line 21: skipped (not a JSON object with subject and body)
+billing: 4, support: 6, sales: 0, needs review: 11
 $ triage serve --port 3000
 listening on http://localhost:3000
 ```
@@ -53,7 +54,7 @@ listening on http://localhost:3000
 | [5](iterations/iteration-5/exercise/) | 接続先を環境変数で選ぶ | 環境変数による設定，組み立ての場所，Jevへの切り替え |
 | [6](iterations/iteration-6/exercise/) | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
 | [7](iterations/iteration-7/exercise/) | ラベル付きデータで精度を測る | 評価，混同行列，しきい値と人の確認に回る割合の関係 |
-| 8 | 振り分けをHTTP APIで公開する | `node:http`，入口側のアダプタ |
+| [8](iterations/iteration-8/exercise/) | 振り分けをHTTP APIで公開する | `node:http`，入口側のアダプタ |
 
 各Iterationの目的と内容は[docs/ROADMAP.md](docs/ROADMAP.md)にまとめている．
 
