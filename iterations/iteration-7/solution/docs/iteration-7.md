@@ -14,14 +14,24 @@ Iteration 6の45のテストが通る．
    ```console
    $ pnpm start "Double charge" "My card was charged twice for the same order."
    department: billing (0.90)
+   urgency: urgent (1.8)
+   refund: yes (0.53)
    $ pnpm start "Demo" "Could we schedule a product demo for our team next week?"
    department: support (0.59) -> needs review
+   urgency: somewhat urgent (1.3)
+   refund: no (0.00)
    $ pnpm start "Two-factor" "I lost my phone and cannot get the two-factor code."
    department: support (0.68)
+   urgency: urgent (1.5)
+   refund: no (0.03)
    $ pnpm start "Education" "Do you have special prices for universities?"
    department: sales (0.40) -> needs review
+   urgency: somewhat urgent (1.3)
+   refund: no (0.15)
    $ pnpm start "Cancel plan" "I want to cancel my plan at the end of this month."
    department: support (0.38) -> needs review
+   urgency: somewhat urgent (1.2)
+   refund: no (0.05)
    ```
 
    正解はbilling・sales・support・sales・billingである．

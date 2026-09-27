@@ -34,7 +34,10 @@ Node.jsは，`--env-file-if-exists=.env`を付けて起動すると，`.env`を�
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
 .env not found. Continuing without it.
+missing environment variables: SYSTEMONE_BASE_URL, SYSTEMONE_MODEL, SYSTEMONE_API_KEY
 ```
+
+2行目は，Iteration 5で完成させる`triage`の表示である．`.env`がないので，接続先の環境変数が足りないことを知らせて終わる．
 
 シェルで設定した環境変数は，`.env`の値より優先される．
 一時的に値を変えたいときは，コマンドの前に書く．
