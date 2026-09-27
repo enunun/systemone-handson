@@ -258,3 +258,6 @@ department: billing (0.73, confidence 0.32)
 urgency: somewhat urgent (1.4)
 refund: yes (0.86)
 ```
+
+解答例のパッケージでは，この実装とテストを`発展(演習4-7)`で始まるコメントとして書いている．
+コメントを外して動かす方法は，リポジトリの[README](../../../../README.md#発展課題)にある．

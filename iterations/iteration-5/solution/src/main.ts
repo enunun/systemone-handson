@@ -1,6 +1,9 @@
 // triageの実行ファイル．環境変数の設定から判断エンジンのアダプタを組み立て，runの結果を表示する．
 // どのアダプタを使うかを決めるのは，このモジュールだけである(組み立ての場所)．
 
+// 発展(演習5-7)：つながらないときの例外(APIConnectionError)もSDKから読む
+// import { APIConnectionError, TypeSafeClient } from "@typesafe-ai/sdk";
+// 発展(演習5-7)ここまで．次の1行の代わりに使う
 import { TypeSafeClient } from "@typesafe-ai/sdk";
 import { createFakeEngine } from "./adapters/fake-engine.ts";
 import { createSystemOneEngine } from "./adapters/systemone-engine.ts";
@@ -28,6 +31,19 @@ const createEngine = (config: Config): DecisionEngine => {
 
 const loaded = loadConfig(process.env);
 if (loaded.ok) {
+  // 発展(演習5-7)：判断エンジンにつながらなければ，接続先のURLとともに短いメッセージを表示して終了コード1で終わる．ほかの例外はそのまま投げ直す
+  // try {
+  //   const { code, output } = await run(process.argv.slice(2), createEngine(loaded.config));
+  //   if (code === 0) console.log(output);
+  //   else console.error(output);
+  //   process.exitCode = code;
+  // } catch (error) {
+  //   if (!(error instanceof APIConnectionError)) throw error;
+  //   const url = loaded.config.engine === "systemone" ? loaded.config.baseURL : "";
+  //   console.error(`cannot reach the decision engine at ${url}: ${error.message}`);
+  //   process.exitCode = 1;
+  // }
+  // 発展(演習5-7)ここまで．次の4行の代わりに使う
   const { code, output } = await run(process.argv.slice(2), createEngine(loaded.config));
   if (code === 0) console.log(output);
   else console.error(output);

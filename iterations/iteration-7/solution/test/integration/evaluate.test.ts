@@ -63,6 +63,12 @@ describe("run eval", () => {
         "line 4: skipped (not a JSON object with subject, body and a known department)",
         "accuracy: 0.50 (auto-routed 2 / 3), review rate: 0.33",
         "",
+        // 発展(演習7-7)：混同行列の右に再現率の列が加わる
+        // "actual \\ predicted   billing   support     sales    recall",
+        // "billing                    1         1         0      0.50",
+        // "support                    0         0         0       n/a",
+        // "sales                      1         0         0      0.00",
+        // 発展(演習7-7)ここまで．次の4行の代わりに使う
         "actual \\ predicted   billing   support     sales",
         "billing                    1         1         0",
         "support                    0         0         0",

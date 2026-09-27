@@ -13,7 +13,8 @@ Prefix every shell command with `rtk`, including each command in an `&&` chain �
 - When creating or fixing an Iteration, follow the `build-handson` skill (`enunun/system-development-skills`). Read `COURSE.md` first; it holds the layout, commands, and pitfalls.
 - Change the exercise and solution of the same Iteration together in the same commit.
 - All solution tests must pass. Exercises must pass type checking and their carried-over tests before the learner adds anything.
-- The code, tests and design documents (`design/`) of Iteration N's (N ≥ 1) exercise are identical to Iteration N-1's solution.
+- The code, tests and design documents (`design/`) of Iteration N's (N ≥ 1) exercise are identical to Iteration N-1's solution with its advanced-exercise comments removed.
+- Solutions run without the advanced exercise (N-7). Its code and tests live in the solution as `// 発展(演習N-7)` comment blocks, and its new files under `advanced/` (see "発展課題" in `COURSE.md`). `tools/check-advanced.mjs` type-checks and tests the version with them applied, and checks the carry-over to the next exercise.
 - Design documents are mermaid diagrams (`design/01-context.md` to `05-sequence.md`; see `docs/design.md`). Arrows in the Component diagram must match the implementation's `import`s (`tools/check-component.mjs` checks solutions).
 - TypeScript runs without a build step (Node type stripping): use only erasable syntax and add `.ts` to relative imports.
 - No test may use laya-server or the model. Output shown in the material must come from real runs against laya-server.
@@ -35,6 +36,7 @@ docs/
 infra/laya-server/  Jev-compatible HTTP server (POST /v1/systemone) running Laya on CPU. Provided finished.
 tools/mermaid/      Checks the syntax of mermaid diagrams in Markdown.
 tools/check-component.mjs  Compares Component diagrams with imports.
+tools/check-advanced.mjs   Checks the advanced-exercise comments and the carry-over to the next exercise.
 .devcontainer/      Dev container; compose.yml also starts laya-server as `laya`.
 ```
 

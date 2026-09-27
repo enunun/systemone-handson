@@ -124,6 +124,7 @@ refund: yes (0.86)
 `main`で，`createTimingEngine(createSystemOneEngine(client))`のように重ねて使う．
 アダプタを重ねても，`triage`は変わらない．
 
-発展課題の解答の一例は，`../solution/docs/iteration-3.md`の演習3-7にある．
+発展課題の解答の一例は，解答例のパッケージ(`../solution`)に`発展(演習3-7)`で始まるコメントと，`advanced/`のファイルとして書いてある．
+解説は`../solution/docs/iteration-3.md`の演習3-7にある．
 
 発展課題でも，テストリストを書いたあとに設計書を更新してから実装し，実装したら設計書と見比べる．

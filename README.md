@@ -58,6 +58,27 @@ listening on http://localhost:3000
 
 各Iterationの目的と内容は[docs/ROADMAP.md](docs/ROADMAP.md)にまとめている．
 
+### 発展課題
+
+各Iterationの最後の演習(演習N-7)は，発展課題である．
+解答例のパッケージは，発展課題を除いた形で動く．
+発展課題の実装とテストは，次のように`発展(演習N-7)`の印で囲んだコメントとして書いてある．
+
+```ts
+  // 発展(演習0-7)：確率が0.4以上0.6未満ならunsureと表示する
+  // const answer = probability >= 0.6 ? "yes" : probability >= 0.4 ? "unsure" : "no";
+  // 発展(演習0-7)ここまで．次の1行の代わりに使う
+  const answer = probability >= 0.5 ? "yes" : "no";
+```
+
+発展課題を動かすときは，印の間の行の頭にある`//`と空白1つを外し，印の2行を消す．
+終わりの印に「次のN行の代わりに使う」とあれば，そのすぐ後のN行も消す．
+発展課題で新しく作るファイルは，解答例の`advanced/`の下に置いてある．
+`advanced/src/adapters/timing-engine.ts`を`src/adapters/timing-engine.ts`に写すように，`advanced/`を除いたパスに写すと使える．
+
+次のIterationの演習用パッケージは，発展課題を除いた解答例から始まる．
+解答例の設計書も，発展課題を除いた実装に合わせてある．
+
 ## 構成
 
 Iterationごとに，演習用(exercise)と解答例(solution)の2つのpnpmパッケージを置く．

@@ -67,6 +67,14 @@ describe("run", () => {
 
     expect(result.output.split("\n")[0]).toBe("department: billing (0.73) -> needs review");
   });
+  // 発展(演習4-7)：--show-confidenceを付けると，部署の行に確信度を表示する
+  //
+  // test("--show-confidenceを付けると，部署の行に確信度を表示する", async () => {
+  //   const result = await run(["--show-confidence", "Refund not received", "Where is my refund?"], engineWith(0.318));
+  //
+  //   expect(result.output.split("\n")[0]).toBe("department: billing (0.73, confidence 0.32)");
+  // });
+  // 発展(演習4-7)ここまで
 
   test("--min-confidenceが0から1の数でなければ，判断エンジンへ送らずに使い方を表示する", async () => {
     const requests: unknown[] = [];

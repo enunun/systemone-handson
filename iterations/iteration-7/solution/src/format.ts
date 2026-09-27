@@ -46,6 +46,27 @@ export const formatEvaluation = (evaluation: Evaluation): string =>
   `review rate: ${formatRate(evaluation.reviewRate)}`;
 
 /** 混同行列を，行が正解の部署，列が判定した部署の表にする． */
+// 発展(演習7-7)：各行の右に，その行の対角線の件数を行の合計で割った再現率を表示する．行の合計が0ならn/aとする
+// export const formatConfusionMatrix = (matrix: ConfusionMatrix): string => {
+//   const labels = Object.keys(matrix);
+//   const header = [
+//     "actual \\ predicted".padEnd(18),
+//     ...labels.map((label) => label.padStart(10)),
+//     "recall".padStart(10),
+//   ].join("");
+//   const rows = labels.map((label) => {
+//     const row = matrix[label] ?? {};
+//     const total = Object.values(row).reduce((sum, count) => sum + count, 0);
+//     const recall = total === 0 ? undefined : (row[label] ?? 0) / total;
+//     return [
+//       label.padEnd(18),
+//       ...labels.map((predicted) => String(row[predicted] ?? 0).padStart(10)),
+//       formatRate(recall).padStart(10),
+//     ].join("");
+//   });
+//   return [header, ...rows].join("\n");
+// };
+// 発展(演習7-7)ここまで．次の8行の代わりに使う
 export const formatConfusionMatrix = (matrix: ConfusionMatrix): string => {
   const labels = Object.keys(matrix);
   const header = ["actual \\ predicted".padEnd(18), ...labels.map((label) => label.padStart(10))].join("");

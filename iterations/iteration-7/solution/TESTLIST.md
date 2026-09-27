@@ -28,3 +28,11 @@
 - [x] `run eval`：`--sweep`と`--min-confidence`は一緒に使えない
 - [x] `run`：`--sweep`は，eval以外では使えない
 - [x] `run`・`run batch`：使い方の文に，`triage eval`の行を足す
+
+## 発展課題(演習7-7)
+
+解答例のパッケージでは，`発展(演習7-7)`で始まるコメントとして書いている．
+
+- [x] `formatConfusionMatrix`：各行の右に，その行の対角線の件数を行の合計で割った再現率を表示する
+- [x] `formatConfusionMatrix`：行の合計が0なら，再現率を`n/a`とする
+- [x] 既存の`formatConfusionMatrix`と結合テストの期待値に`recall`の列を足す

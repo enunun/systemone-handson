@@ -9,6 +9,14 @@ describe("formatDepartment", () => {
   test("人の確認に回すなら，末尾に印を付ける", () => {
     expect(formatDepartment("sales", 0.4394, true)).toBe("department: sales (0.44) -> needs review");
   });
+  // 発展(演習4-7)：確信度を表示する
+  //
+  // test("確信度を渡されたら，確率の後ろに表示する", () => {
+  //   expect(formatDepartment("sales", 0.4394, true, 0.0229)).toBe(
+  //     "department: sales (0.44, confidence 0.02) -> needs review",
+  //   );
+  // });
+  // 発展(演習4-7)ここまで
 });
 
 describe("formatUrgency", () => {
@@ -46,6 +54,16 @@ describe("formatRefund", () => {
 
 describe("formatTriage", () => {
   test("部署・緊急度・返金の判定を，この順に1項目1行で表示する", () => {
+    // 発展(演習4-7)：Triageに部署の確信度が加わる
+    // const triage = {
+    //   department: "billing",
+    //   departmentProbability: 0.7253,
+    //   departmentConfidence: 0.318,
+    //   needsReview: false,
+    //   urgency: 1.4061,
+    //   refundProbability: 0.8631,
+    // };
+    // 発展(演習4-7)ここまで．次の7行の代わりに使う
     const triage = {
       department: "billing",
       departmentProbability: 0.7253,
@@ -55,4 +73,18 @@ describe("formatTriage", () => {
     };
     expect(formatTriage(triage)).toBe("department: billing (0.73)\nurgency: somewhat urgent (1.4)\nrefund: yes (0.86)");
   });
+  // 発展(演習4-7)：showConfidenceが真なら，部署の行に確信度を表示する
+  //
+  // test("showConfidenceが真なら，部署の行に確信度を表示する", () => {
+  //   const triage = {
+  //     department: "billing",
+  //     departmentProbability: 0.7253,
+  //     departmentConfidence: 0.318,
+  //     needsReview: false,
+  //     urgency: 1.4061,
+  //     refundProbability: 0.8631,
+  //   };
+  //   expect(formatTriage(triage, true).split("\n")[0]).toBe("department: billing (0.73, confidence 0.32)");
+  // });
+  // 発展(演習4-7)ここまで
 });

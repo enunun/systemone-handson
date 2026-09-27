@@ -28,6 +28,9 @@ describe("run", () => {
 
     const result = await run(["Refund not received", "Where is my refund?"], clientWith(requests));
 
+    // 発展(演習1-7)：部署の行に，2番目に確からしい部署が付く
+    // expect(result).toEqual({ code: 0, output: "department: billing (0.73, next: support 0.20)\nrefund: yes (0.86)" });
+    // 発展(演習1-7)ここまで．次の1行の代わりに使う
     expect(result).toEqual({ code: 0, output: "department: billing (0.73)\nrefund: yes (0.86)" });
     expect(requests).toHaveLength(1);
     expect(requests[0]).toMatchObject({

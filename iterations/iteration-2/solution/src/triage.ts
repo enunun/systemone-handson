@@ -16,6 +16,10 @@ export interface Triage {
   departmentProbability: number;
   /** 緊急度の期待値(0から3)．段階の番号はurgencyLevelsの添字である． */
   urgency: number;
+  // 発展(演習2-7)：もっとも確率の高い緊急度の段階の番号を持つ
+  // /** もっとも確率の高い緊急度の段階の番号． */
+  // urgencyMostLikely: number;
+  // 発展(演習2-7)ここまで
   /** 返金を求めている確率． */
   refundProbability: number;
 }
@@ -56,6 +60,11 @@ export const triage = async (client: TypeSafeClient, ticket: Ticket): Promise<Tr
     // 選ばれた部署は必ずprobabilitiesのキーにあるが，型の上では見つからない場合もありうるので0とする．
     departmentProbability: department.probabilities[department.choice] ?? 0,
     urgency: answers.urgency.score,
+    // 発展(演習2-7)：もっとも確率の高い段階の番号を取り出す．probabilitiesのキーは文字列なので，Numberで番号に戻す
+    // urgencyMostLikely: Number(
+    //   Object.entries(answers.urgency.probabilities).reduce((best, entry) => (entry[1] > best[1] ? entry : best))[0],
+    // ),
+    // 発展(演習2-7)ここまで
     refundProbability: answers.refund.noul,
   };
 };

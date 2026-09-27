@@ -333,3 +333,7 @@ refund: yes (0.86)
 
 `createTimingEngine`は，`DecisionEngine`を受け取って`DecisionEngine`を返す．
 同じポートを持つものを包んで機能を足す形を，デコレータと呼ぶ．
+
+解答例のパッケージでは，この実装とテストを`発展(演習3-7)`で始まるコメントとして書いている．
+新しく作る`src/adapters/timing-engine.ts`とそのテストは，`advanced/`に同じ相対パスで置いている．
+コメントを外して動かす方法は，リポジトリの[README](../../../../README.md#発展課題)にある．

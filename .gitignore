@@ -74,3 +74,6 @@ tmp/
 
 # node
 node_modules/
+
+# tools/check-advanced.mjsが作る，発展課題を入れた版の一時ディレクトリ
+.solution-advanced/

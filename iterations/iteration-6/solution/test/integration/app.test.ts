@@ -39,6 +39,9 @@ const engineWith = (departmentConfidence = 0.318, requests: unknown[] = []) =>
 
 const usage = [
   'usage: triage [--min-confidence <0-1>] "<subject>" "<body>"',
+  // 発展(演習6-7)：使い方の文に[--concurrency <n>]が加わる
+  // "       triage batch [--min-confidence <0-1>] [--concurrency <n>] <file>",
+  // 発展(演習6-7)ここまで．次の1行の代わりに使う
   "       triage batch [--min-confidence <0-1>] <file>",
 ].join("\n");
 

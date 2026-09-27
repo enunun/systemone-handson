@@ -23,6 +23,9 @@ describe("triage", () => {
         confidence: 0.32,
         probabilities: { billing: 0.73, support: 0.27 },
       },
+      // 発展(演習2-7)：もっとも確率の高い段階を取り出すので，段階ごとの確率を返す
+      // urgency: { type: "score", score: 1.4, confidence: 0.09, legend: {}, probabilities: { 1: 0.6, 2: 0.4 } },
+      // 発展(演習2-7)ここまで．次の1行の代わりに使う
       urgency: { type: "score", score: 1.4, confidence: 0.09, legend: {}, probabilities: {} },
       refund: { type: "noul", noul: 0.86 },
     };
@@ -64,6 +67,15 @@ describe("triage", () => {
 
     const result = await triage(clientWith(answers), ticket);
 
+    // 発展(演習2-7)：もっとも確率の高い緊急度の段階の番号も取り出す
+    // expect(result).toEqual({
+    //   department: "support",
+    //   departmentProbability: 0.8427,
+    //   urgency: 1.6092,
+    //   urgencyMostLikely: 2,
+    //   refundProbability: 0.08,
+    // });
+    // 発展(演習2-7)ここまで．次の6行の代わりに使う
     expect(result).toEqual({
       department: "support",
       departmentProbability: 0.8427,

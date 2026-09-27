@@ -92,4 +92,37 @@ describe("run batch", () => {
     expect(result.code).toBe(2);
     expect(result.output).toContain("triage batch");
   });
+  // 発展(演習6-7)：同時に送る数を指定する
+  //
+  // test("--concurrencyで，同時に送る数を変える", async () => {
+  //   // 送っている途中の数を数え，同時に送った数の最大を記録するfetch．
+  //   let active = 0;
+  //   let most = 0;
+  //   const countingFetch = async (url: string, init?: RequestInit) => {
+  //     active++;
+  //     most = Math.max(most, active);
+  //     await new Promise((resolve) => setTimeout(resolve, 5));
+  //     active--;
+  //     return fakeFetch(url, init);
+  //   };
+  //   const countingEngine = createSystemOneEngine(
+  //     new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: countingFetch }),
+  //   );
+  //   const file = await writeTickets(Array.from({ length: 5 }, () => '{"subject": "Refund", "body": "Where?"}'));
+  //
+  //   await run(["batch", "--concurrency", "2", file], countingEngine);
+  //
+  //   expect(most).toBe(2);
+  // });
+  //
+  // test("--concurrencyが1以上の整数でなければ，使い方を表示する", async () => {
+  //   const file = await writeTickets(['{"subject": "Refund", "body": "Where is my refund?"}']);
+  //
+  //   for (const value of ["0", "1.5", "two"]) {
+  //     const result = await run(["batch", "--concurrency", value, file], engine);
+  //
+  //     expect(result.code).toBe(2);
+  //   }
+  // });
+  // 発展(演習6-7)ここまで
 });

@@ -49,6 +49,16 @@ describe("triage", () => {
   test("答えから，部署とその確率・緊急度の期待値・返金の確率を取り出す", async () => {
     const result = await triage(createFakeEngine(answers), ticket);
 
+    // 発展(演習4-7)：部署の判定の確信度も取り出す
+    // expect(result).toEqual({
+    //   department: "support",
+    //   departmentProbability: 0.8427,
+    //   departmentConfidence: 0.5,
+    //   needsReview: false,
+    //   urgency: 1.6092,
+    //   refundProbability: 0.08,
+    // });
+    // 発展(演習4-7)ここまで．次の7行の代わりに使う
     expect(result).toEqual({
       department: "support",
       departmentProbability: 0.8427,

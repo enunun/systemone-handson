@@ -229,3 +229,6 @@ cannot reach the decision engine at http://localhost:9999: Connection error: fet
 
 `APIConnectionError`はSDKの型なので，この処理はSDKを知っている`main`に書く．
 `run`や`triage`でSDKの例外を受け止めると，アプリの中心がSDKに依存してしまう．
+
+解答例のパッケージでは，この実装とテストを`発展(演習5-7)`で始まるコメントとして書いている．
+コメントを外して動かす方法は，リポジトリの[README](../../../../README.md#発展課題)にある．

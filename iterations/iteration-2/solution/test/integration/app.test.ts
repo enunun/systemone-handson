@@ -37,6 +37,9 @@ describe("run", () => {
 
     expect(result).toEqual({
       code: 0,
+      // 発展(演習2-7)：緊急度の行に，もっとも確率の高い段階が付く
+      // output: "department: billing (0.73)\nurgency: somewhat urgent (1.4, most likely: urgent)\nrefund: yes (0.86)",
+      // 発展(演習2-7)ここまで．次の1行の代わりに使う
       output: "department: billing (0.73)\nurgency: somewhat urgent (1.4)\nrefund: yes (0.86)",
     });
     expect(requests).toHaveLength(1);

@@ -7,6 +7,12 @@ export const formatDepartment = (department: string, probability: number): strin
   `department: ${department} (${probability.toFixed(2)})`;
 
 /** 緊急度の期待値(0から3)を，`urgency: urgent (2.4)`のような1行にする．段階は，期待値にもっとも近いものにする． */
+// 発展(演習2-7)：もっとも確率の高い段階の名前を添える
+// export const formatUrgency = (score: number, mostLikely: number): string => {
+//   const level = urgencyLevels[Math.round(score)];
+//   return `urgency: ${level} (${score.toFixed(1)}, most likely: ${urgencyLevels[mostLikely]})`;
+// };
+// 発展(演習2-7)ここまで．次の4行の代わりに使う
 export const formatUrgency = (score: number): string => {
   const level = urgencyLevels[Math.round(score)];
   return `urgency: ${level} (${score.toFixed(1)})`;
@@ -22,6 +28,9 @@ export const formatRefund = (probability: number): string => {
 export const formatTriage = (triage: Triage): string =>
   [
     formatDepartment(triage.department, triage.departmentProbability),
+    // 発展(演習2-7)：もっとも確率の高い段階も渡す
+    // formatUrgency(triage.urgency, triage.urgencyMostLikely),
+    // 発展(演習2-7)ここまで．次の1行の代わりに使う
     formatUrgency(triage.urgency),
     formatRefund(triage.refundProbability),
   ].join("\n");

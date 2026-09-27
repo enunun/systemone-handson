@@ -77,6 +77,21 @@ describe("createApi", () => {
 
     expect(response.status).toBe(405);
   });
+  // 発展(演習8-7)：死活確認のエンドポイント
+  //
+  // test("GET /healthzに，200と{\"status\": \"ok\"}を返す", async () => {
+  //   const response = await fetch(`${baseURL}/healthz`);
+  //
+  //   expect(response.status).toBe(200);
+  //   expect(await response.json()).toEqual({ status: "ok" });
+  // });
+  //
+  // test("/healthzにGET以外で送ると，ほかのパスと同じく404を返す", async () => {
+  //   const response = await fetch(`${baseURL}/healthz`, { method: "POST", body: "{}" });
+  //
+  //   expect(response.status).toBe(404);
+  // });
+  // 発展(演習8-7)ここまで
 
   test("判断エンジンが失敗したら，502を返す", async () => {
     const failing = createApi(createFakeEngine({}), {});

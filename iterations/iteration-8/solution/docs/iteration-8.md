@@ -196,7 +196,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Team plan", "body": "We are 20 
 テストリストに次の項目を足す．
 
 - `createApi`：`GET /healthz`に，200と`{"status": "ok"}`を返す
-- `createApi`：`/healthz`以外の既存のエラーの振る舞いは変えない
+- `createApi`：`/healthz`にGET以外で送ると，ほかのパスと同じく404を返す
 
 パスを確かめる前に，`/healthz`の場合を足す．
 
@@ -218,3 +218,6 @@ $ curl -s localhost:3001/healthz
 
 判断エンジン(laya-server)にも`GET /healthz`がある．
 `triage serve`の`/healthz`で，判断エンジンの準備ができているかまで確かめるかは，監視で何を知りたいかによって決める．
+
+解答例のパッケージでは，この実装とテストを`発展(演習8-7)`で始まるコメントとして書いている．
+コメントを外して動かす方法は，リポジトリの[README](../../../../README.md#発展課題)にある．

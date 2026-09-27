@@ -125,6 +125,7 @@ cannot reach the decision engine at http://localhost:9999: Connection error: fet
 SDKは，つながらないときに`APIConnectionError`を投げる．
 SDKは送り直しを2回行うので，メッセージが表示されるまで少し時間がかかる．
 
-発展課題の解答の一例は，`../solution/docs/iteration-5.md`の演習5-7にある．
+発展課題の解答の一例は，解答例のパッケージ(`../solution`)に`発展(演習5-7)`で始まるコメントとして書いてある．
+解説は`../solution/docs/iteration-5.md`の演習5-7にある．
 
 発展課題でも，テストリストを書いたあとに設計書を更新してから実装し，実装したら設計書と見比べる．

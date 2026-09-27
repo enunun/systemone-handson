@@ -17,3 +17,10 @@
 
 - [x] `run`：`TypeSafeClient`の代わりに，`createSystemOneEngine`で作ったアダプタを渡す(偽の`fetch`はそのまま)
 - [x] `run`：件名と本文がそろっていなければ，判断エンジンへ送らずに使い方を表示する(同上)
+
+## 発展課題(演習3-7)
+
+解答例のパッケージでは，`発展(演習3-7)`で始まるコメントと，`advanced/`のファイルとして書いている．
+
+- [x] `createTimingEngine`：包んだ判断エンジンの答えを，そのまま返す
+- [x] `createTimingEngine`：質問の数と，かかった時間を記録する

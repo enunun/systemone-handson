@@ -42,6 +42,9 @@ const parseTicket = (text: string) => {
 export const createApi = (engine: DecisionEngine, options: TriageOptions): Server =>
   createServer(async (request, response) => {
     const path = new URL(request.url ?? "/", "http://localhost").pathname;
+    // 発展(演習8-7)：パスを確かめる前に，死活確認(GET /healthz)に答える
+    // if (path === "/healthz" && request.method === "GET") return sendJson(response, 200, { status: "ok" });
+    // 発展(演習8-7)ここまで
     if (path !== "/triage") return sendError(response, 404, `not found: ${path}`);
     if (request.method !== "POST") return sendError(response, 405, "use POST");
     const text = await readBody(request);

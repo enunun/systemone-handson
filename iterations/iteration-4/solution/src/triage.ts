@@ -14,6 +14,10 @@ export interface Triage {
   department: string;
   /** その部署である確率． */
   departmentProbability: number;
+  // 発展(演習4-7)：部署の判定の確信度を持つ
+  // /** 部署の判定の確信度．0から1． */
+  // departmentConfidence: number;
+  // 発展(演習4-7)ここまで
   /** 部署の判定に迷いがあり，人の確認に回すべきか． */
   needsReview: boolean;
   /** 緊急度の期待値(0から3)．段階の番号はurgencyLevelsの添字である． */
@@ -63,6 +67,9 @@ export const triage = async (
   return {
     department: answers.department.value,
     departmentProbability: answers.department.probability,
+    // 発展(演習4-7)：部署の判定の確信度を取り出す
+    // departmentConfidence: answers.department.confidence,
+    // 発展(演習4-7)ここまで
     needsReview: answers.department.confidence < minConfidence,
     urgency: answers.urgency.value,
     refundProbability: answers.refund.probability,

@@ -9,17 +9,33 @@ describe("formatDepartment", () => {
 
 describe("formatUrgency", () => {
   test("期待値にもっとも近い段階の名前と，期待値を表示する", () => {
+    // 発展(演習2-7)：もっとも確率の高い段階を渡す
+    // expect(formatUrgency(2.4387, 3)).toBe("urgency: urgent (2.4, most likely: critical)");
+    // 発展(演習2-7)ここまで．次の1行の代わりに使う
     expect(formatUrgency(2.4387)).toBe("urgency: urgent (2.4)");
   });
 
   test("期待値が段階のちょうど中間なら，上の段階にする", () => {
+    // 発展(演習2-7)：もっとも確率の高い段階を渡す
+    // expect(formatUrgency(0.5, 1)).toBe("urgency: somewhat urgent (0.5, most likely: somewhat urgent)");
+    // 発展(演習2-7)ここまで．次の1行の代わりに使う
     expect(formatUrgency(0.5)).toBe("urgency: somewhat urgent (0.5)");
   });
 
   test("期待値が0なら最も低い段階，3なら最も高い段階にする", () => {
+    // 発展(演習2-7)：もっとも確率の高い段階を渡す
+    // expect(formatUrgency(0, 0)).toBe("urgency: not urgent (0.0, most likely: not urgent)");
+    // expect(formatUrgency(3, 3)).toBe("urgency: critical (3.0, most likely: critical)");
+    // 発展(演習2-7)ここまで．次の2行の代わりに使う
     expect(formatUrgency(0)).toBe("urgency: not urgent (0.0)");
     expect(formatUrgency(3)).toBe("urgency: critical (3.0)");
   });
+  // 発展(演習2-7)：もっとも確率の高い段階の名前を添える
+  //
+  // test("もっとも確率の高い段階の名前を添える", () => {
+  //   expect(formatUrgency(1.4061, 2)).toBe("urgency: somewhat urgent (1.4, most likely: urgent)");
+  // });
+  // 発展(演習2-7)ここまで
 });
 
 describe("formatRefund", () => {
@@ -42,6 +58,18 @@ describe("formatRefund", () => {
 
 describe("formatTriage", () => {
   test("部署・緊急度・返金の判定を，この順に1項目1行で表示する", () => {
+    // 発展(演習2-7)：Triageにもっとも確率の高い段階が加わり，緊急度の行に表示される
+    // const triage = {
+    //   department: "billing",
+    //   departmentProbability: 0.7253,
+    //   urgency: 1.4061,
+    //   urgencyMostLikely: 2,
+    //   refundProbability: 0.8631,
+    // };
+    // expect(formatTriage(triage)).toBe(
+    //   "department: billing (0.73)\nurgency: somewhat urgent (1.4, most likely: urgent)\nrefund: yes (0.86)",
+    // );
+    // 発展(演習2-7)ここまで．次の2行の代わりに使う
     const triage = { department: "billing", departmentProbability: 0.7253, urgency: 1.4061, refundProbability: 0.8631 };
     expect(formatTriage(triage)).toBe("department: billing (0.73)\nurgency: somewhat urgent (1.4)\nrefund: yes (0.86)");
   });

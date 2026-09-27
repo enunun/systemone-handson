@@ -34,4 +34,5 @@ test/integration/                 結合テスト
 TESTLIST.md                       テストリストの模範解答
 design/                           設計書の模範解答
 docs/iteration-3.md               演習の各手順の解説
+advanced/                         発展課題(演習3-7)で新しく作るファイル(src/とtest/に写して使う)
 ```

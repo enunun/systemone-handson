@@ -43,7 +43,7 @@
 - Dev Container：`.devcontainer/`．mise公式のイメージに，`mise.toml`の版のNode・pnpm・rtk・lefthookを入れる．`compose.yml`で`laya`サービス(laya-server)も起動し，アプリからは`http://laya:8080`で呼ぶ．VSCodeの拡張は`bierner.markdown-mermaid`など．
 - 言語とツール：TypeScript(ビルドせず，Nodeの型の除去で実行する)，`tsc`(型検査のみ)，Vitest(テスト)，oxlint(リント)，oxfmt(整形)．
 - 文書の検査：textlint，markdownlint，mermaidの構文検査(`tools/mermaid`)，Componentの照合(`tools/check-component.mjs`)．
-- 検証のコマンド：`mise run check`(整形の検査・リント・型検査・すべてのパッケージのテスト)．
+- 検証のコマンド：`mise run check`(整形の検査・リント・型検査・すべてのパッケージのテスト・発展課題の検査)．
 
 ### リポジトリの構成
 
@@ -58,11 +58,11 @@ iterations/iteration-N/
   exercise/                      演習用パッケージ(triage-iteration-N)
   solution/                      解答例パッケージ(triage-solution-iteration-N)
 infra/laya-server/               Jev互換のAPIでLayaを公開するサーバ(完成品として配る)
-tools/                           mermaidの検査，Componentの照合
+tools/                           mermaidの検査，Componentの照合，発展課題の検査
 ```
 
 - `pnpm-workspace.yaml`は，`infra/*`・`tools/*`・`iterations/*/*`をすべて含む．学習者がパッケージを登録する作業はない．
-- パッケージの中身：`README.md`，`TESTLIST.md`，`design/`，`docs/iteration-N.md`，`package.json`，`tsconfig.json`，`vitest.config.ts`，`src/`，`test/unit/`，`test/integration/`．
+- パッケージの中身：`README.md`，`TESTLIST.md`，`design/`，`docs/iteration-N.md`，`package.json`，`tsconfig.json`，`vitest.config.ts`，`src/`，`test/unit/`，`test/integration/`．解答例には，発展課題で新しく作るファイルを置く`advanced/`を加えることがある．
 - 相対importには`.ts`を付ける(Nodeの型の除去で実行するため)．
 - 演習で使うデータのファイル(`data/`)は，それを初めて使うIterationの演習用パッケージに，解答例と同じものを置く．
 
@@ -101,6 +101,17 @@ tools/                           mermaidの検査，Componentの照合
 
 `docs/systemone/iteration-N.md`に，そのIterationで初めて使うものを解説する．System Oneの概念，SDKやNodeのAPI，Vitestの使い方，設計の考え方を含む．目次は`docs/systemone/README.md`．
 
+### 発展課題
+
+- 各Iterationの演習N-7は発展課題とし，見出しに「(発展)」を付ける．
+- 解答例は，発展課題を除いた形で動かす．発展課題の実装とテストは，解答例の`src/`・`test/`に，`// 発展(演習N-7)：説明`から`// 発展(演習N-7)ここまで`までのコメントで書く．中のコードは，行の頭に`//`と空白1つを付ける．
+- 既存の行を置き換えるときは，終わりの印を`// 発展(演習N-7)ここまで．次のK行の代わりに使う`にし，置き換える行をその直後に置く．
+- 発展課題で新しく作るファイルは，解答例の`advanced/`に，パッケージの直下からと同じ相対パスで置く(例：`advanced/src/adapters/timing-engine.ts`)．
+- 次のIterationの演習用パッケージは，発展課題のコメントを除いた解答例と同じにする．解答例の設計書は，発展課題を除いた実装に合わせる．
+- 解答例の`TESTLIST.md`の最後に「発展課題(演習N-7)」の節を置き，発展課題のテストの項目を書く．解説の演習N-7にも同じ項目を書く．
+- 発展課題の出力を教材に載せるときは，発展課題を入れた版で実行する．`KEEP_ADVANCED=1 node tools/check-advanced.mjs iterations/iteration-N`で，その版が`iterations/iteration-N/.solution-advanced`に残る．
+- `tools/check-advanced.mjs`(`pnpm test`から実行する)は，発展課題を入れた版が型検査とテストを通ることと，演習用パッケージが前のIterationの解答例から発展課題を除いたものと同じことを確かめる．
+
 ## Iteration 0の演習の形
 
 - `src/refund.ts`：`formatRefund`のスタブ(本体は`throw new Error("TODO: …")`)．`refundQuestion`は学習者が足す．
@@ -120,3 +131,4 @@ tools/                           mermaidの検査，Componentの照合
 - laya-serverは1件ずつ推論するので，同時に送る数を増やしても速くならない(Iteration 6で21件が約10秒)．教材では，同時に送る数の制限を「判断エンジンに送りすぎないため」と説明する．
 - 表の期待値を空白の数まで手で書くと，数え間違えやすい．実装の出力で列がそろっていることを確かめてから期待値にする．
 - 同じ問い合わせには，laya-serverは同じ確率を返す．教材の出力を作り直すときは，同じ問い合わせを使う．
+- Vitestは，テストが1つもないテストファイルを失敗にする．発展課題で新しく作るテストファイルは，全体をコメントにできないので，`advanced/`に置く．

@@ -102,6 +102,12 @@ describe("formatConfusionMatrix", () => {
     };
     expect(formatConfusionMatrix(matrix)).toBe(
       [
+        // 発展(演習7-7)：各行の右に再現率の列が加わる
+        // "actual \\ predicted   billing   support     sales    recall",
+        // "billing                    8         2         1      0.73",
+        // "support                    0        11         0      1.00",
+        // "sales                      3         2         3      0.38",
+        // 発展(演習7-7)ここまで．次の4行の代わりに使う
         "actual \\ predicted   billing   support     sales",
         "billing                    8         2         1",
         "support                    0        11         0",
@@ -109,6 +115,17 @@ describe("formatConfusionMatrix", () => {
       ].join("\n"),
     );
   });
+  // 発展(演習7-7)：行の合計が0なら，再現率をn/aとする
+  //
+  // test("行の合計が0なら，再現率をn/aとする", () => {
+  //   const matrix = {
+  //     billing: { billing: 1, support: 0, sales: 0 },
+  //     support: { billing: 0, support: 0, sales: 0 },
+  //     sales: { billing: 0, support: 0, sales: 1 },
+  //   };
+  //   expect(formatConfusionMatrix(matrix).split("\n")[2]).toBe("support                    0         0         0       n/a");
+  // });
+  // 発展(演習7-7)ここまで
 });
 
 describe("formatSweep", () => {
