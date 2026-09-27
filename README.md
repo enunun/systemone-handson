@@ -48,7 +48,7 @@ listening on http://localhost:3000
 | [0](iterations/iteration-0/exercise/) | 返金を求めているかを判定する | System One，noul(はい・いいえ)，TypeSafeのSDK，Vitest，pnpm |
 | [1](iterations/iteration-1/exercise/) | 担当部署を判定する | choice(選択)，確率の分布，選択肢の説明文，1回の問い合わせで複数の質問 |
 | [2](iterations/iteration-2/exercise/) | 緊急度を判定する．判断と表示を分ける | score(段階評価)，期待値，判断と表示の分離 |
-| 3 | 判断エンジンをアプリから切り離す | ポートとアダプタ，依存性の逆転，テストダブル |
+| [3](iterations/iteration-3/exercise/) | 判断エンジンをアプリから切り離す | ポートとアダプタ，依存性の逆転，テストダブル |
 | 4 | 迷っている問い合わせを人の確認に回す | 確信度，しきい値，コマンドラインのオプション |
 | 5 | 接続先を環境変数で選ぶ | 環境変数による設定，組み立ての場所，Jevへの切り替え |
 | 6 | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
