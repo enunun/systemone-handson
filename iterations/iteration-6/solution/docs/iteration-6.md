@@ -232,7 +232,7 @@ usage: triage [--min-confidence <0-1>] "<subject>" "<body>"
 ## 演習6-6：振り返る
 
 1. `mapWithConcurrency`のテストを書かなかった場合は，`Promise.all`をそのまま使って，同時に送る数の制限が抜けていないかを確かめる．
-2. devcontainerの中のlaya-serverでは，同時に送る数が1のときと4のときで，どちらも約11秒かかる．laya-serverは1つのCPUで1件ずつ推論するからである．制限の目的は，速さではなく，判断エンジンへ送りすぎないことである．
+2. devcontainerの中のlaya-serverでは，同時に送る数が1のときと4のときで，どちらも約10秒かかる．laya-serverは1つのCPUで1件ずつ推論するからである．制限の目的は，速さではなく，判断エンジンへ送りすぎないことである．
 3. しきい値0.05では，人の確認に回る件数は11件から4件に減り，salesにも3件が振り分けられた．どちらのしきい値がよいかは，振り分けた結果が正しいかどうかを見ないと決められない．それを測るのが，Iteration 7である．
 4. 解答例は設計書どおりに実装できた．`mapWithConcurrency`を汎用の部品にしたので，`batch`から`triage`関数への依存はない．
 
@@ -257,11 +257,17 @@ usage: triage [--min-confidence <0-1>] "<subject>" "<body>"
 $ time node --env-file-if-exists=.env src/main.ts batch --concurrency 1 data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
 billing: 4, support: 6, sales: 0, needs review: 11
-real    0m11.190s
+
+real    0m10.136s
+user    0m0.213s
+sys     0m0.075s
 $ time node --env-file-if-exists=.env src/main.ts batch --concurrency 4 data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
 billing: 4, support: 6, sales: 0, needs review: 11
-real    0m11.182s
+
+real    0m10.225s
+user    0m0.219s
+sys     0m0.063s
 ```
 
 `--concurrency`が同時に送る数を変えることは，テストでは`mapWithConcurrency`のテストで確かめている．

@@ -127,7 +127,10 @@ billing: 5, support: 9, sales: 3, needs review: 4
 $ time node --env-file-if-exists=.env src/main.ts batch --concurrency 1 data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
 billing: 4, support: 6, sales: 0, needs review: 11
-real    0m11.190s
+
+real    0m10.136s
+user    0m0.213s
+sys     0m0.075s
 ```
 
 発展課題の解答の一例は，`../solution/docs/iteration-6.md`の演習6-7にある．
