@@ -94,9 +94,9 @@ $ curl -s localhost:3000/triage -d '{"subject":"Refund","body":"Where is my refu
 ## Iteration 2：緊急度を判定する．判断と表示を分ける
 
 - 要求：緊急度を4段階(not urgent・somewhat urgent・urgent・critical)で判定し，もっとも近い段階の名前と期待値を表示する．
-- 使い方：2行目に`urgency: urgent (2.1)`を表示する．
-- モジュール：`urgency`(`urgencyQuestion`，`formatUrgency`)を足す．
-- リファクタリング：質問の組み立てと答えの解釈を`triage`(`triage`，型`Triage`)に，表示を`format`(`formatTriage`)にまとめる．`app`は両者をつなぐだけにする．
+- 使い方：2行目に`urgency: somewhat urgent (1.4)`のように表示する．
+- リファクタリング：質問の組み立てと答えの解釈を`triage`(`triage`，型`Ticket`・`Triage`)に，表示を`format`(`formatTriage`，`formatDepartment`，`formatUrgency`，`formatRefund`)にまとめる．`refund`と`department`は，この2つに移す．`app`は両者をつなぐだけにする．
+- モジュール：緊急度の質問を`triage`に，`formatUrgency`を`format`に足す．
 - 設計書で更新するもの：Componentを`triage`・`format`を中心に描き直す．Codeに型`Triage`を足す．
 - 学ぶこと：scoreの質問と答え，期待値と段階の対応，判断と表示を分ける理由．
 - 既存のテストへの影響：部署・返金の単体テストを，`triage`と`format`のテストに移す．
