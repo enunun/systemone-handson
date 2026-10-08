@@ -12,7 +12,7 @@
   - 確信度を使って，自動で処理するものと人に回すものを分けられる．
   - テストリストから始めるTDDと，設計書を実装に合わせて育てる進め方を身につける．
 - 教材の言語：日本語(常体，読点は「，」，句点は「．」)．サンプルの問い合わせ文と，プログラムの出力は英語．
-- 規模：Iteration 0から8までの9回．1回あたり30分から1時間．
+- 規模：Iteration 0から10までの11回．1回あたり30分から1時間．
 
 ## 題材
 
@@ -29,7 +29,7 @@
 | ファイル | 図 | 示すもの |
 | --- | --- | --- |
 | `01-context.md` | C4Context | 利用者，triage，判断エンジン(Ollama，Iteration 5からJev)，Iteration 8からAPIの利用者 |
-| `02-container.md` | C4Container | triageの実行ファイル，Ollama，Iteration 6からファイル，Iteration 8からHTTP API |
+| `02-container.md` | C4Container | triageの実行ファイル，Ollama，Iteration 6からファイル，Iteration 8からHTTP API，Iteration 9から評価の記録 |
 | `03-component.md` | C4Component | `src/`のモジュールと，その依存(`import`)．外部のパッケージは`Component_Ext`で描く |
 | `04-code.md` | flowchart・classDiagram | 型と関数の流れ，主な型 |
 | `05-sequence.md` | sequenceDiagram | 入口から判断エンジンまでの呼び出しの順序 |
@@ -95,6 +95,8 @@ tools/                           mermaidの検査，Componentの照合，発展�
 - Iteration 5：`.env.example`から`.env`を作る．
 - Iteration 6・7：`data/`のファイルでサブコマンドを実行する．`time`で実行時間を測る．
 - Iteration 8：サーバを起動し，別のターミナルからcurlでリクエストを送る．
+- Iteration 9：評価を記録し，記録から指標を表示する．
+- Iteration 10：部署の説明文を変えて記録を取り直し，比べる．`tev1:4b`を取得して(`curl http://ollama:11434/api/pull -d '{"model": "tev1:4b"}'`)，`.env`でモデルとタイムアウトを替える．4Bを動かせない環境では，配布する記録を使う．
 
 ### Iterationごとの解説
 
@@ -130,5 +132,7 @@ tools/                           mermaidの検査，Componentの照合，発展�
 - Ollamaは1件ずつ推論するので，同時に送る数を増やしてもほとんど速くならない(Iteration 6で21件が，1件ずつで約19秒，4件ずつで約17秒)．教材では，同時に送る数の制限を「判断エンジンに送りすぎないため」と説明する．
 - Ollamaは，`OLLAMA_HOST`を0.0.0.0にしないで起動すると，`Host`ヘッダが`localhost`などでないリクエストに403を返す．公式のイメージは0.0.0.0で待ち受けるので，devcontainerでは`http://ollama:11434`で呼べる．
 - 表の期待値を空白の数まで手で書くと，数え間違えやすい．実装の出力で列がそろっていることを確かめてから期待値にする．
+- `tev1:4b`は，3問のリクエストで1件あたり約14秒かかり(4コアのCPU)，SDKの既定のタイムアウト(10秒)を超える．メモリは約5GB使う．`tev1:0.8b`と同時に読み込むとメモリが足りなくなり，Ollamaは推論のプロセスを止めて500を返す．devcontainerでは`OLLAMA_MAX_LOADED_MODELS=1`にして，モデルを1つずつ読み込む．
+- 所要時間は，同じ環境でもCPUの割り当てによって3倍ほど変わる(`tev1:0.8b`の3問で0.85秒から3秒)．教材に載せる所要時間は，同じ記録から作る．
 - 同じ問い合わせと同じ質問には，Ollamaは同じ確率を返す．教材の出力を作り直すときは，同じ問い合わせを使う．
 - Vitestは，テストが1つもないテストファイルを失敗にする．発展課題で新しく作るテストファイルは，全体をコメントにできないので，`advanced/`に置く．

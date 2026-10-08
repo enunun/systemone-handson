@@ -1,7 +1,6 @@
 # triage-solution-iteration-8(解答例)
 
 Iteration 8の演習用パッケージ([../exercise/](../exercise/))を完成させた状態の解答例．
-このハンズオンで作る`triage`の完成形である．
 
 ```console
 $ pnpm start serve --port 3000

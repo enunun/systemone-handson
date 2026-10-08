@@ -1,6 +1,6 @@
 # ロードマップ
 
-このハンズオンでは，問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から8までの9回に分けて少しずつ育てる．
+このハンズオンでは，問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から10までの11回に分けて少しずつ育てる．
 `triage`は，問い合わせの文章を読んで，担当部署・緊急度・返金の要否を判断する．
 判断はSystem One(文章を生成せず，型の決まった答えを確率つきで返すモデル)に任せる．
 手元ではOllamaで動かすTev1を，本番ではTypeSafe AIのJevを使う想定で，接続先を替えてもアプリのコードが変わらない設計を身につける．
@@ -52,7 +52,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 テストリストは「何ができればよいか」を，設計書は「それをどんな型・関数・モジュールで作るか」を表す．
 テスト駆動開発(TDD)の進め方とテストリストの書き方は[tdd.md](tdd.md)で，設計書の書き方は[design.md](design.md)で説明する．
 
-設計書は，[C4モデル](https://c4model.com/)の4つの階層(Context・Container・Component・Code)と，判断エンジンとのやりとりを表すシーケンス図を，mermaidで書く．Iteration 0から8まで同じ設計書を育てる．
+設計書は，[C4モデル](https://c4model.com/)の4つの階層(Context・Container・Component・Code)と，判断エンジンとのやりとりを表すシーケンス図を，mermaidで書く．Iteration 0から10まで同じ設計書を育てる．
 
 各Iterationの演習用パッケージは，1つ前のIterationの解答例のコードと設計書から始まる．
 前のIterationを自分で書き終えていなくても，次のIterationに進める．
@@ -83,6 +83,8 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 | 6 | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
 | 7 | ラベル付きデータで精度を測る | 評価，混同行列，しきい値と人の確認に回る割合の関係 |
 | 8 | 振り分けをHTTP APIで公開する | `node:http`，入口側のアダプタ，CLIとAPIで同じ判断を共有する |
+| 9 | 評価の記録を残し，指標で読む | 調整用と確かめ用のデータ，適合率・再現率，Brierスコア，平均絶対誤差，パーセンタイル |
+| 10 | 2つの設定を比べ，確信度の較正を確かめる | 対応のある比較，調整用のデータの過大評価，確信度の較正，精度と速さの引き換え |
 
 ## Iteration 0：返金を求めているかを判定する
 
@@ -160,3 +162,19 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 - モジュール：`adapters/http-api`(`createApi`)を足す．`app`に`serve`サブコマンドを足す．CLIとHTTP APIは，同じ`triage`を使う．
 - 設計書で更新するもの：ContextにAPIの利用者を，ContainerにHTTP APIを足す．Componentで，入口側のアダプタ(CLI・HTTP API)と出口側のアダプタ(判断エンジン)を描き分ける．シーケンス図にHTTPのリクエストからの流れを足す．
 - 学ぶこと：`node:http`，入力の検証，入口側と出口側のアダプタ，HTTPサーバの結合テスト．
+
+## Iteration 9：評価の記録を残し，指標で読む
+
+- 要求：評価用のデータに，返金の要否(`refund`)と緊急度の段階(`urgency`，0〜3)の正解を足す．データは2つに分け(各30件)，質問の調整には`data/dev.jsonl`を，調整した結果の確認には`data/test.jsonl`を使う．`triage eval --out <ファイル>`で，1件ごとの振り分けの結果と所要時間をJSON Linesで記録する．`triage report <記録>`は，記録だけを読んで指標を表示する．指標は，部署の正解率と人の確認に回る割合，部署ごとの適合率と再現率，返金の正解率とBrierスコア，緊急度の平均絶対誤差，所要時間の中央値と95パーセンタイルである．
+- 使い方：`triage eval --out results/dev.jsonl data/dev.jsonl`のあとに`triage report results/dev.jsonl`．
+- モジュール：`records`(`EvalRecord`，`formatRecords`，`parseRecords`)と`metrics`(`precisionRecall`，`refundMetrics`，`meanAbsoluteError`，`percentile`)を足す．`evaluate`の正解付きの問い合わせに`refund`と`urgency`を足す．`format`に`formatReport`を足す．`app`に`eval`の`--out`と`report`サブコマンドを足す．`data/labeled.jsonl`は`data/dev.jsonl`に置き換える．
+- 設計書で更新するもの：Containerに評価用のデータと記録のファイルを足す．Componentに`records`と`metrics`を足す．Codeに，記録から指標を作る流れを足す．シーケンス図に，記録を書き出す流れと，記録だけを読む`report`の流れを足す．
+- 学ぶこと：調整用と確かめ用のデータを分ける理由，評価の記録を残して指標を計算し直す，適合率と再現率，確率の評価(Brierスコア)，段階の評価(平均絶対誤差)，パーセンタイル，`node:fs/promises`の`writeFile`と`mkdir`，`performance.now`．
+
+## Iteration 10：2つの設定を比べ，確信度の較正を確かめる
+
+- 要求：`triage compare [--min-confidence <0-1>] <記録A> <記録B>`で，同じデータの2つの記録の指標を並べて表示し，部署の判定が食い違った問い合わせと，片方だけが正解した件数を表示する．`triage report --calibration <記録>`で，部署の確信度を0.2刻みの区間に分け，区間ごとの件数・確信度の平均・正解率を表示する．環境変数`SYSTEMONE_TIMEOUT_MS`で，判断エンジンへの1回の問い合わせを待つ時間を指定できる．部署の選択肢の説明文を`data/dev.jsonl`で調整し，`data/test.jsonl`で一度だけ確かめる．
+- 使い方：`triage compare results/test-before.jsonl results/test-after.jsonl`，`triage report --calibration results/test-after.jsonl`．モデルを`tev1:4b`に替えた記録とも比べる．
+- モジュール：`compare`(`compareRecords`)と，`metrics`に`calibration`を足す．`format`に`formatComparison`と`formatCalibration`を足す．`config`に`timeoutMs`を足し，`main`でSDKに渡す．`triage`の部署の説明文を変える．
+- 設計書で更新するもの：Componentに`compare`を足す．Codeに比較と較正の流れを足す．
+- 学ぶこと：同じデータでの比較(対応のある比較)，食い違った問い合わせを読む，件数が少ないときの差の読み方，調整用のデータで測った精度が高く出る理由，確信度の較正，精度と速さの引き換え，タイムアウトの設定，モデルの取得(`/api/pull`)．

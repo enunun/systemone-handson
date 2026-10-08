@@ -20,6 +20,9 @@ services:
         until ollama list > /dev/null 2>&1; do sleep 1; done
         ollama pull tev1:0.8b
         wait
+    environment:
+      # tev1:4bとtev1:0.8bを同時に読み込むとメモリが足りなくなるので，1つずつ読み込む．
+      OLLAMA_MAX_LOADED_MODELS: "1"
     volumes:
       - ollama-models:/root/.ollama
     ports:

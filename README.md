@@ -5,7 +5,7 @@ TypeScriptを読み書きでき，大規模言語モデルのAPIを使ったこ�
 
 ## このハンズオンで作るもの
 
-問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から8までの9回に分けて少しずつ育てる．
+問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から10までの11回に分けて少しずつ育てる．
 最初は「返金を求めているか」を判定するだけのプログラムから始め，担当部署・緊急度の判定，人の確認への振り分け，まとめての処理，精度の評価，HTTP APIを足していく．
 完成すると，次のように使える．
 
@@ -55,6 +55,8 @@ listening on http://localhost:3000
 | [6](iterations/iteration-6/exercise/) | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
 | [7](iterations/iteration-7/exercise/) | ラベル付きデータで精度を測る | 評価，混同行列，しきい値と人の確認に回る割合の関係 |
 | [8](iterations/iteration-8/exercise/) | 振り分けをHTTP APIで公開する | `node:http`，入口側のアダプタ |
+| [9](iterations/iteration-9/exercise/) | 評価の記録を残し，指標で読む | 調整用と確かめ用のデータ，適合率・再現率，Brierスコア |
+| [10](iterations/iteration-10/exercise/) | 2つの設定を比べ，確信度の較正を確かめる | 対応のある比較，確信度の較正，精度と速さの引き換え |
 
 各Iterationの目的と内容は[docs/ROADMAP.md](docs/ROADMAP.md)にまとめている．
 
