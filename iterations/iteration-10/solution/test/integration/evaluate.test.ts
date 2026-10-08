@@ -164,6 +164,12 @@ describe("run report", () => {
     expect(result.output.split("\n").at(-1)).toMatch(/^latency median: \d+ ms, p95: \d+ ms$/);
   });
 
+  test("判断エンジンを使えなくても，記録から指標を表示する", async () => {
+    const result = await run(["report", await writeRecords()], { unavailable: "missing environment variables" });
+
+    expect(result.code).toBe(0);
+  });
+
   test("--min-confidenceで，部署の正解率を求めるしきい値を変える", async () => {
     const result = await run(["report", "--min-confidence", "0.5", await writeRecords()], engine);
 
@@ -249,6 +255,14 @@ describe("run compare", () => {
       "B                       billing   support   billing",
       "only A correct: 0, only B correct: 1",
     ]);
+  });
+
+  test("判断エンジンを使えなくても，2つの記録を比べる", async () => {
+    const { a, b } = await writeTwoRecords();
+
+    const result = await run(["compare", a, b], { unavailable: "missing environment variables" });
+
+    expect(result.code).toBe(0);
   });
 
   test("--min-confidenceで，正解率を求めるしきい値を変える", async () => {

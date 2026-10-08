@@ -4,7 +4,7 @@
 
 ## 演習10-1：引き継いだパッケージを確かめる
 
-Iteration 9の91のテストが通る．
+Iteration 9の93のテストが通る．
 比べる前の記録は，`results/dev-before.jsonl`と`results/test-before.jsonl`である．
 比べる記録は，続けて取る．このハンズオンの開発環境では，Iteration 9で記録を取ったときより推論が遅く，所要時間の中央値は約2.8秒だった．
 
@@ -20,7 +20,7 @@ Iteration 9の91のテストが通る．
    ```
 
    9件のうち7件がBに転んでも，差がなければ5回に1回は起きる．差があると言うには，もっと件数が要る．
-2. 確信度は，確率の分布の集まり方を表す値で，正しい確率ではない．`tev1:0.8b`の確信度は，正解率より低く出る．確信度0.3の問い合わせも8割は正しい．人の確認に回すかは，確信度の値の意味ではなく，Iteration 7のしきい値ごとの評価で決める．このデータでは，確信度0.2未満の1件は誤っていて，しきい値0.2で人の確認に回る．0.2から0.6の8件にも誤りが2件あるが，しきい値を0.6まで上げると，正しい6件も人の確認に回る．
+2. 確信度は，確率の分布の集まり方を表す値で，正しい確率ではない．`tev1:0.8b`の確信度は，正解率より低く出る．確信度0.3の問い合わせも8割は正しい．人の確認に回すかは，確信度の値の意味ではなく，Iteration 7のしきい値ごとの評価で決める．このデータでは，確信度0.2未満の1件は誤っている．0.2から0.4の5件にも誤りが1件ある．既定のしきい値0.3では，確信度0.3未満の5件が人の確認に回り，そのうち2件が誤っていた．
 3. devcontainerを開いた直後は，`tev1:0.8b`だけが一覧にある．
 
 ## 演習10-3：テストリストを書く
@@ -105,7 +105,7 @@ new TypeSafeClient({
 ```console
 $ pnpm test
  Test Files  15 passed (15)
-      Tests  108 passed (108)
+      Tests  111 passed (111)
 ```
 
 ### 説明文を直して比べる
@@ -120,8 +120,8 @@ A: results/dev-before.jsonl
 B: results/dev-after.jsonl
 
 metric                             A       B
-accuracy                        0.93    0.96
-review rate                     0.10    0.07
+accuracy                        0.96    0.96
+review rate                     0.13    0.07
 refund accuracy                 0.93    0.93
 refund brier score             0.068   0.066
 urgency mean absolute error     0.82    0.87
@@ -146,8 +146,8 @@ A: results/test-before.jsonl
 B: results/test-after.jsonl
 
 metric                             A       B
-accuracy                        0.79    0.93
-review rate                     0.03    0.03
+accuracy                        0.85    0.96
+review rate                     0.10    0.17
 refund accuracy                 1.00    1.00
 refund brier score             0.011   0.011
 urgency mean absolute error     0.77    0.79
@@ -180,8 +180,8 @@ A: results/test-after.jsonl
 B: results/test-4b.jsonl
 
 metric                             A       B
-accuracy                        0.93    0.93
-review rate                     0.03    0.03
+accuracy                        0.96    0.93
+review rate                     0.17    0.03
 refund accuracy                 1.00    1.00
 refund brier score             0.011   0.001
 urgency mean absolute error     0.79    0.65
@@ -197,7 +197,7 @@ only A correct: 1, only B correct: 1
 
 ```console
 $ pnpm start report --calibration results/test-after.jsonl
-accuracy: 0.93 (auto-routed 29 / 30), review rate: 0.03
+accuracy: 0.96 (auto-routed 25 / 30), review rate: 0.17
 
 department  precision  recall
 billing          0.90    0.90
@@ -237,10 +237,30 @@ confidence  tickets  mean confidence  accuracy
 ## 演習10-6：振り返る
 
 1. 境目の項目がなかった場合は，確信度1の記録がどの区間に入るかを確かめる．
-2. 直したあとの部署の正解率は，`dev`が0.96，`test`が0.93である．新しい問い合わせでの見積もりとして報告するのは，直すのに使わなかった`test`の0.93である．`dev`の0.96は，`dev`の誤りを見て直した結果なので，高めに出ている見込みがある．
+2. しきい値0.3では，`dev`が0.96(人の確認に回る割合7%)，`test`も0.96(17%)である．`test`は，同じ正解率を出すのに，人の確認に回す問い合わせが多い．すべてを自動で振り分けるしきい値0にそろえると，差がはっきりする．
+
+   ```console
+   $ pnpm start report --min-confidence 0 results/dev-after.jsonl
+   accuracy: 0.97 (auto-routed 30 / 30), review rate: 0.00
+   $ pnpm start report --min-confidence 0 results/test-after.jsonl
+   accuracy: 0.90 (auto-routed 30 / 30), review rate: 0.00
+   ```
+
+   新しい問い合わせでの見積もりとして報告するのは，直すのに使わなかった`test`の値である．`dev`の値は，`dev`の誤りを見て直した結果なので，高めに出ている．
 3. `test`では，Bだけが正解した件数が3件，Aだけが0件である．差がなくても4回に1回は起きる偏りなので，`test`だけでは効果があったと言い切れない．ただし，`dev`でも2件と0件で同じ向きに直った．`test`で食い違った3件は，どれもsalesの説明文に関わる問い合わせ(salesへ直ったデモと割引の相談，salesから外れた値上げの問い合わせ)だった．件数の偏りと，食い違った問い合わせの中身の両方から，効果があったと判断した．
-4. 部署の正解率は，どちらも0.93で，片方だけが正解した件数も1件ずつである．部署の振り分けには差が見えない．返金のBrierスコア(0.011と0.001)と緊急度の平均絶対誤差(0.79と0.65)は`tev1:4b`がよい．一方，所要時間の中央値は2.8秒と15.3秒で約5倍，メモリは約1GBと約5GBである．部署の振り分けが目的なら，`tev1:0.8b`を使う．緊急度で対応の順番を決めることが大事になったら，`tev1:4b`を検討する．
-5. どちらのモデルでも，確信度0.2未満の区間は1件で，その1件は誤っている．しきい値0.2では，その1件だけが人の確認に回る．0.2以上にも誤りが残る(`tev1:0.8b`は2件，`tev1:4b`は2件)．`tev1:4b`は，確信度0.8以上に22件が集まり，その正解率は1.00である．どちらのモデルでもしきい値0.2はおおむね妥当だが，区間ごとの件数が少ないので，データを増やして確かめるとよい．
+4. しきい値0.3での正解率と人の確認に回る割合は，`tev1:0.8b`が0.96と17%，`tev1:4b`が0.93と3%である．`tev1:4b`は確信度が高く出やすいので，同じしきい値でも人の確認に回すものが少ない．しきい値0でそろえて比べると，正解率はどちらも0.90で，片方だけが正解した件数も1件ずつである．
+
+   ```console
+   $ pnpm start compare --min-confidence 0 results/test-after.jsonl results/test-4b.jsonl
+   …
+   metric                             A       B
+   accuracy                        0.90    0.90
+   review rate                     0.00    0.00
+   …
+   ```
+
+   部署を当てる力には差が見えないが，`tev1:4b`は迷いが少なく，人の確認に回す件数を減らせる．返金のBrierスコア(0.011と0.001)と緊急度の平均絶対誤差(0.79と0.65)は`tev1:4b`がよい．一方，所要時間の中央値は2.8秒と15.3秒で約5倍，メモリは約1GBと約5GBである．人の確認に回す件数が問題にならないなら，`tev1:0.8b`を使う．人の確認の手間を減らしたいときや，緊急度で対応の順番を決めることが大事になったときは，`tev1:4b`を検討する．
+5. どちらのモデルでも，確信度0.2未満の区間は1件で，その1件は誤っている．しきい値0.3では，`tev1:0.8b`は0.2〜0.4の区間の5件(うち誤り1件)も人の確認に回すが，`tev1:4b`はその区間が1件しかない．しきい値は，モデルごとに表を見て選び直す．`tev1:4b`は，確信度0.8以上に22件が集まり，その正解率は1.00である．どちらのモデルでもしきい値0.2はおおむね妥当だが，区間ごとの件数が少ないので，データを増やして確かめるとよい．
 6. 解答例は設計書どおりに実装できた．
 
 ## 演習10-7(発展)：期待較正誤差を表示する

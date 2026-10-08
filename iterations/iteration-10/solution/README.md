@@ -9,8 +9,8 @@ A: results/test-after.jsonl
 B: data/records/test-tev1-4b.jsonl
 
 metric                             A       B
-accuracy                        0.93    0.93
-review rate                     0.03    0.03
+accuracy                        0.96    0.93
+review rate                     0.17    0.03
 refund accuracy                 1.00    1.00
 refund brier score             0.011   0.001
 urgency mean absolute error     0.79    0.65

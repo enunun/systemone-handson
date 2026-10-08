@@ -19,6 +19,7 @@
 - [x] `formatConfusionMatrix`：行を正解の部署，列を判定した部署とした表にする
 - [x] `formatSweep`：しきい値ごとの評価を表にする
 - [x] `Triage`を作っている既存のテスト(`batch`・`format`)に，`departmentConfidence`を足す
+- [x] `triage`：「しきい値を指定しなければ，0.2を使う」を，`--sweep`で選んだ0.3を使うように変える(確信度0.29の答えで確かめる)
 
 ## 結合テスト
 

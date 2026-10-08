@@ -10,7 +10,7 @@ Iteration 8の解答例と同じコード・テスト・設計書から始まる
 
 ```console
 $ pnpm start eval --out results/dev.jsonl data/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
@@ -19,16 +19,16 @@ sales                      0         2         6
 
 wrote 30 records to results/dev.jsonl
 $ pnpm start report results/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall
 billing          1.00    0.91
 support          0.79    1.00
 sales            1.00    0.75
 
-refund accuracy: 0.93, brier score: 0.068
+refund accuracy: 0.93, brier score: 0.066
 urgency mean absolute error: 0.82
-latency median: 696 ms, p95: 819 ms
+latency median: 1186 ms, p95: 1310 ms
 ```
 
 作りながら，調整用と確かめ用のデータを分ける理由，適合率と再現率，Brierスコア，平均絶対誤差，パーセンタイル，評価の記録の残し方を学ぶ．

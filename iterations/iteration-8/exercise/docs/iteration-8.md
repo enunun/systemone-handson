@@ -47,7 +47,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 ### 要求
 
 - `triage serve [--min-confidence <0-1>] [--port <0-65535>]`で，HTTPサーバを起動する．ポートを指定しなければ3000とする．起動したら`listening on http://localhost:3000`のように表示する．
-- `POST /triage`に，`subject`と`body`を持つJSONを本文として送ると，振り分けの結果(`Triage`の項目)をJSONで返す．ステータスは200，`Content-Type`は`application/json`とする．しきい値は，`--min-confidence`で指定したもの(なければ0.2)を使う．
+- `POST /triage`に，`subject`と`body`を持つJSONを本文として送ると，振り分けの結果(`Triage`の項目)をJSONで返す．ステータスは200，`Content-Type`は`application/json`とする．しきい値は，`--min-confidence`で指定したもの(なければ0.3)を使う．
 - 次の場合は，`{"error": "理由"}`のJSONとステータスコードを返す．
   - 本文がJSONとして読めない，または`subject`か`body`がない：400．
   - `/triage`以外のパス：404．

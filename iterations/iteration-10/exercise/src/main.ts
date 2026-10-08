@@ -26,13 +26,10 @@ const createEngine = (config: Config): DecisionEngine => {
   }
 };
 
+// 設定が足りなくても，判断エンジンを使わないコマンド(report)は実行できるように，理由をrunに渡す．
 const loaded = loadConfig(process.env);
-if (loaded.ok) {
-  const { code, output } = await run(process.argv.slice(2), createEngine(loaded.config));
-  if (code === 0) console.log(output);
-  else console.error(output);
-  process.exitCode = code;
-} else {
-  console.error(loaded.message);
-  process.exitCode = 1;
-}
+const engine = loaded.ok ? createEngine(loaded.config) : { unavailable: loaded.message };
+const { code, output } = await run(process.argv.slice(2), engine);
+if (code === 0) console.log(output);
+else console.error(output);
+process.exitCode = code;

@@ -9,7 +9,7 @@ Iteration 8のコードは，`refund`と`urgency`を読まずに飛ばすので�
 
 ```console
 $ pnpm start eval data/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
@@ -87,8 +87,8 @@ sales                      0         2         6
 | --- | --- | --- |
 | [02-container.md](../design/02-container.md) | 評価用のファイルの説明を直し，評価の記録を足した．`triage eval`が1件ずつ送ることを書いた | データの置き場所が増え，送り方が変わった |
 | [03-component.md](../design/03-component.md) | `records`と`metrics`を足した | 新しいモジュール |
-| [04-code.md](../design/04-code.md) | `runEval`に記録を，`runReport`の流れと指標の表を足した．主な型に`EvalRecord`・`Report`などを足した | 新しい流れと型 |
-| [05-sequence.md](../design/05-sequence.md) | `eval --out`と`report`の図を足した | 新しい使い方 |
+| [04-code.md](../design/04-code.md) | `runEval`に記録を，`runReport`の流れと指標の表を足した．主な型に`EvalRecord`・`Report`などを足した．設定が足りないときは`EngineUnavailable`を`run`に渡すことを書いた | 新しい流れと型．設定がなくても`report`を実行する |
+| [05-sequence.md](../design/05-sequence.md) | `eval --out`と`report`の図を足した．設定が足りないときの分岐を`app`に移した | 新しい使い方．設定がなくても`report`を実行する |
 
 `records`は，記録の形(`EvalRecord`)と読み書きだけを受け持つ．
 `metrics`は，記録から数を計算するだけで，表示の書式は`format`に任せる．
@@ -186,17 +186,37 @@ const records = await mapWithConcurrency(tickets, evalConcurrency, async (ticket
 記録を書く処理(`writeRecords`)は，ディレクトリを作ってから書き，失敗したらメッセージを返す．
 `runReport`は，ファイルを読んで`parseRecords`・`buildReport`・`formatReport`の順に呼ぶだけで，`engine`を受け取らない．
 
+### 設定がなくても`report`を実行する
+
+Iteration 5から，`main`は設定が足りなければ`run`を呼ばずに，足りない環境変数を表示して終わっていた．
+`report`は判断エンジンを使わないので，`.env`がなくても動いてほしい．
+そこで，`main`は設定が足りないときに，判断エンジンの代わりに理由(`{ unavailable: 理由 }`)を`run`に渡す．
+`run`は，`report`ならそのまま実行し，判断エンジンを使うコマンドなら理由を表示して終了コード1で終わる．
+
+```ts
+export const run = async (args: string[], engine: DecisionEngine | EngineUnavailable): Promise<RunResult> => {
+  const command = parseCommand(args);
+  if (command === undefined) return { code: 2, output: usage };
+  if (command.kind === "report") return runReport(command.file, command.options);
+  if ("unavailable" in engine) return { code: 1, output: engine.unavailable };
+  …
+};
+```
+
+`"unavailable" in engine`で確かめたあとは，TypeScriptが`engine`を`DecisionEngine`として扱うので，そのまま`runBatch`などに渡せる．
+結合テストでは，`run`に`{ unavailable: "…" }`を渡して確かめる．
+
 ```console
 $ pnpm test
  Test Files  14 passed (14)
-      Tests  91 passed (91)
+      Tests  93 passed (93)
 ```
 
 本物の判断エンジンで，2つのデータの記録を取る．
 
 ```console
 $ pnpm start eval --out results/dev.jsonl data/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
@@ -205,18 +225,18 @@ sales                      0         2         6
 
 wrote 30 records to results/dev.jsonl
 $ pnpm start report results/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall
 billing          1.00    0.91
 support          0.79    1.00
 sales            1.00    0.75
 
-refund accuracy: 0.93, brier score: 0.068
+refund accuracy: 0.93, brier score: 0.066
 urgency mean absolute error: 0.82
-latency median: 696 ms, p95: 819 ms
+latency median: 1186 ms, p95: 1310 ms
 $ pnpm start eval --out results/test.jsonl data/test.jsonl
-accuracy: 0.79 (auto-routed 29 / 30), review rate: 0.03
+accuracy: 0.88 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                    8         1         1
@@ -225,16 +245,16 @@ sales                      1         3         6
 
 wrote 30 records to results/test.jsonl
 $ pnpm start report results/test.jsonl
-accuracy: 0.79 (auto-routed 29 / 30), review rate: 0.03
+accuracy: 0.88 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall
 billing          0.89    0.80
 support          0.71    1.00
 sales            0.86    0.60
 
-refund accuracy: 1.00, brier score: 0.011
-urgency mean absolute error: 0.77
-latency median: 709 ms, p95: 771 ms
+refund accuracy: 1.00, brier score: 0.012
+urgency mean absolute error: 0.78
+latency median: 400 ms, p95: 446 ms
 ```
 
 しきい値を変えても，判断エンジンには尋ねない．
@@ -248,15 +268,15 @@ billing          1.00    0.91
 support          0.79    1.00
 sales            1.00    0.75
 
-refund accuracy: 0.93, brier score: 0.068
+refund accuracy: 0.93, brier score: 0.066
 urgency mean absolute error: 0.82
-latency median: 696 ms, p95: 819 ms
+latency median: 1186 ms, p95: 1310 ms
 ```
 
 ## 演習9-6：振り返る
 
 1. 時間を確かめる項目がなかった場合は，`elapsedMs`のテストをどう書いたかを振り返る．毎回変わる値は，「0以上の数」のように性質で確かめる．
-2. 部署の正解率は，devの0.93に対してtestは0.79である．salesの再現率は0.75と0.60，返金のBrierスコアは0.068と0.011である．質問を何も調整していないのに，データが違うだけでこれだけ差が出る．30件では，1件の違いで正解率が3ポイント動く．1つの評価の数を，小数第2位まで信じてはいけない．Iteration 10で質問を調整するときも，この差を頭に置く．
+2. 部署の正解率は，devの0.96に対してtestは0.88である．salesの再現率は0.75と0.60，返金のBrierスコアは0.066と0.012である．質問を何も調整していないのに，データが違うだけでこれだけ差が出る．30件では，1件の違いで正解率が3ポイント動く．1つの評価の数を，小数第2位まで信じてはいけない．Iteration 10で質問を調整するときも，この差を頭に置く．
 3. devでは，salesの問い合わせ2件と，billingの問い合わせ1件がsupportへ流れ出ている．そのため，supportの適合率が0.79に下がっている．testでも，salesから3件，billingから1件がsupportに流れている．`triage`は，迷うとsupportを選びやすい．
 4. 返金の正解率は，確率の大きさを見ない．0.51で当たっても0.99で当たっても同じ1件である．Brierスコアは，確率の大きさは見るが，「はい」と「いいえ」のどちらの誤りが多いかは見ない．緊急度の平均絶対誤差は，ずれの大きさは見るが，高く見積もったか低く見積もったかを区別しない．1つの指標だけでは見落とすものがあるので，いくつかの指標を並べて読む．
 5. 解答例は設計書どおりに実装できた．`evalConcurrency`は，設計書のCodeに`mapWithConcurrency(…, 1, triage)`と書いた．
@@ -282,16 +302,16 @@ return [name, { precision, recall, f1 }];
 
 ```console
 $ pnpm start report results/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall    f1
 billing          1.00    0.91  0.95
 support          0.79    1.00  0.88
 sales            1.00    0.75  0.86
 
-refund accuracy: 0.93, brier score: 0.068
+refund accuracy: 0.93, brier score: 0.066
 urgency mean absolute error: 0.82
-latency median: 696 ms, p95: 819 ms
+latency median: 1186 ms, p95: 1310 ms
 ```
 
 F1は，適合率と再現率のうち低いほうに引っ張られる．

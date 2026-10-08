@@ -96,7 +96,7 @@ flowchart LR
 ```
 
 - `formatTriage`は，`Triage`の項目ごとに1行を作り，改行でつなぐ．`needsReview`なら，部署の行の末尾に空白と`-> needs review`を付ける．
-- しきい値(`minConfidence`)は，`--min-confidence`で指定する．指定しなければ`defaultMinConfidence`(0.2)を使う．確信度がしきい値ちょうどなら，人の確認に回さない．
+- しきい値(`minConfidence`)は，`--min-confidence`で指定する．指定しなければ`defaultMinConfidence`(0.3)を使う．確信度がしきい値ちょうどなら，人の確認に回さない．
 - 緊急度は，期待値を四捨五入した番号の段階の名前と，期待値を小数第1位まで表示する．返金は，確率が0.5以上なら`yes`とする．確率は小数第2位までに丸める．
 
 `adapters/http-api`は，HTTPのリクエストを次のように処理する．

@@ -11,12 +11,12 @@ TypeScriptを読み書きでき，大規模言語モデルのAPIを使ったこ�
 
 ```console
 $ triage "Refund not received" "I cancelled two weeks ago and still have no refund."
-department: billing (0.87)
-urgency: urgent (1.6)
-refund: yes (0.83)
+department: billing (0.86)
+urgency: urgent (1.5)
+refund: yes (0.81)
 $ triage batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 5, support: 11, sales: 3, needs review: 2
+billing: 5, support: 11, sales: 4, needs review: 1
 $ triage serve --port 3000
 listening on http://localhost:3000
 ```

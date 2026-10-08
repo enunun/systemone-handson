@@ -189,13 +189,22 @@ const runServe = async (port: number, options: TriageOptions, engine: DecisionEn
   return { code: 0, output: `listening on http://localhost:${actualPort}`, server };
 };
 
-/** コマンドライン引数を受け取り，振り分けの結果を表示する文字列を返す． */
-export const run = async (args: string[], engine: DecisionEngine): Promise<RunResult> => {
+/** 判断エンジンを使えないときの理由．設定が足りないときに，判断エンジンの代わりにrunへ渡す． */
+export interface EngineUnavailable {
+  unavailable: string;
+}
+
+/**
+ * コマンドライン引数を受け取り，振り分けの結果を表示する文字列を返す．
+ * 評価の記録だけを読むコマンドは，判断エンジンを使えなくても実行する．
+ */
+export const run = async (args: string[], engine: DecisionEngine | EngineUnavailable): Promise<RunResult> => {
   const command = parseCommand(args);
   if (command === undefined) return { code: 2, output: usage };
+  if (command.kind === "report") return runReport(command.file, command.options);
+  if ("unavailable" in engine) return { code: 1, output: engine.unavailable };
   if (command.kind === "batch") return runBatch(command.file, command.options, engine);
   if (command.kind === "eval") return runEval(command.file, command.options, command.sweep, command.out, engine);
-  if (command.kind === "report") return runReport(command.file, command.options);
   if (command.kind === "serve") return runServe(command.port, command.options, engine);
   const result = await triage(engine, { subject: command.subject, body: command.body }, command.options);
   return { code: 0, output: formatTriage(result) };

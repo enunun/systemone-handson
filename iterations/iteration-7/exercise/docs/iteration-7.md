@@ -8,7 +8,7 @@
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
@@ -48,11 +48,12 @@ sales                      0         2         6
 
 - `triage eval [--min-confidence <0-1> | --sweep] <ファイル>`で，正解の部署が付いた問い合わせを評価する．
 - ファイルは，1行に1件，`subject`・`body`と，正解の部署`department`(billing・support・salesのどれか)を持つJSONを書いたもの(JSON Lines)である．読めない行は，`line 4: skipped (not a JSON object with subject, body and a known department)`のように知らせて飛ばす．
-- すべての問い合わせを振り分け(同時に4件まで)，部署の確信度がしきい値以上のものを「自動で振り分けたもの」とみなす．しきい値は`--min-confidence`で指定し，指定しなければ0.2とする．
+- すべての問い合わせを振り分け(同時に4件まで)，部署の確信度がしきい値以上のものを「自動で振り分けたもの」とみなす．しきい値は`--min-confidence`で指定し，指定しなければ既定値(`defaultMinConfidence`)とする．
 - 1行目に，`accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10`のように，正解率(自動で振り分けたもののうち部署が正解だった割合)・自動で振り分けた件数・全体の件数・人の確認に回る割合を表示する．割合は小数第2位まで表示する．自動で振り分けたものがなければ，正解率は`n/a`とする．
 - 空の行を挟んで，混同行列を表示する．行が正解の部署，列が判定した部署で，人の確認に回るものも含めて数える．列は右にそろえる．
 - `--sweep`を付けたときは，評価の1行と混同行列の代わりに，しきい値0.0〜1.0(0.1刻み)ごとの評価を表で表示する．
 - `--sweep`と`--min-confidence`は一緒に使えない．`--sweep`は`eval`でだけ使える．どちらも使い方を表示する．使い方には`triage eval`の行を足す．
+- `data/labeled.jsonl`の`--sweep`の表から，自動で振り分けたものの誤りを5%まで(正解率0.95以上)にするしきい値のうち，人の確認に回る割合がもっとも小さいものを選ぶ．選んだしきい値を，既定値にする．
 
 ### 使い方の例
 
@@ -78,6 +79,7 @@ min-confidence  auto-routed  accuracy  review rate
 | `src/evaluate.ts` | `ConfusionMatrix` | `Record<string, Record<string, number>>` | 混同行列． |
 | `src/evaluate.ts` | `parseLabeledTickets` | `(text: string) => { tickets: LabeledTicket[]; errors: string[] }` | ファイルの中身を読む． |
 | `src/evaluate.ts` | `evaluate` | `(results: readonly LabeledResult[], minConfidence: number) => Evaluation` | 評価する． |
+| `src/triage.ts` | `defaultMinConfidence` | `number` | 選んだしきい値に変える． |
 | `src/evaluate.ts` | `confusionMatrix` | `(results: readonly LabeledResult[]) => ConfusionMatrix` | 混同行列を作る． |
 | `src/evaluate.ts` | `sweep` | `(results: readonly LabeledResult[]) => Evaluation[]` | しきい値0.0〜1.0で評価する． |
 | `src/format.ts` | `formatEvaluation`・`formatConfusionMatrix`・`formatSweep` | | 表示する． |
@@ -93,7 +95,7 @@ min-confidence  auto-routed  accuracy  review rate
 
 - Container：評価用のファイルを足す．
 - Component：`evaluate`を足す．`batch`との共通部分をどう描くかを考える．
-- Code：`eval`の流れと，`LabeledTicket`・`Evaluation`・`ConfusionMatrix`を足す．自動で振り分けたとみなす条件と，正解率の決めごとを図の下に書く．
+- Code：`eval`の流れと，`LabeledTicket`・`Evaluation`・`ConfusionMatrix`を足す．自動で振り分けたとみなす条件と，正解率の決めごとを図の下に書く．しきい値の既定値も，選んだ値に直す．
 - シーケンス：`triage eval`が`triage batch`とどこが同じで，どこが違うかを書く．
 
 ## 演習7-5：テスト駆動で実装する
@@ -103,12 +105,12 @@ min-confidence  auto-routed  accuracy  review rate
 - `test/unit/evaluate.test.ts`を作り，`evaluate`・`confusionMatrix`・`sweep`をテスト駆動で作る．割り算の結果を比べるときは，期待値も`2 / 3`のように割り算で書く．そうすれば，丸めの誤差を考えなくて済む．
 - 表の列は，`padStart`・`padEnd`でそろえる．期待する表を自分で書くときは，空白の数を数え間違えやすい．表示したものを目で見て，列がそろっていることを確かめてから期待値にする．
 - `app`に`eval`サブコマンドを足し，`test/integration/evaluate.test.ts`を作る．
-- 最後に，`data/labeled.jsonl`で実行し，`--sweep`の表からしきい値を選ぶ．
+- 最後に，`data/labeled.jsonl`で実行し，`--sweep`の表からしきい値を選ぶ．既定値のテストの期待値を先に直してRedを確かめてから，`defaultMinConfidence`を変える．
 
 ## 演習7-6：振り返る
 
 1. 自分の`TESTLIST.md`と，解答例の[TESTLIST.md](../../solution/TESTLIST.md)を比べる．
-2. `--sweep`の表から，「誤りは5%まで」とするとき，どのしきい値を選ぶか．そのとき人の確認に回るのは何%か．Iteration 4で決めた既定値0.2は，妥当だったか．
+2. 選んだしきい値はいくつか．そのとき人の確認に回るのは何%か．Iteration 4で仮に決めた0.2では，何が足りなかったか．
 3. 混同行列から，どの部署の問い合わせを取り違えやすいかを読み取る．取り違えを減らすには，何を変えるとよいか．変えたら，もう一度評価する．
 4. 本家Jevに切り替えるなら，切り替えの前後で何を比べるか．
 5. 設計書と実装を見比べる．違う形になったところがあれば，設計書を実装に合わせて直す．
@@ -119,7 +121,7 @@ min-confidence  auto-routed  accuracy  review rate
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales    recall
 billing                   10         1         0      0.91

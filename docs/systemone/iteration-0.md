@@ -70,7 +70,7 @@ $ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -
 {"model":"tev1:0.8b","answers":{"refund":{"type":"noul","noul":0.11976156770903792},"angry":{"type":"noul","noul":0.5630101063694293}},"usage":{"input_tokens":383,"output_tokens":3}}
 ```
 
-`refund`だけを尋ねたときと，`refund`の確率が少し違う．Tev1の答えは，一緒に尋ねる質問によって少し変わることがある．同じ質問の組み合わせなら，何度送っても同じ確率が返る．
+`refund`だけを尋ねたときと，`refund`の確率が少し違う．Tev1の答えは，一緒に尋ねる質問によって少し変わることがある．同じ質問の組み合わせなら，何度送っても同じ確率が返る．ただし，Ollamaを起動し直すと，小数の下の桁は少し変わることがある．
 
 質問がないなど，リクエストが誤っていると，エラーを返す．
 

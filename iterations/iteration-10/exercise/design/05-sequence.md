@@ -14,15 +14,15 @@ sequenceDiagram
   participant engine as Ollama・Jev
   user->>main: triage "Refund not received" "Where is my refund?"
   main->>main: loadConfig(process.env)
-  alt 設定が足りない
-    main->>user: 足りない環境変数(標準エラー出力，終了コード1)
-  end
-  main->>main: createEngine(config)<br/>(new TypeSafeClient(baseURL: SYSTEMONE_BASE_URL)，createSystemOneEngine)
+  main->>main: createEngine(config)<br/>(new TypeSafeClient(baseURL: SYSTEMONE_BASE_URL)，createSystemOneEngine)<br/>設定が足りなければ{ unavailable: 理由 }
   main->>app: run(args, engine)
   app->>app: parseCommand(args)
   alt 引数の数が合わない，またはオプションが誤っている
     app-->>main: { code: 2, output: 使い方 }
     main->>user: 使い方(標準エラー出力)
+  else 設定が足りない
+    app-->>main: { code: 1, output: 足りない環境変数 }
+    main->>user: 足りない環境変数(標準エラー出力)
   else それ以外
     app->>triage: triage(engine, { subject, body }, { minConfidence })
     triage->>adapter: decide(state, { department, urgency, refund })

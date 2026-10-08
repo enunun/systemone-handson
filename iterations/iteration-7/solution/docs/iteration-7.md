@@ -14,24 +14,24 @@ Iteration 6の45のテストが通る．
    ```console
    $ pnpm start "Double charge" "My card was charged twice for the same order."
    department: billing (0.99)
-   urgency: somewhat urgent (1.2)
-   refund: no (0.14)
+   urgency: somewhat urgent (1.1)
+   refund: no (0.13)
    $ pnpm start "Demo" "Could we schedule a product demo for our team next week?"
-   department: support (0.63)
+   department: support (0.64)
    urgency: somewhat urgent (0.8)
    refund: no (0.02)
    $ pnpm start "Two-factor" "I lost my phone and cannot get the two-factor code."
    department: support (0.99)
    urgency: urgent (1.6)
-   refund: no (0.21)
+   refund: no (0.20)
    $ pnpm start "Education" "Do you have special prices for universities?"
-   department: sales (0.52) -> needs review
+   department: sales (0.51) -> needs review
    urgency: somewhat urgent (0.9)
-   refund: no (0.16)
+   refund: no (0.17)
    $ pnpm start "Cancel plan" "I want to cancel my plan at the end of this month."
-   department: billing (0.56) -> needs review
+   department: billing (0.55) -> needs review
    urgency: somewhat urgent (0.8)
-   refund: no (0.05)
+   refund: no (0.04)
    ```
 
    正解はbilling・sales・support・sales・billingである．
@@ -64,7 +64,7 @@ Iteration 6の45のテストが通る．
 | --- | --- | --- |
 | [01-context.md](../design/01-context.md)・[02-container.md](../design/02-container.md) | 評価を読むこと，評価用のファイルを足した | 使い方とデータが増えた |
 | [03-component.md](../design/03-component.md) | `evaluate`を足した．`evaluate`は`batch`の`parseJsonLines`・`isTicket`を使う | 新しいモジュール |
-| [04-code.md](../design/04-code.md) | `eval`の流れ・`runEval`の流れと，`LabeledTicket`・`Evaluation`・`ConfusionMatrix`，`Triage`の`departmentConfidence`を足した | 新しい型と関数 |
+| [04-code.md](../design/04-code.md) | `eval`の流れ・`runEval`の流れと，`LabeledTicket`・`Evaluation`・`ConfusionMatrix`，`Triage`の`departmentConfidence`を足した．しきい値の既定値を0.3にした | 新しい型と関数．評価で選んだしきい値 |
 | [05-sequence.md](../design/05-sequence.md) | `triage eval`は`triage batch`と同じ流れで送ることを書いた | 新しい使い方 |
 
 `evaluate`は，しきい値を変えて評価し直すので，`needsReview`ではなく`departmentConfidence`を使う．
@@ -209,19 +209,48 @@ min-confidence  auto-routed  accuracy  review rate
 0.1                      29      0.90         0.03
 0.2                      27      0.93         0.10
 0.3                      26      0.96         0.13
-0.4                      26      0.96         0.13
+0.4                      25      0.96         0.17
 0.5                      24      0.96         0.20
-0.6                      23      1.00         0.23
+0.6                      22      1.00         0.27
 0.7                      21      1.00         0.30
 0.8                      18      1.00         0.40
 0.9                      13      1.00         0.57
 1.0                       0       n/a         1.00
 ```
 
+「誤りは5%まで」(正解率0.95以上)を満たすしきい値のうち，人の確認に回る割合がもっとも小さいのは0.3(13%)である．
+Iteration 4で仮に決めた0.2では，正解率が0.93で足りない．
+既定値を0.3にする．既定値のテスト(「しきい値を指定しなければ，0.2を使う」)を，0.3を使うことを確かめる形に変える．
+確信度を0.29にした答えは，既定値が0.3なら人の確認に回り，0.2なら回らないので，0.3であることを確かめられる．
+`defaultMinConfidence`を変える前は，テストが失敗する．
+
+```console
+ FAIL  |unit| test/unit/triage.test.ts > triage > しきい値を指定しなければ，0.3を使う
+AssertionError: expected false to be true // Object.is equality
+
+- Expected
++ Received
+
+- true
++ false
+```
+
+`defaultMinConfidence`を0.3にすると，テストが通る．評価し直すと，1行目が0.3での評価になる．
+
+```console
+$ pnpm start eval data/labeled.jsonl
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+
+actual \ predicted   billing   support     sales
+billing                   10         1         0
+support                    0        11         0
+sales                      0         2         6
+```
+
 ## 演習7-6：振り返る
 
 1. リファクタリングの項目がなかった場合は，`parseLabeledTickets`が`parseTickets`をまるごと写したものになっていないかを確かめる．
-2. 「誤りは5%まで」(正解率0.95以上)なら，しきい値0.3を選ぶ．人の確認に回るのは13%である．Iteration 4で決めた既定値0.2では，正解率は0.93で，わずかに足りない．既定値を0.3に上げるか，誤りを7%まで許すかを決める．ただし30件では1件の違いで正解率が大きく変わるので，件数を増やして確かめるとよい．
+2. しきい値0.3を選んだ．人の確認に回るのは13%である．Iteration 4で仮に決めた0.2では，正解率が0.93で，「誤りは5%まで」をわずかに満たさなかった．ただし30件では1件の違いで正解率が3ポイント変わるので，件数を増やして確かめるとよい．Iteration 9では，評価用のデータを増やして分け，Iteration 10で選び方をさらに確かめる．
 3. salesの問い合わせを，supportと取り違えやすい(8件のうち2件)．salesの選択肢の説明(`new purchases, pricing and plan upgrades`)に，デモや見積もり，割引などの言葉を足すと変わる可能性がある．変えたら，同じデータで評価して比べる．
 4. 同じ`data/labeled.jsonl`で`--sweep`の表を作り，同じ正解率を満たすしきい値と，そのときの人の確認に回る割合を比べる．確信度の尺度が違うので，しきい値そのものは比べられない．
 5. 解答例は設計書どおりに実装できた．

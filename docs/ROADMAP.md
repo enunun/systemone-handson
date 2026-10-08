@@ -9,30 +9,30 @@
 
 ```console
 $ triage "Refund not received" "I cancelled two weeks ago and still have no refund."
-department: billing (0.87)
-urgency: urgent (1.6)
-refund: yes (0.83)
+department: billing (0.86)
+urgency: urgent (1.5)
+refund: yes (0.81)
 $ triage "Discount" "Do you offer a discount for non-profit organizations?"
-department: support (0.53) -> needs review
+department: support (0.45) -> needs review
 urgency: somewhat urgent (0.9)
-refund: no (0.17)
+refund: no (0.15)
 $ triage batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 5, support: 11, sales: 3, needs review: 2
-$ triage eval data/labeled.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+billing: 5, support: 11, sales: 4, needs review: 1
+$ triage eval data/dev.jsonl
+accuracy: 0.96 (auto-routed 28 / 30), review rate: 0.07
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
 support                    0        11         0
-sales                      0         2         6
+sales                      0         0         8
 $ triage serve --port 3000
 listening on http://localhost:3000
 ```
 
 ```console
 $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "Where is my refund?"}'
-{"department":"billing","departmentProbability":0.8736835530882852,"departmentConfidence":0.653906619759055,"needsReview":false,"urgency":1.2259161755022923,"refundProbability":0.5204658538893784}
+{"department":"billing","departmentProbability":0.8192454080420463,"departmentConfidence":0.568832523597461,"needsReview":false,"urgency":1.2345428163683536,"refundProbability":0.4929566423398415}
 ```
 
 `triage`は，各Iterationのパッケージのディレクトリで`pnpm start`として実行する(`pnpm start batch data/tickets.jsonl`など)．
@@ -148,9 +148,9 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 
 ## Iteration 7：ラベル付きデータで精度を測る
 
-- 要求：`triage eval <ファイル>`で，正解の部署が付いた問い合わせを振り分け，自動で振り分けた件数とその正解率，人の確認に回した割合を表示する．`--sweep`を付けると，しきい値を0.1刻みで変えた結果を表で表示する．
-- 使い方：`triage eval data/labeled.jsonl`で`accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10`と混同行列を表示する．
-- モジュール：`evaluate`(`parseLabeledTickets`，`evaluate`，`confusionMatrix`，`sweep`)を足す．`triage`の結果に部署の確信度を足す．
+- 要求：`triage eval <ファイル>`で，正解の部署が付いた問い合わせを振り分け，自動で振り分けた件数とその正解率，人の確認に回した割合を表示する．`--sweep`を付けると，しきい値を0.1刻みで変えた結果を表で表示する．その表から「誤りは5%まで」を満たすしきい値を選び，既定値をIteration 4の0.2から変える．
+- 使い方：`triage eval data/labeled.jsonl`で`accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13`と混同行列を表示する．
+- モジュール：`evaluate`(`parseLabeledTickets`，`evaluate`，`confusionMatrix`，`sweep`)を足す．`triage`の結果に部署の確信度を足し，`defaultMinConfidence`を選んだしきい値(0.3)にする．
 - リファクタリング：JSON Linesの読み方を`batch`の`parseJsonLines`にまとめ，`parseTickets`と`parseLabeledTickets`で使う．
 - 設計書で更新するもの：Componentに`evaluate`を足す．Codeに評価の流れを足す．
 - 学ぶこと：評価用データ，正解率，混同行列，しきい値と「人の確認に回る割合」の関係，Jevへ替える前に精度を測る意味．
@@ -165,7 +165,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 
 ## Iteration 9：評価の記録を残し，指標で読む
 
-- 要求：評価用のデータに，返金の要否(`refund`)と緊急度の段階(`urgency`，0〜3)の正解を足す．データは2つに分け(各30件)，質問の調整には`data/dev.jsonl`を，調整した結果の確認には`data/test.jsonl`を使う．`triage eval --out <ファイル>`で，1件ごとの振り分けの結果と所要時間をJSON Linesで記録する．`triage report <記録>`は，記録だけを読んで指標を表示する．指標は，部署の正解率と人の確認に回る割合，部署ごとの適合率と再現率，返金の正解率とBrierスコア，緊急度の平均絶対誤差，所要時間の中央値と95パーセンタイルである．
+- 要求：評価用のデータに，返金の要否(`refund`)と緊急度の段階(`urgency`，0〜3)の正解を足す．データは2つに分け(各30件)，質問の調整には`data/dev.jsonl`を，調整した結果の確認には`data/test.jsonl`を使う．`triage eval --out <ファイル>`で，1件ごとの振り分けの結果と所要時間をJSON Linesで記録する．`triage report <記録>`は，記録だけを読んで指標を表示する．判断エンジンの設定がなくても実行できる．指標は，部署の正解率と人の確認に回る割合，部署ごとの適合率と再現率，返金の正解率とBrierスコア，緊急度の平均絶対誤差，所要時間の中央値と95パーセンタイルである．
 - 使い方：`triage eval --out results/dev.jsonl data/dev.jsonl`のあとに`triage report results/dev.jsonl`．
 - モジュール：`records`(`EvalRecord`，`formatRecords`，`parseRecords`)と`metrics`(`precisionRecall`，`refundMetrics`，`meanAbsoluteError`，`percentile`)を足す．`evaluate`の正解付きの問い合わせに`refund`と`urgency`を足す．`format`に`formatReport`を足す．`app`に`eval`の`--out`と`report`サブコマンドを足す．`data/labeled.jsonl`は`data/dev.jsonl`に置き換える．
 - 設計書で更新するもの：Containerに評価用のデータと記録のファイルを足す．Componentに`records`と`metrics`を足す．Codeに，記録から指標を作る流れを足す．シーケンス図に，記録を書き出す流れと，記録だけを読む`report`の流れを足す．

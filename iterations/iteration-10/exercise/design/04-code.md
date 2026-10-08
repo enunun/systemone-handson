@@ -10,12 +10,14 @@
 flowchart LR
   env(["process.env<br/>(.envを含む)"]) -- "loadConfig" --> result(["ConfigResult"])
   result -- "ok: true" --> config(["Config"])
-  result -- "ok: false" --> message(["message<br/>標準エラー出力，終了コード1"])
+  result -- "ok: false" --> unavailable(["EngineUnavailable<br/>{ unavailable: message }"])
   config -- "createEngine<br/>engine: systemone" --> systemone(["createSystemOneEngine(new TypeSafeClient)"])
   config -- "createEngine<br/>engine: fake" --> fake(["createFakeEngine(fakeAnswers)"])
   systemone --> engine(["DecisionEngine"])
   fake --> engine
 ```
+
+- `run`には，`DecisionEngine`か，設定が足りない理由(`EngineUnavailable`)を渡す．`report`は判断エンジンを使わないので，理由を渡されても実行する．ほかのコマンドは，理由を標準エラー出力に表示して，終了コード1で終わる．
 
 - `DECISION_ENGINE`がないときは`systemone`とする．`systemone`のときは，`SYSTEMONE_BASE_URL`・`SYSTEMONE_MODEL`・`SYSTEMONE_API_KEY`がすべて必要である．空の値は，ないものとして扱う．
 
@@ -38,6 +40,7 @@ flowchart LR
   reportCommand -- "ファイルが読めない" --> readError
   command -- "kind: serve" --> serve(["port・TriageOptions"])
   serve -- "runServe<br/>(createApi，listen)" --> serveOutput(["RunResult<br/>code: 0，listening on …，server"])
+  command -- "判断エンジンを使うコマンドで<br/>EngineUnavailableを渡された" --> unavailableOutput(["RunResult<br/>code: 1，設定が足りない理由"])
   args -- "引数の数が合わない<br/>知らないオプション<br/>しきい値が0から1の数でない<br/>ポートが0から65535の整数でない" --> usage(["RunResult<br/>code: 2，使い方"])
 ```
 
@@ -126,7 +129,7 @@ flowchart LR
 ```
 
 - `formatTriage`は，`Triage`の項目ごとに1行を作り，改行でつなぐ．`needsReview`なら，部署の行の末尾に空白と`-> needs review`を付ける．
-- しきい値(`minConfidence`)は，`--min-confidence`で指定する．指定しなければ`defaultMinConfidence`(0.2)を使う．確信度がしきい値ちょうどなら，人の確認に回さない．
+- しきい値(`minConfidence`)は，`--min-confidence`で指定する．指定しなければ`defaultMinConfidence`(0.3)を使う．確信度がしきい値ちょうどなら，人の確認に回さない．
 - 緊急度は，期待値を四捨五入した番号の段階の名前と，期待値を小数第1位まで表示する．返金は，確率が0.5以上なら`yes`とする．確率は小数第2位までに丸める．
 
 `adapters/http-api`は，HTTPのリクエストを次のように処理する．

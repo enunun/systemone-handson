@@ -53,7 +53,7 @@ export interface TriageOptions {
 }
 
 /** しきい値を指定しないときに使う，部署の判定の確信度のしきい値． */
-export const defaultMinConfidence = 0.2;
+export const defaultMinConfidence = 0.3;
 
 /** 問い合わせについて判断エンジンに尋ね，振り分けの結果を返す． */
 export const triage = async (

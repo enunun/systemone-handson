@@ -14,8 +14,8 @@ A: results/test-before.jsonl
 B: results/test-after.jsonl
 
 metric                             A       B
-accuracy                        0.79    0.93
-review rate                     0.03    0.03
+accuracy                        0.85    0.96
+review rate                     0.10    0.17
 refund accuracy                 1.00    1.00
 refund brier score             0.011   0.011
 urgency mean absolute error     0.77    0.79

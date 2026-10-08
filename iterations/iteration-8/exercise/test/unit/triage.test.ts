@@ -71,8 +71,8 @@ describe("triage", () => {
     expect(result.needsReview).toBe(false);
   });
 
-  test("しきい値を指定しなければ，0.2を使う", async () => {
-    const lowConfidence = { ...answers, department: { ...answers.department, confidence: 0.19 } } as Record<
+  test("しきい値を指定しなければ，0.3を使う", async () => {
+    const lowConfidence = { ...answers, department: { ...answers.department, confidence: 0.29 } } as Record<
       string,
       Answer
     >;

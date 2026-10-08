@@ -47,6 +47,14 @@ const usage = [
 ].join("\n");
 
 describe("run", () => {
+  test("判断エンジンを使えなければ，理由を表示して終了コード1で終わる", async () => {
+    const result = await run(["Refund not received", "Where is my refund?"], {
+      unavailable: "missing environment variables: SYSTEMONE_BASE_URL",
+    });
+
+    expect(result).toEqual({ code: 1, output: "missing environment variables: SYSTEMONE_BASE_URL" });
+  });
+
   test("件名と本文を判断エンジンに送り，担当部署・緊急度・返金の判定を表示する", async () => {
     const requests: unknown[] = [];
 

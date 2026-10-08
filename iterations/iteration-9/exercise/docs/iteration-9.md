@@ -8,7 +8,7 @@ Iteration 7では，部署の正解率と混同行列で精度を測った．
 
 ```console
 $ pnpm start eval --out results/dev.jsonl data/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
@@ -17,16 +17,16 @@ sales                      0         2         6
 
 wrote 30 records to results/dev.jsonl
 $ pnpm start report results/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall
 billing          1.00    0.91
 support          0.79    1.00
 sales            1.00    0.75
 
-refund accuracy: 0.93, brier score: 0.068
+refund accuracy: 0.93, brier score: 0.066
 urgency mean absolute error: 0.82
-latency median: 696 ms, p95: 819 ms
+latency median: 1186 ms, p95: 1310 ms
 ```
 
 作りながら，調整用と確かめ用のデータを分ける理由，適合率と再現率，Brierスコア，平均絶対誤差，パーセンタイル，評価の記録の残し方を学ぶ．
@@ -73,13 +73,14 @@ Iteration 10では，このIterationで作る記録と指標を使って，質�
   - 書いたら，評価の表示のあとに空の行を挟んで，`wrote 30 records to results/dev.jsonl`と表示する．
   - 書けなければ，`cannot write <ファイル>: <理由>`を表示して終了コード1で終わる．
 - `triage report [--min-confidence <0-1>] <ファイル>`で，評価の記録を読んで次の指標を表示する．判断エンジンには尋ねない．書式は「このIterationで作るもの」の例のとおりである．
-  - 1行目：部署の正解率・自動で振り分けた件数・人の確認に回る割合(`triage eval`と同じ)．しきい値は`--min-confidence`で指定し，指定しなければ0.2とする．
+  - 1行目：部署の正解率・自動で振り分けた件数・人の確認に回る割合(`triage eval`と同じ)．しきい値は`--min-confidence`で指定し，指定しなければ0.3とする．
   - 部署ごとの適合率と再現率の表．人の確認に回すものも含めて，すべての記録で求める．
   - 返金の正解率(確率0.5以上を「はい」とする)とBrierスコア(小数第3位まで)．
   - 緊急度の平均絶対誤差(小数第2位まで)．
   - 所要時間の中央値と95パーセンタイル(最近順位法．ミリ秒の整数)．
   - 割る数が0になるなど，求められない値は`n/a`と表示する．
-  - 読めない行は，`line 2: skipped (not a JSON object with ticket, result and elapsedMs)`のように知らせて飛ばす．記録のファイルが読めなければ，`cannot read <ファイル>: <理由>`を表示して終了コード1で終わる．
+  - 読めない行は，`line 2: skipped (not a JSON object with ticket, result and elapsedMs)`のように知らせて飛ばす．
+  - 判断エンジンの設定(`.env`)がなくても実行できる．記録のファイルが読めなければ，`cannot read <ファイル>: <理由>`を表示して終了コード1で終わる．
 - `--out`は`eval`でだけ使える．使い方には，`triage eval`の行に`[--out <file>]`を足し，`triage report [--min-confidence <0-1>] <file>`の行を足す．
 - `data/labeled.jsonl`は，`data/dev.jsonl`に置き換えたので消す．
 
@@ -99,7 +100,9 @@ Iteration 10では，このIterationで作る記録と指標を使って，質�
 | `src/metrics.ts` | `percentile` | `(values: readonly number[], p: number) => number \| undefined` | 最近順位法のパーセンタイル． |
 | `src/metrics.ts` | `buildReport` | `(records: readonly EvalRecord[], minConfidence: number) => Report` | 指標をまとめる． |
 | `src/format.ts` | `formatReport` | `(report: Report) => string` | 指標を表示する文字列にする． |
-| `src/app.ts` | `run` | (変えない) | `eval --out`と`report`を読む． |
+| `src/app.ts` | `EngineUnavailable` | `{ unavailable: string }` | 判断エンジンを使えない理由．設定が足りないときに，`main`が判断エンジンの代わりに`run`へ渡す． |
+| `src/app.ts` | `run` | `(args: string[], engine: DecisionEngine \| EngineUnavailable) => Promise<RunResult>` | `eval --out`と`report`を読む．判断エンジンを使うコマンドで理由を渡されたら，理由を表示して終了コード1で終わる． |
+| `src/main.ts` | (変える) | | 設定が足りなければ，`{ unavailable: 理由 }`を`run`に渡す． |
 
 ### 考えること
 
@@ -108,13 +111,14 @@ Iteration 10では，このIterationで作る記録と指標を使って，質�
 - 指標の関数のテストでは，手で計算できる件数の記録を作る．適合率・再現率・Brierスコア・平均絶対誤差の期待値を，その記録から手で求める．
 - 「求められない値」になるのは，どの指標の，どんな場合か．
 - `report`が判断エンジンに尋ねないことは，どう確かめられるか．
+- Iteration 5から，`main`は設定が足りなければ`run`を呼ばずに終わっていた．設定がなくても`report`を実行するには，`main`と`run`の間で何を渡せばよいか．
 
 ## 演習9-4：設計書を更新する
 
 - Container：評価用のファイルの説明を直し，評価の記録のファイルを足す．`triage eval`が1件ずつ送ることを書く．
 - Component：`records`と`metrics`を足す．`records`と`metrics`が，どのモジュールに依存するかを考える．
-- Code：`runEval`の流れに記録を，`runReport`の流れを足す．指標の求め方を表にする．主な型に`EvalRecord`と`Report`を足す．
-- シーケンス：`eval --out`で記録を書く流れと，`report`が記録だけを読む流れを描く．
+- Code：`runEval`の流れに記録を，`runReport`の流れを足す．指標の求め方を表にする．主な型に`EvalRecord`と`Report`を足す．設定が足りないときに`main`が`run`へ渡すものを，`main`の流れに描く．
+- シーケンス：`eval --out`で記録を書く流れと，`report`が記録だけを読む流れを描く．設定が足りないときの分岐を，`main`から`app`へ移す．
 
 ## 演習9-5：テスト駆動で実装する
 
@@ -144,16 +148,16 @@ F1は`2 × 適合率 × 再現率 / (適合率 + 再現率)`で求める．適�
 
 ```console
 $ pnpm start report results/dev.jsonl
-accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
+accuracy: 0.96 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall    f1
 billing          1.00    0.91  0.95
 support          0.79    1.00  0.88
 sales            1.00    0.75  0.86
 
-refund accuracy: 0.93, brier score: 0.068
+refund accuracy: 0.93, brier score: 0.066
 urgency mean absolute error: 0.82
-latency median: 696 ms, p95: 819 ms
+latency median: 1186 ms, p95: 1310 ms
 ```
 
 発展課題の解答の一例は，解答例のパッケージ(`../solution`)に`発展(演習9-7)`で始まるコメントとして書いてある．

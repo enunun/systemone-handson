@@ -4,7 +4,7 @@ Iteration 9の演習用パッケージ([../exercise/](../exercise/))を完成さ
 
 ```console
 $ pnpm start eval --out results/test.jsonl data/test.jsonl
-accuracy: 0.79 (auto-routed 29 / 30), review rate: 0.03
+accuracy: 0.88 (auto-routed 26 / 30), review rate: 0.13
 
 actual \ predicted   billing   support     sales
 billing                    8         1         1
@@ -13,16 +13,16 @@ sales                      1         3         6
 
 wrote 30 records to results/test.jsonl
 $ pnpm start report results/test.jsonl
-accuracy: 0.79 (auto-routed 29 / 30), review rate: 0.03
+accuracy: 0.88 (auto-routed 26 / 30), review rate: 0.13
 
 department  precision  recall
 billing          0.89    0.80
 support          0.71    1.00
 sales            0.86    0.60
 
-refund accuracy: 1.00, brier score: 0.011
-urgency mean absolute error: 0.77
-latency median: 709 ms, p95: 771 ms
+refund accuracy: 1.00, brier score: 0.012
+urgency mean absolute error: 0.78
+latency median: 400 ms, p95: 446 ms
 ```
 
 ## 見どころ
