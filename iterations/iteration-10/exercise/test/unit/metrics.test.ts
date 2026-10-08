@@ -34,27 +34,12 @@ const records = [
 
 describe("precisionRecall", () => {
   test("部署ごとに，判定したもののうちの正解の割合(適合率)と，正解のもののうち判定できた割合(再現率)を求める", () => {
-    // 発展(演習9-7)：F1も求める
-    // expect(precisionRecall(toLabeledResults(records))).toEqual({
-    //   billing: { precision: 1, recall: 1 / 2, f1: 2 / 3 },
-    //   support: { precision: 1 / 3, recall: 1, f1: 1 / 2 },
-    //   sales: { precision: undefined, recall: 0, f1: undefined },
-    // });
-    // 発展(演習9-7)ここまで．次の5行の代わりに使う
     expect(precisionRecall(toLabeledResults(records))).toEqual({
       billing: { precision: 1, recall: 1 / 2 },
       support: { precision: 1 / 3, recall: 1 },
       sales: { precision: undefined, recall: 0 },
     });
   });
-  // 発展(演習9-7)：適合率と再現率がどちらも0なら，F1を求めない
-  //
-  // test("適合率と再現率がどちらも0なら，F1はundefinedにする", () => {
-  //   const wrong = [record("billing", "support", false, 0, 0, 0, 0), record("support", "billing", false, 0, 0, 0, 0)];
-  //
-  //   expect(precisionRecall(toLabeledResults(wrong)).billing).toEqual({ precision: 0, recall: 0, f1: undefined });
-  // });
-  // 発展(演習9-7)ここまで
 });
 
 describe("refundMetrics", () => {
