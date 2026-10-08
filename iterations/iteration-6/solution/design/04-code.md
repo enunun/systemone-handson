@@ -40,7 +40,7 @@ flowchart LR
   text(["string<br/>ファイルの中身"]) -- "parseTickets" --> parsed(["ParsedTickets<br/>tickets・errors"])
   parsed -- "mapWithConcurrency(tickets, 4, triage)" --> results(["Triage[]"])
   results -- "summarize" --> summary(["Summary"])
-  summary -- "formatSummary" --> line(["billing: 4, support: 6, sales: 0, needs review: 11"])
+  summary -- "formatSummary" --> line(["billing: 5, support: 11, sales: 3, needs review: 2"])
   parsed -- "errors" --> errors(["line 21: skipped (…)"])
 ```
 

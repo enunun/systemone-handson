@@ -6,14 +6,14 @@ import { run } from "../../src/app.ts";
 const fakeFetch = (noul: number, requests: unknown[]) => async (_url: string, init?: RequestInit) => {
   requests.push(JSON.parse(String(init?.body)));
   return Response.json({
-    model: "laya",
+    model: "tev1:0.8b",
     answers: { refund: { type: "noul", noul } },
     usage: { input_tokens: 53, output_tokens: 0 },
   });
 };
 
 const clientWith = (noul: number, requests: unknown[] = []) =>
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch(noul, requests) });
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch(noul, requests) });
 
 describe("run", () => {
   test("件名と本文を判断エンジンに送り，返金の判定を表示する", async () => {

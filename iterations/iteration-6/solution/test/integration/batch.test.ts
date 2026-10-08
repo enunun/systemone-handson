@@ -11,7 +11,7 @@ const fakeFetch = async (_url: string, init?: RequestInit) => {
   const request = JSON.parse(String(init?.body)) as { state: { subject: string } };
   const unsure = request.state.subject === "Team plan";
   return Response.json({
-    model: "laya",
+    model: "tev1:0.8b",
     answers: {
       department: {
         type: "choice",
@@ -29,7 +29,7 @@ const fakeFetch = async (_url: string, init?: RequestInit) => {
 };
 
 const engine = createSystemOneEngine(
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch }),
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch }),
 );
 
 let dir = "";
@@ -106,7 +106,7 @@ describe("run batch", () => {
   //     return fakeFetch(url, init);
   //   };
   //   const countingEngine = createSystemOneEngine(
-  //     new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: countingFetch }),
+  //     new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: countingFetch }),
   //   );
   //   const file = await writeTickets(Array.from({ length: 5 }, () => '{"subject": "Refund", "body": "Where?"}'));
   //

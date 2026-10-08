@@ -11,9 +11,9 @@ sequenceDiagram
   participant format as format
   participant adapter as systemone-engine
   participant client as TypeSafeClient
-  participant engine as laya-server
+  participant engine as Ollama
   user->>main: triage "Refund not received" "Where is my refund?"
-  main->>main: new TypeSafeClient(baseURL: http://laya:8080)
+  main->>main: new TypeSafeClient(baseURL: http://ollama:11434)
   main->>main: createSystemOneEngine(client)
   main->>app: run(args, engine)
   alt 件名か本文がない

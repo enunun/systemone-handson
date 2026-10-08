@@ -8,9 +8,9 @@ sequenceDiagram
   participant main as main
   participant app as app
   participant client as TypeSafeClient
-  participant engine as laya-server
+  participant engine as Ollama
   user->>main: triage "Refund not received" "Where is my refund?"
-  main->>main: new TypeSafeClient(baseURL: http://laya:8080)
+  main->>main: new TypeSafeClient(baseURL: http://ollama:11434)
   main->>app: run(args, client)
   alt 件名か本文がない
     app-->>main: { code: 2, output: 使い方 }

@@ -7,10 +7,10 @@
 しきい値は，既定では0.2で，`--min-confidence`で変えられる．
 
 ```console
-$ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
 ```
 
 作りながら，確率と確信度の違い，しきい値の考え方，`util.parseArgs`でのオプションの解析を学ぶ．
@@ -28,7 +28,7 @@ refund: no (0.07)
 
    ```sh
    pnpm start "Refund not received" "Where is my refund?"
-   pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
+   pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
    ```
 
 ## 演習4-2：確信度を調べる
@@ -38,10 +38,10 @@ refund: no (0.07)
 読み終えたら，次を試す．
 
 1. 演習4-1の2つの問い合わせを，curlで`department`の`choice`の質問だけにして送り，`probabilities`と`confidence`を読む．
-2. 資料の式で，`Team plan`の`confidence`を手で(または`node`の対話モードで)計算し，答えと一致することを確かめる．`node`を引数なしで実行すると対話モードになり，`Math.log`などを試せる．
+2. 資料の式で，`Discount`の`confidence`を手で(または`node`の対話モードで)計算し，答えと一致することを確かめる．`node`を引数なしで実行すると対話モードになり，`Math.log`などを試せる．
 3. 次の問い合わせも送り，部署が正しく選ばれているか，`confidence`はいくつかを表にする．しきい値を0.2にすると，どれが人の確認に回るか．
    - `"Invoice"`・`"Please send me the invoice for September."`
-   - `"Discount"`・`"Do you offer a discount for non-profit organizations?"`
+   - `"Students"`・`"Is there a discount for students?"`
    - `"Cancel"`・`"I want to cancel my subscription."`
    - `"Enterprise"`・`"We would like to talk to someone about an enterprise contract."`
 
@@ -62,14 +62,14 @@ refund: no (0.07)
 ### 使い方の例
 
 ```console
-$ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
-$ pnpm start --min-confidence 0.1 "Hello" "I have a question about my account."
-department: support (0.59)
-urgency: somewhat urgent (1.1)
-refund: no (0.10)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
+$ pnpm start --min-confidence 0.1 "Plan" "What is the difference between your plans?"
+department: support (0.61)
+urgency: somewhat urgent (0.8)
+refund: no (0.08)
 $ pnpm start --min-confidence 2 "Hello" "Hi"
 usage: triage [--min-confidence <0-1>] "<subject>" "<body>"
 ```
@@ -123,10 +123,10 @@ usage: triage [--min-confidence <0-1>] "<subject>" "<body>"
 `--show-confidence`を付けたときは，部署の行に確信度も表示する．
 
 ```console
-$ pnpm start --show-confidence "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44, confidence 0.02) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
+$ pnpm start --show-confidence "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53, confidence 0.08) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
 ```
 
 `Triage`に部署の確信度を足し，表示の関数に「確信度を表示するか」を渡す必要がある．

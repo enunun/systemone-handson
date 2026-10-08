@@ -9,10 +9,10 @@ Iteration 3の解答例と同じコード・テスト・設計書から始まる
 しきい値は`--min-confidence`で変えられる．
 
 ```console
-$ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
 ```
 
 作りながら，確率と確信度の違い，しきい値の考え方，`util.parseArgs`でのオプションの解析を学ぶ．

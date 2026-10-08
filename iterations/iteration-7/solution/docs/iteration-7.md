@@ -13,30 +13,30 @@ Iteration 6の45のテストが通る．
 
    ```console
    $ pnpm start "Double charge" "My card was charged twice for the same order."
-   department: billing (0.90)
-   urgency: urgent (1.8)
-   refund: yes (0.53)
-   $ pnpm start "Demo" "Could we schedule a product demo for our team next week?"
-   department: support (0.59) -> needs review
-   urgency: somewhat urgent (1.3)
-   refund: no (0.00)
-   $ pnpm start "Two-factor" "I lost my phone and cannot get the two-factor code."
-   department: support (0.68)
-   urgency: urgent (1.5)
-   refund: no (0.03)
-   $ pnpm start "Education" "Do you have special prices for universities?"
-   department: sales (0.40) -> needs review
-   urgency: somewhat urgent (1.3)
-   refund: no (0.15)
-   $ pnpm start "Cancel plan" "I want to cancel my plan at the end of this month."
-   department: support (0.38) -> needs review
+   department: billing (0.99)
    urgency: somewhat urgent (1.2)
+   refund: no (0.14)
+   $ pnpm start "Demo" "Could we schedule a product demo for our team next week?"
+   department: support (0.63)
+   urgency: somewhat urgent (0.8)
+   refund: no (0.02)
+   $ pnpm start "Two-factor" "I lost my phone and cannot get the two-factor code."
+   department: support (0.99)
+   urgency: urgent (1.6)
+   refund: no (0.21)
+   $ pnpm start "Education" "Do you have special prices for universities?"
+   department: sales (0.52) -> needs review
+   urgency: somewhat urgent (0.9)
+   refund: no (0.16)
+   $ pnpm start "Cancel plan" "I want to cancel my plan at the end of this month."
+   department: billing (0.56) -> needs review
+   urgency: somewhat urgent (0.8)
    refund: no (0.05)
    ```
 
    正解はbilling・sales・support・sales・billingである．
-   `Demo`と`Cancel plan`は部署を誤ったが，どちらも人の確認に回った．
-   `Education`は正しいのに人の確認に回った．
+   `Demo`は部署を誤ったのに，人の確認に回らなかった．
+   `Education`と`Cancel plan`は正しいのに人の確認に回った．
    数件を見るだけでは，しきい値が妥当かを判断しにくい．
 
 2. しきい値を上げると，確信度の低いものから人の確認に回る．このとき，人の確認に回る割合は下がらない．正解率は，確信度の低いものほど誤りやすいなら上がる．
@@ -197,32 +197,32 @@ $ pnpm test
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
 support                    0        11         0
-sales                      1         2         5
+sales                      0         2         6
 $ pnpm start eval --sweep data/labeled.jsonl
 min-confidence  auto-routed  accuracy  review rate
-0.0                      30      0.87         0.00
-0.1                      25      0.92         0.17
-0.2                      19      0.95         0.37
-0.3                      17      1.00         0.43
-0.4                      15      1.00         0.50
-0.5                       8      1.00         0.73
-0.6                       4      1.00         0.87
-0.7                       3      1.00         0.90
-0.8                       1      1.00         0.97
-0.9                       1      1.00         0.97
+0.0                      30      0.90         0.00
+0.1                      29      0.90         0.03
+0.2                      27      0.93         0.10
+0.3                      26      0.96         0.13
+0.4                      26      0.96         0.13
+0.5                      24      0.96         0.20
+0.6                      23      1.00         0.23
+0.7                      21      1.00         0.30
+0.8                      18      1.00         0.40
+0.9                      13      1.00         0.57
 1.0                       0       n/a         1.00
 ```
 
 ## 演習7-6：振り返る
 
 1. リファクタリングの項目がなかった場合は，`parseLabeledTickets`が`parseTickets`をまるごと写したものになっていないかを確かめる．
-2. 「誤りは5%まで」(正解率0.95以上)なら，しきい値0.2を選ぶ．人の確認に回るのは37%である．この30件では，Iteration 4で決めた既定値0.2は妥当だった．ただし30件では1件の違いで正解率が大きく変わるので，件数を増やして確かめるとよい．
-3. salesの問い合わせを，supportやbillingと取り違えやすい(8件のうち3件)．salesの選択肢の説明(`new purchases, pricing and plan upgrades`)に，デモや見積もり，割引などの言葉を足すと変わる可能性がある．変えたら，同じデータで評価して比べる．
+2. 「誤りは5%まで」(正解率0.95以上)なら，しきい値0.3を選ぶ．人の確認に回るのは13%である．Iteration 4で決めた既定値0.2では，正解率は0.93で，わずかに足りない．既定値を0.3に上げるか，誤りを7%まで許すかを決める．ただし30件では1件の違いで正解率が大きく変わるので，件数を増やして確かめるとよい．
+3. salesの問い合わせを，supportと取り違えやすい(8件のうち2件)．salesの選択肢の説明(`new purchases, pricing and plan upgrades`)に，デモや見積もり，割引などの言葉を足すと変わる可能性がある．変えたら，同じデータで評価して比べる．
 4. 同じ`data/labeled.jsonl`で`--sweep`の表を作り，同じ正解率を満たすしきい値と，そのときの人の確認に回る割合を比べる．確信度の尺度が違うので，しきい値そのものは比べられない．
 5. 解答例は設計書どおりに実装できた．
 
@@ -258,15 +258,15 @@ export const formatConfusionMatrix = (matrix: ConfusionMatrix): string => {
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
 
 actual \ predicted   billing   support     sales    recall
 billing                   10         1         0      0.91
 support                    0        11         0      1.00
-sales                      1         2         5      0.63
+sales                      0         2         6      0.75
 ```
 
-salesの再現率が0.63と低いことが，数で見える．
+salesの再現率が0.75と低いことが，数で見える．
 
 解答例のパッケージでは，この実装とテストを`発展(演習7-7)`で始まるコメントとして書いている．
 コメントを外して動かす方法は，リポジトリの[README](../../../../README.md#発展課題)にある．

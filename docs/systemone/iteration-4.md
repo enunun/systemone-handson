@@ -11,8 +11,8 @@ Iteration 4で初めて使う概念・APIを説明する．
 - 選ばれた選択肢の確率：「その選択肢がどれくらいありそうか」．
 - 確信度：「確率の分布が，どれくらい1つの選択肢に集まっているか」．分布全体から計算する．
 
-laya-serverの確信度は，分布のエントロピー(ばらつきの大きさ)を使って，次の式で計算する．
-kは選択肢の数，p_iは各選択肢の確率である．
+Ollamaの確信度は，分布のエントロピー(ばらつきの大きさ)を使って，次の式で計算する．
+kは選択肢の数，p_iは各選択肢の確率，logは自然対数である．
 
 ```text
 confidence = 1 − (−Σ p_i log p_i) / log k
@@ -20,18 +20,25 @@ confidence = 1 − (−Σ p_i log p_i) / log k
 
 すべての確率が同じ(もっとも迷っている)なら0，1つの選択肢の確率が1(まったく迷っていない)なら1になる．
 
-実際の答えで比べる．
+`department`の質問だけを送った実際の答えで比べる(確率は小数第4位に丸めた)．
 
 | 問い合わせ | 選ばれた部署 | 確率の分布 | 選ばれた部署の確率 | 確信度 |
 | --- | --- | --- | --- | --- |
-| `Charged twice` | billing | billing 0.9661 | 0.97 | 0.846 |
-| `Login problem` | support | support 0.8427，billing 0.0745，sales 0.0828 | 0.84 | 0.5048 |
-| `Refund not received` | billing | billing 0.7253，support 0.1994，sales 0.0753 | 0.73 | 0.318 |
-| `Team plan` | sales | sales 0.4394，support 0.2963，billing 0.2642 | 0.44 | 0.0229 |
+| `Login problem` | support | support 0.9976，billing 0.0016，sales 0.0008 | 1.00 | 0.9834 |
+| `Refund not received` | billing | billing 0.9365，support 0.0633，sales 0.0002 | 0.94 | 0.7838 |
+| `Charged twice` | billing | billing 0.9297，support 0.0683，sales 0.002 | 0.93 | 0.7604 |
+| `Discount` | support | support 0.5576，sales 0.2471，billing 0.1953 | 0.56 | 0.0987 |
 
 確信度は，選ばれた部署の確率より小さい値になりやすい．
-`Team plan`では，salesの確率は0.44ある．しかし，ほかの2つも0.26〜0.30あって分布がほぼ平らなので，確信度は0.02しかない．
+`Discount`では，supportの確率は0.56ある．しかし，ほかの2つも0.20〜0.25あって分布が平らに近いので，確信度は0.10しかない．
 確信度は確率とは尺度が違うので，しきい値は確率の感覚で決めず，実際の答えを見て決める．
+
+`Charged twice`の本文は`"I was charged twice this month."`，`Discount`の本文は`"Do you offer a discount for non-profit organizations?"`である．
+`Discount`の正しい部署はsalesなので，確信度の低い答えは誤っていた．
+
+同じ問い合わせでも，一緒に送る質問が違うと，確率と確信度も少し変わる．
+`triage`は部署・緊急度・返金の3つをまとめて尋ねるので，`department`だけを尋ねたときとは値が違う．
+しきい値を決めるときは，`triage`が実際に送る質問の組み合わせで測る．
 
 確信度の計算の仕方は，判断エンジンごとに決まっている．
 判断エンジンを替えたら，しきい値も見直す．

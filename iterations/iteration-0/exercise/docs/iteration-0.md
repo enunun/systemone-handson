@@ -7,7 +7,7 @@
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-refund: yes (0.86)
+refund: yes (0.81)
 ```
 
 作りながら，System Oneの考え方と`/v1/systemone`のAPI，TypeSafeのSDK，Vitestでのテストの書き方，mermaidでの設計書の書き方を学ぶ．
@@ -64,7 +64,7 @@ refund: yes (0.86)
 
 読み終えたら，次を試す．
 
-1. `curl -s http://laya:8080/healthz`で，判断エンジンの準備ができていることを確かめる．
+1. `curl -s http://ollama:11434/v1/models`で，判断エンジンのモデル(`tev1:0.8b`)が使えることを確かめる．
 2. 資料の最初のcurlの例を実行し，`refund`の確率を読む．
 3. 本文を，返金を求めていない文(例：`"How do I change my password?"`)に変えて送り，確率がどう変わるかを見る．
 4. 本文を，どちらとも取れる文(例：`"I am not happy with my purchase."`)に変えて送る．確率は0と1のどちらに近いか．
@@ -87,9 +87,9 @@ refund: yes (0.86)
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-refund: yes (0.86)
+refund: yes (0.81)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-refund: no (0.08)
+refund: no (0.14)
 $ pnpm start "Refund not received"
 usage: triage "<subject>" "<body>"
 ```
@@ -118,8 +118,8 @@ usage: triage "<subject>" "<body>"
 `design/`には，5つのファイルが見出しだけの状態で置いてある．
 演習0-3で書いたテストリストの振る舞いを，どんな部品で実現するかを図にする．
 
-1. `01-context.md`：利用者・`triage`・判断エンジン(laya-server)の関係を`C4Context`の図で描く．
-2. `02-container.md`：`triage`の実行ファイルと，laya-serverを`C4Container`の図で描く．laya-serverは，このシステムの外にあるものとして描く．
+1. `01-context.md`：利用者・`triage`・判断エンジン(Ollama)の関係を`C4Context`の図で描く．
+2. `02-container.md`：`triage`の実行ファイルと，Ollamaを`C4Container`の図で描く．Ollamaは，このシステムの外にあるものとして描く．
 3. `03-component.md`：`src/`の3つのモジュール(`main`・`app`・`refund`)と，SDK(`@typesafe-ai/sdk`)と，その依存関係を`C4Component`の図で描く．型だけを`import`する依存も矢印にする．
 4. `04-code.md`：次の2つを描く．
    - 型と関数の流れ：コマンドライン引数(`string[]`)から`RunResult`まで，どの型をどの関数で変換していくか．引数が足りないときの流れも描く．
@@ -193,7 +193,7 @@ usage: triage "<subject>" "<body>"
 1. 自分の`TESTLIST.md`と，解答例の[TESTLIST.md](../../solution/TESTLIST.md)を比べる．自分にだけある項目，解答例にだけある項目はそれぞれどれか．それはなぜか．
 2. `formatRefund`に「しきい値を`>`で比べている(0.5ちょうどが`no`になる)」という誤りがあったとする．単体テストと結合テストのどちらで見つかるか．
 3. 結合テストで，本物の判断エンジンではなく偽の`fetch`を使った．偽の`fetch`では確かめられないことは何か．それはどうやって確かめるか．
-4. 判断エンジンのURL(`http://laya:8080`)を知っているモジュールはどれか．`run`がURLを知らないことには，どんな利点があるか．
+4. 判断エンジンのURL(`http://ollama:11434`)を知っているモジュールはどれか．`run`がURLを知らないことには，どんな利点があるか．
 5. 設計書と実装を見比べる．実装してみて，設計書と違う形になったところはあるか．あれば，設計書を実装に合わせて直す．
 
 ## 演習0-7(発展)：迷っているときは「unsure」と表示する
@@ -202,8 +202,8 @@ usage: triage "<subject>" "<body>"
 確率が0.4以上0.6未満なら，`yes`・`no`の代わりに`unsure`と表示する．
 
 ```console
-$ pnpm start "Order" "The product arrived broken."
-refund: unsure (0.57)
+$ pnpm start "Order" "My package arrived late and the box was crushed."
+refund: unsure (0.43)
 ```
 
 1. テストリストに項目を足す．既存のテストのうち，期待値が変わるものも探して「〜に変える」という項目にする．

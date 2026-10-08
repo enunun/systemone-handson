@@ -8,7 +8,7 @@
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-refund: yes (0.86)
+refund: yes (0.81)
 ```
 
 作りながら，System Oneの考え方と`/v1/systemone`のAPI，TypeSafeのSDK，Vitestでのテストの書き方，mermaidでの設計書の書き方を学ぶ．

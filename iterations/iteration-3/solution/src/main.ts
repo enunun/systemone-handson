@@ -1,4 +1,4 @@
-// triageの実行ファイル．判断エンジン(laya-server)につなぐアダプタを作り，runの結果を表示する．
+// triageの実行ファイル．判断エンジン(Ollama)につなぐアダプタを作り，runの結果を表示する．
 
 import { TypeSafeClient } from "@typesafe-ai/sdk";
 import { createSystemOneEngine } from "./adapters/systemone-engine.ts";
@@ -7,7 +7,7 @@ import { createSystemOneEngine } from "./adapters/systemone-engine.ts";
 // 発展(演習3-7)ここまで
 import { run } from "./app.ts";
 
-const client = new TypeSafeClient({ baseURL: "http://laya:8080", apiKey: "local", defaultModel: "laya" });
+const client = new TypeSafeClient({ baseURL: "http://ollama:11434", apiKey: "ollama", defaultModel: "tev1:0.8b" });
 // 発展(演習3-7)：アダプタを重ねて，問い合わせにかかった時間を標準エラー出力に書く
 // const { code, output } = await run(process.argv.slice(2), createTimingEngine(createSystemOneEngine(client)));
 // 発展(演習3-7)ここまで．次の1行の代わりに使う

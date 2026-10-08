@@ -5,9 +5,9 @@ Iteration 3の演習用パッケージ([../exercise/](../exercise/))を完成さ
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 ## 見どころ

@@ -4,11 +4,11 @@ Iteration 1の演習用パッケージ([../exercise/](../exercise/))を完成さ
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-refund: yes (0.86)
+department: billing (0.82)
+refund: yes (0.61)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-department: support (0.84)
-refund: no (0.08)
+department: support (1.00)
+refund: no (0.16)
 ```
 
 ## 見どころ

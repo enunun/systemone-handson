@@ -59,7 +59,7 @@ Iteration 2で`triage`が`?? 0`で取り出していた値を，アダプタで�
 // test/unit/adapters/systemone-engine.test.ts
 const engineWith = (answers: object, requests: unknown[] = []) =>
   createSystemOneEngine(
-    new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch(answers, requests) }),
+    new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch(answers, requests) }),
   );
 
 describe("createSystemOneEngine", () => {
@@ -268,7 +268,7 @@ src/app.ts(19,55): error TS2345: Argument of type 'TypeSafeClient' is not assign
 
 ```ts
 // src/main.ts
-const client = new TypeSafeClient({ baseURL: "http://laya:8080", apiKey: "local", defaultModel: "laya" });
+const client = new TypeSafeClient({ baseURL: "http://ollama:11434", apiKey: "ollama", defaultModel: "tev1:0.8b" });
 const { code, output } = await run(process.argv.slice(2), createSystemOneEngine(client));
 ```
 
@@ -278,7 +278,7 @@ const { code, output } = await run(process.argv.slice(2), createSystemOneEngine(
 // 本物と同じアダプタに，偽のfetchを持つクライアントを渡す．
 const engineWith = (requests: unknown[] = []) =>
   createSystemOneEngine(
-    new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch(requests) }),
+    new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch(requests) }),
   );
 ```
 
@@ -289,9 +289,9 @@ $ pnpm test
  Test Files  5 passed (5)
       Tests  18 passed (18)
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 ## 演習3-6：振り返る
@@ -325,10 +325,10 @@ export const createTimingEngine = (engine: DecisionEngine, log = (line: string) 
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-decide: 3 questions in 654 ms
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+decide: 3 questions in 1009 ms
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 `createTimingEngine`は，`DecisionEngine`を受け取って`DecisionEngine`を返す．

@@ -17,7 +17,7 @@ Prefix every shell command with `rtk`, including each command in an `&&` chain �
 - Solutions run without the advanced exercise (N-7). Its code and tests live in the solution as `// 発展(演習N-7)` comment blocks, and its new files under `advanced/` (see "発展課題" in `COURSE.md`). `tools/check-advanced.mjs` type-checks and tests the version with them applied, and checks the carry-over to the next exercise.
 - Design documents are mermaid diagrams (`design/01-context.md` to `05-sequence.md`; see `docs/design.md`). Arrows in the Component diagram must match the implementation's `import`s (`tools/check-component.mjs` checks solutions).
 - TypeScript runs without a build step (Node type stripping): use only erasable syntax and add `.ts` to relative imports.
-- No test may use laya-server or the model. Output shown in the material must come from real runs against laya-server.
+- No test may use Ollama or the model. Output shown in the material must come from real runs against Ollama with `tev1:0.8b`.
 - Write prose in the plain style (である調) with `，` and `．`; textlint checks it.
 - `git commit` runs lefthook hooks. If they fail, fix the reported issues. Do not use `--no-verify`.
 - After making changes, run `mise run check`.
@@ -33,11 +33,10 @@ docs/
   tdd.md       Test-driven development and test lists.
   design.md    How to write the design documents (C4 model, sequence diagram, mermaid).
   systemone/   Per-Iteration notes on System One concepts, APIs and tools.
-infra/laya-server/  Jev-compatible HTTP server (POST /v1/systemone) running Laya on CPU. Provided finished.
 tools/mermaid/      Checks the syntax of mermaid diagrams in Markdown.
 tools/check-component.mjs  Compares Component diagrams with imports.
 tools/check-advanced.mjs   Checks the advanced-exercise comments and the carry-over to the next exercise.
-.devcontainer/      Dev container; compose.yml also starts laya-server as `laya`.
+.devcontainer/      Dev container; compose.yml also starts Ollama (POST /v1/systemone, model `tev1:0.8b`) as `ollama`.
 ```
 
 # Artifact Cleanup

@@ -10,11 +10,11 @@ C4Container
     Container(cli, "triage", "Node.jsのプログラム(TypeScript)", "引数を読み，判断エンジンに問い合わせて，振り分けの結果を標準出力に表示する")
     ContainerDb(env, ".env", "環境変数の定義", "判断エンジンの種類・URL・モデル名・APIキー")
   }
-  Container_Ext(laya, "laya-server", "Node.js，Laya", "http://laya:8080．POST /v1/systemoneで質問に答える")
+  Container_Ext(ollama, "Ollama", "Ollama，Tev1", "http://ollama:11434．POST /v1/systemoneで質問に答える")
   Container_Ext(jev, "TypeSafe Jev", "Web API", "https://api.typesafe.ai．POST /v1/systemoneで質問に答える")
   Rel(user, cli, "件名と本文を引数で渡す")
   Rel(cli, env, "起動時に読む", "node --env-file-if-exists")
-  Rel(cli, laya, "POST /v1/systemone", "HTTP，JSON")
+  Rel(cli, ollama, "POST /v1/systemone", "HTTP，JSON")
   Rel(cli, jev, "POST /v1/systemone", "HTTPS，JSON")
 ```
 

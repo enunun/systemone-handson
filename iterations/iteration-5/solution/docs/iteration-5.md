@@ -6,7 +6,7 @@
 
 Iteration 4の26のテストが通る．
 
-接続先は，`src/main.ts`の`new TypeSafeClient({ baseURL: "http://laya:8080", apiKey: "local", defaultModel: "laya" })`に書かれている．
+接続先は，`src/main.ts`の`new TypeSafeClient({ baseURL: "http://ollama:11434", apiKey: "ollama", defaultModel: "tev1:0.8b" })`に書かれている．
 本家Jevに替えるには，この3つの値を書き換えることになる．
 書き換えたコードはGitに入るので，APIキーも一緒に入ってしまう．
 
@@ -64,13 +64,13 @@ Componentの図では，`main`から出る矢印がもっとも多い．
 最初のテストは，3つの環境変数がそろっている場合である．
 
 ```ts
-const laya = { SYSTEMONE_BASE_URL: "http://laya:8080", SYSTEMONE_MODEL: "laya", SYSTEMONE_API_KEY: "local" };
+const ollama = { SYSTEMONE_BASE_URL: "http://ollama:11434", SYSTEMONE_MODEL: "tev1:0.8b", SYSTEMONE_API_KEY: "ollama" };
 
 describe("loadConfig", () => {
   test("3つの環境変数から，/v1/systemoneの判断エンジンにつなぐ設定を作る", () => {
-    expect(loadConfig(laya)).toEqual({
+    expect(loadConfig(ollama)).toEqual({
       ok: true,
-      config: { engine: "systemone", baseURL: "http://laya:8080", model: "laya", apiKey: "local" },
+      config: { engine: "systemone", baseURL: "http://ollama:11434", model: "tev1:0.8b", apiKey: "ollama" },
     });
   });
 });
@@ -80,7 +80,7 @@ describe("loadConfig", () => {
 
 ```ts
   test("足りない環境変数があれば，その名前を並べたメッセージを返す", () => {
-    expect(loadConfig({ SYSTEMONE_MODEL: "laya" })).toEqual({
+    expect(loadConfig({ SYSTEMONE_MODEL: "tev1:0.8b" })).toEqual({
       ok: false,
       message: "missing environment variables: SYSTEMONE_BASE_URL, SYSTEMONE_API_KEY",
     });
@@ -100,7 +100,7 @@ AssertionError: expected { ok: true, config: { …(4) } } to deeply equal { ok: 
 +     "apiKey": "",
 +     "baseURL": "",
 +     "engine": "systemone",
-+     "model": "laya",
++     "model": "tev1:0.8b",
 +   },
 +   "ok": true,
   }
@@ -180,9 +180,9 @@ $ pnpm start "Refund not received" "Where is my refund?"
 missing environment variables: SYSTEMONE_BASE_URL, SYSTEMONE_MODEL, SYSTEMONE_API_KEY
 $ cp .env.example .env
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 $ DECISION_ENGINE=fake pnpm start "Refund not received" "Where is my refund?"
 department: support (1.00)
 urgency: not urgent (0.0)
@@ -193,7 +193,7 @@ refund: no (0.00)
 
 1. `main`の振る舞いを，単体テストの項目として書いた場合は，それをどう確かめたかを振り返る．解答例では，`main`に残す処理を小さくし，手で確かめる項目にした．
 2. `.env`の3行を書き換えるだけでよい．コードは変えない．APIキーは`.env`にだけ書き，Gitに入れない．
-3. 判断エンジンを起動していないときや，表示の書式だけを確かめたいときに，決まった答えで動かせる．laya-serverのモデルのダウンロードを待たずに，プログラムの流れを確かめられる．
+3. 判断エンジンを起動していないときや，表示の書式だけを確かめたいときに，決まった答えで動かせる．Ollamaのモデルのダウンロードを待たずに，プログラムの流れを確かめられる．
 4. 変わらない．`run`は`DecisionEngine`を受け取るので，どこから判断エンジンを作ったかを知らない．
 5. 解答例は設計書どおりに実装できた．Componentの図の`main`からの矢印が増えたのは，設計のとおりである．
 

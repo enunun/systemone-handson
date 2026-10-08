@@ -5,24 +5,24 @@ TypeScriptを読み書きでき，大規模言語モデルのAPIを使ったこ�
 
 ## このハンズオンで作るもの
 
-問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から8までの9回に分けて少しずつ育てる．
+問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から10までの11回に分けて少しずつ育てる．
 最初は「返金を求めているか」を判定するだけのプログラムから始め，担当部署・緊急度の判定，人の確認への振り分け，まとめての処理，精度の評価，HTTP APIを足していく．
 完成すると，次のように使える．
 
 ```console
 $ triage "Refund not received" "I cancelled two weeks ago and still have no refund."
-department: billing (0.69)
-urgency: somewhat urgent (1.1)
-refund: yes (0.87)
+department: billing (0.87)
+urgency: urgent (1.6)
+refund: yes (0.83)
 $ triage batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 $ triage serve --port 3000
 listening on http://localhost:3000
 ```
 
 判断は，TypeSafe AIのJevと同じHTTP APIを持つサーバに任せる．
-学習中は，OSSのモデル[Laya](https://github.com/NandhaKishorM/laya)を手元のCPUで動かすサーバ(`infra/laya-server`)を使う．
+学習中は，[Ollama](https://ollama.com/)で，System OneのモデルTev1の0.8B版([`tev1:0.8b`](https://ollama.com/library/tev1))を手元のCPUで動かす．
 作りながら，System Oneの質問の種類(yes/no・選択・段階評価)，確率と確信度，ポートとアダプタによる判断エンジンの切り離し，評価の仕方を学ぶ．
 あわせて，テストリストと設計書を書いてから実装する進め方を身に付ける．
 
@@ -55,6 +55,8 @@ listening on http://localhost:3000
 | [6](iterations/iteration-6/exercise/) | ファイルの問い合わせをまとめて振り分ける | ファイルの読み込み，JSON Lines，サブコマンド，同時に送る数の制限 |
 | [7](iterations/iteration-7/exercise/) | ラベル付きデータで精度を測る | 評価，混同行列，しきい値と人の確認に回る割合の関係 |
 | [8](iterations/iteration-8/exercise/) | 振り分けをHTTP APIで公開する | `node:http`，入口側のアダプタ |
+| [9](iterations/iteration-9/exercise/) | 評価の記録を残し，指標で読む | 調整用と確かめ用のデータ，適合率・再現率，Brierスコア |
+| [10](iterations/iteration-10/exercise/) | 2つの設定を比べ，確信度の較正を確かめる | 対応のある比較，確信度の較正，精度と速さの引き換え |
 
 各Iterationの目的と内容は[docs/ROADMAP.md](docs/ROADMAP.md)にまとめている．
 
@@ -99,7 +101,6 @@ docs/
   tdd.md           テスト駆動開発とテストリストの書き方
   design.md        設計書の書き方(C4モデルとmermaid)
   systemone/       Iterationごとの，System Oneの概念・API・ツールの資料
-infra/laya-server/ 判断を下すサーバ(完成品．演習では手を加えない)
 tools/             設計書のmermaidの図の検査と，Componentの図と実装の照合
 ```
 
@@ -111,19 +112,18 @@ VSCodeの[Dev Containers](https://containers.dev/)で開発する．
 2. Dockerを起動した状態で，このリポジトリをVSCodeで開く．
 3. コマンドパレットから「Dev Containers: Reopen in Container」を実行する．
 
-開発用のコンテナと並んで，判断を下すサーバ(`laya`)のコンテナが起動する．
-開発用のコンテナからは，`http://laya:8080`で呼べる．
-`laya`は，初回の起動時にモデル(約1.7GB)をHugging Faceからダウンロードし，Dockerのボリュームに保存する．
-ダウンロードの進み具合は，10秒ごとに`laya`コンテナのログへ出る．
-ダウンロードと読み込みが終わるまでは，問い合わせに503を返す．
+開発用のコンテナと並んで，判断を下すサーバ(`ollama`)のコンテナが起動する．
+開発用のコンテナからは，`http://ollama:11434`で呼べる．
+`ollama`は，初回の起動時にモデル`tev1:0.8b`(約800MB)をダウンロードし，Dockerのボリュームに保存する．
+ダウンロードの進み具合は，`ollama`コンテナのログに出る．
 準備ができたかは，開発用のコンテナで次のコマンドを実行して確かめる．
 
 ```sh
-curl http://laya:8080/healthz
+curl http://ollama:11434/v1/models
 ```
 
-`{"status":"ok"}`と表示されれば準備ができている．
-LayaはCPUで動く．3つの質問への回答は0.5秒ほどで返り，メモリは2GBほど使う．
+一覧に`tev1:0.8b`があれば準備ができている．
+Tev1の0.8B版はCPUで動く．3つの質問への回答は1秒ほどで返り，メモリは1GBほど使う．
 
 コンテナには次のツールが入っている．版はすべて`mise.toml`で決めている．
 
@@ -156,5 +156,5 @@ mise run check   # lintとtestをまとめて実行する(教材を直したと�
 ## ライセンス
 
 - このリポジトリ：MIT
-- Laya(モデルの重み)：Apache 2.0(Convai Innovations)
-- `@receptron/laya`，`@typesafe-ai/sdk`：MIT
+- Tev1(モデルの重み)：Apache 2.0(Together AI)
+- Ollama，`@typesafe-ai/sdk`：MIT

@@ -15,7 +15,7 @@ listening on http://localhost:3000
 
 ```console
 $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "Where is my refund?"}'
-{"department":"billing","departmentProbability":0.7253,"departmentConfidence":0.318,"needsReview":false,"urgency":1.4061,"refundProbability":0.8631}
+{"department":"billing","departmentProbability":0.8736835530882852,"departmentConfidence":0.653906619759055,"needsReview":false,"urgency":1.2259161755022923,"refundProbability":0.5204658538893784}
 ```
 
 作りながら，`node:http`でのHTTPサーバ，入力の検証とステータスコード，入口側と出口側のアダプタ，HTTPサーバの結合テストを学ぶ．

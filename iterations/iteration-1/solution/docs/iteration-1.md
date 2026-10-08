@@ -12,7 +12,7 @@ $ pnpm test
       Tests  6 passed (6)
 ```
 
-プログラムを実行すると，Iteration 0と同じく`refund: yes (0.86)`だけが表示される．
+プログラムを実行すると，Iteration 0と同じく`refund: yes (0.81)`だけが表示される．
 
 ## 演習1-2：choiceの質問を試す
 
@@ -20,16 +20,18 @@ $ pnpm test
 
 | 問い合わせ | 説明文 | 選ばれた部署 | `probabilities` | `confidence` |
 | --- | --- | --- | --- | --- |
-| `Refund not received`・`Where is my refund?` | あり | billing | billing 0.7253，support 0.1994，sales 0.0753 | 0.318 |
-| 同上 | なし | billing | billing 0.5122，support 0.3877，sales 0.1001 | 0.144 |
-| `Login problem`・`I cannot log in since yesterday.` | あり | support | billing 0.0745，support 0.8427，sales 0.0828 | 0.5048 |
-| 同上 | なし | support | billing 0.0447，support 0.9103，sales 0.045 | 0.6686 |
-| `Hello`・`I have a question about my account.` | あり | support | billing 0.2407，support 0.5877，sales 0.1717 | 0.1283 |
+| `Refund not received`・`Where is my refund?` | あり | billing | billing 0.9365，support 0.0633，sales 0.0002 | 0.7838 |
+| 同上 | なし | support | billing 0.3498，support 0.6482，sales 0.002 | 0.3986 |
+| `Login problem`・`I cannot log in since yesterday.` | あり | support | billing 0.0016，support 0.9976，sales 0.0008 | 0.9834 |
+| 同上 | なし | support | billing 0.0032，support 0.9957，sales 0.0011 | 0.9727 |
+| `Discount`・`Do you offer a discount for non-profit organizations?` | あり | support | billing 0.1953，support 0.5576，sales 0.2471 | 0.0987 |
 
-- 返金の問い合わせでは，説明文を外すと`billing`の確率が下がった．「refunds」が`billing`の説明にあることが手がかりになっていた．
-- ログインの問い合わせでは，説明文を外しても`support`が選ばれ，確率はむしろ上がった．説明文は，いつも確率を上げるものではない．ラベルの名前だけで十分に伝わる場合もある．
-- 手順4では，`department`と`refund`のどちらにも，1つずつ送ったときと同じ答えが返る．
-- 手順5の`Hello`は，確率が分散し，`confidence`も低い．どの部署とも言い切れない問い合わせでは，こうなる．Iteration 4では，この`confidence`を使って人の確認に回す．
+確率は小数第4位に丸めた．
+
+- 返金の問い合わせでは，説明文を外すと`billing`の確率が下がり，`support`が選ばれた．「refunds」が`billing`の説明にあることが手がかりになっていた．
+- ログインの問い合わせでは，説明文を外しても`support`が選ばれ，確率もほとんど変わらなかった．ラベルの名前だけで十分に伝わる場合もある．
+- 手順4では，`department`は`billing`(0.8162)，`refund`は0.6122になる．選ばれる部署と，返金を求めているかの判断は変わらないが，確率は1つずつ送ったとき(0.9365と0.8091)より下がる．Tev1の答えは，一緒に尋ねる質問によって変わることがある．
+- 手順5の`Discount`は，確率が分散し，`confidence`も低い．しかも，正しい部署(sales)は選ばれていない．どの部署とも言い切れない問い合わせでは，こうなる．Iteration 4では，この`confidence`を使って人の確認に回す．
 
 ## 演習1-3：テストリストを書く
 
@@ -162,7 +164,7 @@ const answers = {
 
 const fakeFetch = (requests: unknown[]) => async (_url: string, init?: RequestInit) => {
   requests.push(JSON.parse(String(init?.body)));
-  return Response.json({ model: "laya", answers, usage: { input_tokens: 120, output_tokens: 0 } });
+  return Response.json({ model: "tev1:0.8b", answers, usage: { input_tokens: 120, output_tokens: 0 } });
 };
 ```
 
@@ -242,14 +244,14 @@ $ pnpm test
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-refund: yes (0.86)
+department: billing (0.82)
+refund: yes (0.61)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-department: support (0.84)
-refund: no (0.08)
+department: support (1.00)
+refund: no (0.16)
 $ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44)
-refund: no (0.07)
+department: sales (0.98)
+refund: no (0.06)
 ```
 
 ## 演習1-6：振り返る
@@ -279,11 +281,11 @@ export const formatDepartment = (answer: ChoiceResponse): string => {
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73, next: support 0.20)
-refund: yes (0.86)
-$ pnpm start "Hello" "I have a question about my account."
-department: support (0.59, next: billing 0.24)
-refund: no (0.10)
+department: billing (0.82, next: support 0.18)
+refund: yes (0.61)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.56, next: sales 0.27)
+refund: no (0.33)
 ```
 
 `toSorted`は，元の配列を変えずに，並べ替えた新しい配列を返す．

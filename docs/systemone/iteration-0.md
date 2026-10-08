@@ -20,16 +20,17 @@ System Oneは，文章を生成せず，あらかじめ決めた形の答えを�
 問い合わせの振り分けのように，「どれにあてはまるか」「はいか，いいえか」を大量にすばやく決めたい処理は，System Oneに向いている．
 文章を書く・要約する・理由を説明するといった処理は，LLMに向いている．
 
-このハンズオンでは，TypeSafe AIのJevと同じAPIを持つサーバ`laya-server`を使う．
-`laya-server`は，OSSのモデルLayaをCPUで動かす．
+このハンズオンでは，TypeSafe AIのJevと同じAPIを持つ[Ollama](https://ollama.com/)を使う．
+Ollamaは，手元のCPUでモデルを動かすサーバである．モデルには，Together AIのSystem Oneのモデル`tev1:0.8b`(Tev1の0.8B版．約800MB)を使う．
 
 ## `/v1/systemone`：質問を送って答えを受け取る
 
 判断エンジンには，HTTPの`POST /v1/systemone`で問い合わせる．
-リクエストの本文は，判断の材料(`state`)と，名前を付けた質問(`questions`)のJSONである．
+リクエストの本文は，使うモデルの名前(`model`)と，判断の材料(`state`)と，名前を付けた質問(`questions`)のJSONである．
 
 ```json
 {
+  "model": "tev1:0.8b",
   "state": { "subject": "Refund not received", "body": "Where is my refund?" },
   "questions": {
     "refund": { "type": "noul", "instructions": "Is the customer asking for a refund?" }
@@ -37,6 +38,7 @@ System Oneは，文章を生成せず，あらかじめ決めた形の答えを�
 }
 ```
 
+- `model`は，Ollamaに入れたモデルの名前である．
 - `state`は，文字列でもJSONのオブジェクトでもよい．
 - `questions`のキー(ここでは`refund`)は，答えを取り出すときの名前になる．自分で好きな名前を付ける．
 - `type`は質問の種類である．このIterationでは`noul`(はい・いいえ)を使う．ほかの種類は，後のIterationで使う．
@@ -45,42 +47,44 @@ System Oneは，文章を生成せず，あらかじめ決めた形の答えを�
 devcontainerの中で，curlで問い合わせてみる．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d '{"state": {"subject": "Refund not received", "body": "Where is my refund?"}, "questions": {"refund": {"type": "noul", "instructions": "Is the customer asking for a refund?"}}}'
-{"model":"laya","answers":{"refund":{"type":"noul","noul":0.8631}},"usage":{"input_tokens":53,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d '{"model": "tev1:0.8b", "state": {"subject": "Refund not received", "body": "Where is my refund?"}, "questions": {"refund": {"type": "noul", "instructions": "Is the customer asking for a refund?"}}}'
+{"model":"tev1:0.8b","answers":{"refund":{"type":"noul","noul":0.8090922107684615}},"usage":{"input_tokens":138,"output_tokens":1}}
 ```
 
 レスポンスの`answers`に，質問の名前ごとの答えが入る．
 `noul`の質問の答えは，「はい」である確率(0から1)である．
-`usage`は，読んだトークンの数である．文章を生成しないので，`output_tokens`は0になる．
+`usage`は，読んだトークン(`input_tokens`)と，答えを決めるために使ったトークン(`output_tokens`)の数である．文章を生成しないので，`output_tokens`は質問ごとに数個で済む．
 
 同じリクエストを何度送っても，同じ確率が返る．
 問い合わせの内容を変えると，確率が変わる．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d '{"state": {"subject": "Login problem", "body": "I cannot log in since yesterday."}, "questions": {"refund": {"type": "noul", "instructions": "Is the customer asking for a refund?"}}}'
-{"model":"laya","answers":{"refund":{"type":"noul","noul":0.079}},"usage":{"input_tokens":53,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d '{"model": "tev1:0.8b", "state": {"subject": "Login problem", "body": "I cannot log in since yesterday."}, "questions": {"refund": {"type": "noul", "instructions": "Is the customer asking for a refund?"}}}'
+{"model":"tev1:0.8b","answers":{"refund":{"type":"noul","noul":0.1440886316110138}},"usage":{"input_tokens":137,"output_tokens":1}}
 ```
 
 1回のリクエストで，複数の質問をまとめて尋ねられる．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d '{"state": {"subject": "Login problem", "body": "I cannot log in since yesterday."}, "questions": {"refund": {"type": "noul", "instructions": "Is the customer asking for a refund?"}, "angry": {"type": "noul", "instructions": "Is the customer angry?"}}}'
-{"model":"laya","answers":{"refund":{"type":"noul","noul":0.079},"angry":{"type":"noul","noul":0.1447}},"usage":{"input_tokens":103,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d '{"model": "tev1:0.8b", "state": {"subject": "Login problem", "body": "I cannot log in since yesterday."}, "questions": {"refund": {"type": "noul", "instructions": "Is the customer asking for a refund?"}, "angry": {"type": "noul", "instructions": "Is the customer angry?"}}}'
+{"model":"tev1:0.8b","answers":{"refund":{"type":"noul","noul":0.11976156770903792},"angry":{"type":"noul","noul":0.5630101063694293}},"usage":{"input_tokens":383,"output_tokens":3}}
 ```
+
+`refund`だけを尋ねたときと，`refund`の確率が少し違う．Tev1の答えは，一緒に尋ねる質問によって少し変わることがある．同じ質問の組み合わせなら，何度送っても同じ確率が返る．
 
 質問がないなど，リクエストが誤っていると，エラーを返す．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d '{"state": "Where is my refund?", "questions": {}}'
-{"error":{"message":"questions: at least one question is required"}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d '{"model": "tev1:0.8b", "state": "Where is my refund?", "questions": {}}'
+{"error":"questions must contain 1–64 fields"}
 ```
 
-`laya-server`は，モデルの読み込みが終わるまで，問い合わせに503を返す．
-準備ができたかは，`GET /healthz`で確かめる．
+Ollamaは，devcontainerを初めて開いたときにモデルをダウンロードする．
+モデルが使えるようになったかは，`GET /v1/models`で確かめる．一覧に`tev1:0.8b`があれば，問い合わせられる．
 
 ```console
-$ curl -s http://laya:8080/healthz
-{"status":"ok"}
+$ curl -s http://ollama:11434/v1/models
+{"object":"list","data":[{"id":"tev1:0.8b","object":"model","created":1791429834,"owned_by":"library"}]}
 ```
 
 ## TypeSafeのSDK
@@ -91,19 +95,19 @@ SDKは，リクエストを組み立て，レスポンスを型の付いた値�
 ```ts
 import { TypeSafeClient } from "@typesafe-ai/sdk";
 
-const client = new TypeSafeClient({ baseURL: "http://laya:8080", apiKey: "local", defaultModel: "laya" });
+const client = new TypeSafeClient({ baseURL: "http://ollama:11434", apiKey: "ollama", defaultModel: "tev1:0.8b" });
 
 const result = await client.systemOne({
   state: { subject: "Login problem", body: "I cannot log in since yesterday." },
   questions: { angry: { type: "noul", instructions: "Is the customer angry?" } },
 });
-console.log(result.answers.angry.noul); // 0.1447
+console.log(result.answers.angry.noul); // 0.6484420177215527
 ```
 
 - `new TypeSafeClient(設定)`でクライアントを作る．
   - `baseURL`：判断エンジンのURL．省略すると本家Jev(`https://api.typesafe.ai`)になる．
-  - `apiKey`：APIキー．`laya-server`は検査しないので，何でもよい．
-  - `defaultModel`：モデルの名前．`laya-server`は何を指定しても`laya`で答える．
+  - `apiKey`：APIキー．Ollamaは検査しないので，何でもよい．このハンズオンでは`ollama`にする．
+  - `defaultModel`：モデルの名前．SDKは，これをリクエストの`model`に入れる．
 - `client.systemOne({ state, questions })`は，答えを`Promise`で返す．`await`で待つ．
 - `result.answers.<質問の名前>`で，その質問の答えを取り出す．答えの型は質問の種類から決まる．`noul`の質問なら，答えは`{ type: "noul", noul: number }`である．
 - 質問の型もSDKにある．`noul`の質問は`NoulQuestion`型である．型だけを使うときは`import type { NoulQuestion } from "@typesafe-ai/sdk"`と書く．
@@ -174,13 +178,13 @@ import { TypeSafeClient } from "@typesafe-ai/sdk";
 const fakeFetch = async (_url: string, init?: RequestInit) => {
   console.log(init?.body); // SDKが送ろうとしたリクエストの本文(JSONの文字列)
   return Response.json({
-    model: "laya",
+    model: "tev1:0.8b",
     answers: { angry: { type: "noul", noul: 0.9 } },
     usage: { input_tokens: 10, output_tokens: 0 },
   });
 };
 
-const client = new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch });
+const client = new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch });
 ```
 
 - `Response.json(値)`は，値をJSONにしたレスポンスを作る．

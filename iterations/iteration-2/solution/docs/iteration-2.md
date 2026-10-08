@@ -14,10 +14,10 @@ $ pnpm test
 
 ## 演習2-2：scoreの質問を試す
 
-1. `Refund not received`の問い合わせの答えは，`probabilities`が`{"0":0.2147,"1":0.2574,"2":0.4349,"3":0.093}`，`score`が1.4061である．手で計算すると`0×0.2147 + 1×0.2574 + 2×0.4349 + 3×0.093 = 1.4062`で，丸めの誤差を除いて一致する．
-2. `Production down`の問い合わせでは，`probabilities`が`{"0":0.0077,"1":0.0631,"2":0.4122,"3":0.5171}`，`score`が2.4387になった．高い段階に確率が集まり，期待値も上がる．
-3. `Refund not received`では，もっとも確率の高い段階は2(urgent)だが，期待値を四捨五入すると1(somewhat urgent)になる．`Production down`では，もっとも確率の高い段階は3(critical)だが，期待値を四捨五入すると2(urgent)になる．どちらも，確率が低い段階にも分かれているので，期待値はもっとも確率の高い段階より低くなった．
-4. 2段階にすると，`probabilities`が`{"0":0.2513,"1":0.7487}`，`score`が0.7487になる．2段階の期待値は，`0×(lowの確率) + 1×(highの確率)`なので，highの確率と同じになる．
+1. `Refund not received`の問い合わせの答えは，小数第4位に丸めると`probabilities`が`{"0":0.182,"1":0.2903,"2":0.3939,"3":0.1338}`，`score`が1.4796である．手で計算すると`0×0.182 + 1×0.2903 + 2×0.3939 + 3×0.1338 = 1.4795`で，丸めの誤差を除いて一致する．
+2. `Production down`の問い合わせでは，`probabilities`が`{"0":0.0061,"1":0.013,"2":0.6127,"3":0.3683}`，`score`が2.3432になった．高い段階に確率が集まり，期待値も上がる．
+3. `Refund not received`では，もっとも確率の高い段階は2(urgent)だが，期待値を四捨五入すると1(somewhat urgent)になる．not urgentとsomewhat urgentにも確率が分かれているので，期待値はもっとも確率の高い段階より低くなった．`Production down`では，どちらも2(urgent)で一致する．
+4. 2段階にすると，小数第4位に丸めて`probabilities`が`{"0":0.21,"1":0.79}`，`score`が0.79になる．2段階の期待値は，`0×(lowの確率) + 1×(highの確率)`なので，highの確率と同じになる．
 
 ## 演習2-3：テストリストを書く
 
@@ -81,7 +81,7 @@ Iteration 1からの変更は次のとおりである．
    ```ts
    const fakeFetch = (answers: object, requests: unknown[]) => async (_url: string, init?: RequestInit) => {
      requests.push(JSON.parse(String(init?.body)));
-     return Response.json({ model: "laya", answers, usage: { input_tokens: 120, output_tokens: 0 } });
+     return Response.json({ model: "tev1:0.8b", answers, usage: { input_tokens: 120, output_tokens: 0 } });
    };
    ```
 
@@ -248,17 +248,17 @@ $ pnpm test
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-department: support (0.84)
+department: support (1.00)
 urgency: urgent (1.6)
-refund: no (0.08)
+refund: no (0.11)
 $ pnpm start "Production down" "Since the last update the app crashes on login. Our whole company cannot work."
-department: support (0.82)
-urgency: urgent (2.4)
-refund: no (0.05)
+department: support (1.00)
+urgency: urgent (2.3)
+refund: no (0.27)
 ```
 
 ## 演習2-6：振り返る
@@ -299,14 +299,14 @@ export const formatUrgency = (score: number, mostLikely: number): string => {
 ```
 
 ```console
-$ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4, most likely: urgent)
-refund: yes (0.86)
+$ pnpm start "Login problem" "I cannot log in since yesterday."
+department: support (1.00)
+urgency: urgent (1.6, most likely: somewhat urgent)
+refund: no (0.11)
 $ pnpm start "Production down" "Since the last update the app crashes on login. Our whole company cannot work."
-department: support (0.82)
-urgency: urgent (2.4, most likely: critical)
-refund: no (0.05)
+department: support (1.00)
+urgency: urgent (2.3, most likely: urgent)
+refund: no (0.27)
 ```
 
 `probabilities`のキーは文字列(`"0"`〜`"3"`)なので，`Number`で番号に戻す．

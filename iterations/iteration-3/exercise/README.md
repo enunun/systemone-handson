@@ -11,9 +11,9 @@ TypeSafeのSDKを使う部分と，テストで使う偽物を，それぞれア
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 作りながら，ポートとアダプタ，依存性の逆転，テストダブル(stub・fake)の使い分けを学ぶ．

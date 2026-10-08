@@ -11,7 +11,7 @@ sequenceDiagram
   participant format as format
   participant adapter as systemone-engine
   participant client as TypeSafeClient
-  participant engine as laya-server・Jev
+  participant engine as Ollama・Jev
   user->>main: triage "Refund not received" "Where is my refund?"
   main->>main: loadConfig(process.env)
   alt 設定が足りない

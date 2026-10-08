@@ -24,14 +24,14 @@ const answersWith = (departmentConfidence: number) => ({
 // 判断エンジンの代わりに，決まった答えを返すfetch．受け取ったリクエストの本文をrequestsに記録する．
 const fakeFetch = (answers: object, requests: unknown[]) => async (_url: string, init?: RequestInit) => {
   requests.push(JSON.parse(String(init?.body)));
-  return Response.json({ model: "laya", answers, usage: { input_tokens: 150, output_tokens: 0 } });
+  return Response.json({ model: "tev1:0.8b", answers, usage: { input_tokens: 150, output_tokens: 0 } });
 };
 
 // 本物と同じアダプタに，偽のfetchを持つクライアントを渡す．
 const engineWith = (departmentConfidence = 0.318, requests: unknown[] = []) =>
   createSystemOneEngine(
     new TypeSafeClient({
-      baseURL: "http://laya.test",
+      baseURL: "http://ollama.test",
       apiKey: "test",
       fetch: fakeFetch(answersWith(departmentConfidence), requests),
     }),

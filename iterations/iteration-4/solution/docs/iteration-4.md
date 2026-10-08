@@ -9,42 +9,45 @@ Iteration 3の18のテストが通る．
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
-$ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44)
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53)
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
 ```
 
-部署の確率だけを見ると，0.73の`Refund not received`のほうが信用できそうに見える．
-ただし，0.44が「3つのうちでは明らかに高い」のか「ほかとほとんど変わらない」のかは，確率1つからはわからない．
+部署の確率だけを見ると，0.87の`Refund not received`のほうが信用できそうに見える．
+ただし，0.53が「3つのうちでは明らかに高い」のか「ほかとほとんど変わらない」のかは，確率1つからはわからない．
+なお，非営利団体向けの割引の問い合わせなので，正しい部署はsalesである．
 
 ## 演習4-2：確信度を調べる
 
-1. `Team plan`の答えは，`probabilities`が`{"billing":0.2642,"support":0.2963,"sales":0.4394}`，`confidence`が0.0229である．salesがもっとも高いが，ほかの2つとの差は小さい．
-2. `node`の対話モードで計算すると，丸めると0.0229になる．
+1. `Discount`の答えは，`probabilities`が`{"billing":0.1953,"support":0.5576,"sales":0.2471}`(小数第4位に丸めた)，`confidence`が0.0987である．supportがもっとも高いが，ほかの2つとの差は大きくない．
+   `Refund not received`は，billingが0.9365，`confidence`が0.7838である．
+   どちらも，`pnpm start`で見た確率とは少し違う．`triage`は部署・緊急度・返金の3つの質問をまとめて送るので，答えが`department`だけを尋ねたときと変わる([Iteration 1の資料](../../../../docs/systemone/iteration-1.md)の「1回の問い合わせで複数の質問に答えさせる」)．
+2. `node`の対話モードで計算すると，0.0988になる．丸めた確率から計算したので，最後の桁がずれるが，答えとほぼ一致する．
 
    ```console
-   > const p = [0.4394, 0.2963, 0.2642]
+   > const p = [0.5576, 0.2471, 0.1953]
    undefined
    > 1 - (-p.reduce((s, x) => s + x * Math.log(x), 0)) / Math.log(3)
-   0.022934839558632736
+   0.09876699386297527
    ```
 
-3. 結果は次のとおりである．しきい値0.2では，4つのうち3つが人の確認に回る．
+3. 結果は次のとおりである．しきい値0.2では，4つのうち1つが人の確認に回る．
 
    | 問い合わせ | 選ばれた部署 | 部署の確率 | `confidence` | 部署は正しいか | 0.2で人の確認に回るか |
    | --- | --- | --- | --- | --- | --- |
-   | `Invoice` | billing | 0.9238 | 0.7069 | 正しい | 回らない |
-   | `Discount` | sales | 0.5024 | 0.072 | 正しい | 回る |
-   | `Cancel` | billing | 0.4957 | 0.0613 | 正しい | 回る |
-   | `Enterprise` | billing | 0.3985 | 0.0224 | 誤り(salesが正しい) | 回る |
+   | `Invoice` | billing | 0.9952 | 0.9702 | 正しい | 回らない |
+   | `Students` | support | 0.557 | 0.0986 | 誤り(salesが正しい) | 回る |
+   | `Cancel` | billing | 0.7158 | 0.437 | 正しい | 回らない |
+   | `Enterprise` | sales | 0.922 | 0.7092 | 正しい | 回らない |
 
-   誤って`billing`とした`Enterprise`は，確信度がもっとも低く，人の確認に回る．
-   一方で，部署が正しい`Discount`と`Cancel`も人の確認に回る．
-   Layaの確信度は，全体として低い．そのため，しきい値0.2でも多くの問い合わせが人の確認に回る．
+   誤って`support`とした`Students`は，確信度がもっとも低く，人の確認に回る．
+   部署が正しい3つは，確信度が0.4以上あり，自動で振り分けられる．
+   `Cancel`は，正しいが確信度は0.437と中くらいである．しきい値を0.5にすると，正しい`Cancel`も人の確認に回る．
 
 ## 演習4-3：テストリストを書く
 
@@ -199,18 +202,18 @@ $ pnpm test
 本物の判断エンジンで実行する．
 
 ```console
-$ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
-$ pnpm start "Hello" "I have a question about my account."
-department: support (0.59) -> needs review
-urgency: somewhat urgent (1.1)
-refund: no (0.10)
-$ pnpm start --min-confidence 0.1 "Hello" "I have a question about my account."
-department: support (0.59)
-urgency: somewhat urgent (1.1)
-refund: no (0.10)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
+$ pnpm start "Plan" "What is the difference between your plans?"
+department: support (0.61) -> needs review
+urgency: somewhat urgent (0.8)
+refund: no (0.08)
+$ pnpm start --min-confidence 0.1 "Plan" "What is the difference between your plans?"
+department: support (0.61)
+urgency: somewhat urgent (0.8)
+refund: no (0.08)
 $ pnpm start --min-confidence 2 "Hello" "Hi"
 usage: triage [--min-confidence <0-1>] "<subject>" "<body>"
 ```
@@ -218,7 +221,7 @@ usage: triage [--min-confidence <0-1>] "<subject>" "<body>"
 ## 演習4-6：振り返る
 
 1. 境界ちょうどの項目がなかった場合は，`<`と`<=`を取り違えても通ってしまわないかを確かめる．
-2. 人の確認に回った3つのうち，部署が正しかったものは2つ(`Discount`・`Cancel`)である．しきい値を0.05に下げると，確信度0.0613と0.072の2つは自動で振り分けられ，誤っていた`Enterprise`(0.0224)だけが人の確認に回る．ただし，4つの例だけで決めるのは危うい．Iteration 7で，もっと多くの問い合わせを使って測る．
+2. 人の確認に回ったのは`Students`の1つで，その部署は誤っていた．しきい値を0.05に下げると，`Students`(0.0986)も自動で振り分けられ，誤った部署のまま処理される．逆に0.5に上げると，正しい`Cancel`(0.437)も人の確認に回る．ただし，4つの例だけで決めるのは危うい．Iteration 7で，もっと多くの問い合わせを使って測る．
 3. `triage`が`process.argv`を読むと，テストのたびにプロセスの引数を書き換える必要がある．また，Iteration 6や8のように，コマンドライン以外から`triage`を使うときにも困る．設定は，入口(`app`)で読んで引数として渡す．
 4. 解答例は設計書どおりに実装できた．引数の解析は，`run`の中に書くと長くなるので，設計の段階から`parseCommand`として分けて描いた．
 
@@ -249,14 +252,14 @@ export const formatDepartment = (
 `parseCommand`では，`"show-confidence": { type: "boolean" }`を`options`に足し，`parsed.values["show-confidence"] ?? false`で読む．
 
 ```console
-$ pnpm start --show-confidence "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44, confidence 0.02) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
+$ pnpm start --show-confidence "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53, confidence 0.08) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
 $ pnpm start --show-confidence "Refund not received" "Where is my refund?"
-department: billing (0.73, confidence 0.32)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87, confidence 0.65)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 解答例のパッケージでは，この実装とテストを`発展(演習4-7)`で始まるコメントとして書いている．

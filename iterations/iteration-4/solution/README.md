@@ -3,14 +3,14 @@
 Iteration 4の演習用パッケージ([../exercise/](../exercise/))を完成させた状態の解答例．
 
 ```console
-$ pnpm start "Team plan" "We are 20 people and want to upgrade to the team plan. What does it cost?"
-department: sales (0.44) -> needs review
-urgency: somewhat urgent (1.0)
-refund: no (0.07)
-$ pnpm start --min-confidence 0.1 "Hello" "I have a question about my account."
-department: support (0.59)
-urgency: somewhat urgent (1.1)
-refund: no (0.10)
+$ pnpm start "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
+$ pnpm start --min-confidence 0.1 "Plan" "What is the difference between your plans?"
+department: support (0.61)
+urgency: somewhat urgent (0.8)
+refund: no (0.08)
 ```
 
 ## 見どころ

@@ -16,22 +16,22 @@ Iteration 2で初めて使う概念・APIと，設計の考え方を説明する
 }
 ```
 
-この質問を`urgency`という名前で送ると，次の答えが返る．
+この質問を`urgency`という名前で，Iteration 0の`refund`の例と同じ`model`と`state`とともに送ると，次の答えが返る．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d @urgency.json
-{"model":"laya","answers":{"urgency":{"type":"score","score":1.4061,"confidence":0.0892,"legend":{"0":"not urgent","1":"somewhat urgent","2":"urgent","3":"critical"},"probabilities":{"0":0.2147,"1":0.2574,"2":0.4349,"3":0.093}}},"usage":{"input_tokens":54,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d @urgency.json
+{"model":"tev1:0.8b","answers":{"urgency":{"type":"score","score":1.4795653686385797,"legend":{"0":"not urgent","1":"somewhat urgent","2":"urgent","3":"critical"},"probabilities":{"0":0.1819726286523267,"1":0.290328122507964,"2":0.3938605003885126,"3":0.13383874845119678},"confidence":0.05844455690247674}},"usage":{"input_tokens":179,"output_tokens":1}}
 ```
 
 - `probabilities`：段階の番号ごとの確率．
-- `score`：段階の番号の期待値．段階の番号に，その確率を掛けて足したもの(`0×0.2147 + 1×0.2574 + 2×0.4349 + 3×0.093 = 1.4061`)である．段階の間の値もとる．
+- `score`：段階の番号の期待値．段階の番号に，その確率を掛けて足したもの(小数第4位に丸めると`0×0.182 + 1×0.2903 + 2×0.3939 + 3×0.1338 = 1.4795`)である．段階の間の値もとる．
 - `legend`：段階の番号と説明の対応．送った`criteria`と同じである．
 - `confidence`：`choice`と同じく，答えにどれだけ迷いがないかを表す．
 
 ### 期待値と，もっとも確率の高い段階
 
-上の例で，もっとも確率が高い段階は2(urgent，0.4349)である．
-一方，期待値は1.4061で，四捨五入すると1(somewhat urgent)になる．
+上の例で，もっとも確率が高い段階は2(urgent，0.3939)である．
+一方，期待値は1.4796で，四捨五入すると1(somewhat urgent)になる．
 期待値は，確率の分布全体を1つの数にまとめたものなので，もっとも確率の高い段階とは一致しないことがある．
 このハンズオンでは，期待値にもっとも近い段階を表示する．
 期待値を使うと，「urgentとsomewhat urgentの間」のような中間の度合いも数で扱える．
@@ -42,12 +42,12 @@ $ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d @
 `["low", "high"]`の2段階で尋ねると，期待値は「highである確率」と同じになる．
 
 ```json
-{"type":"score","score":0.7487,"confidence":0.1867,"legend":{"0":"low","1":"high"},"probabilities":{"0":0.2513,"1":0.7487}}
+{"type":"score","score":0.7900270596701728,"legend":{"0":"low","1":"high"},"probabilities":{"0":0.20997294032982716,"1":0.7900270596701728},"confidence":0.25856898681974017}
 ```
 
 段階は，低いものから高いものへ順に並べる．
-逆順(`["critical", "urgent", "somewhat urgent", "not urgent"]`)に並べて同じ問い合わせを送ると，期待値は1.4442になった．
-元の並びの1.4061を裏返した値(3 − 1.4061 = 1.5939)にはならない．
+逆順(`["critical", "urgent", "somewhat urgent", "not urgent"]`)に並べて同じ問い合わせを送ると，期待値は1.5398になった．
+元の並びの1.4796を裏返した値(3 − 1.4796 = 1.5204)にはならない．
 並び順を変えると，同じ意味の質問でも答えが変わる．
 
 ## SDKの型

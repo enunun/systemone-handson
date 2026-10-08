@@ -7,9 +7,9 @@
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 アプリが判断を頼む窓口(ポート)`DecisionEngine`を定め，`triage`はこの型だけを使うようにする．
@@ -114,10 +114,10 @@ TypeSafeのSDKを使う部分と，テストで使う偽物は，それぞれ`De
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-decide: 3 questions in 654 ms
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+decide: 3 questions in 1009 ms
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 かかった時間は，実行するたびに変わる．

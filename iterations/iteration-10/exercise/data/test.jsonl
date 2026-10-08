@@ -1,0 +1,30 @@
+{"subject": "Refund for unused months", "body": "I cancelled my annual plan after two months. Please refund the remaining ten months.", "department": "billing", "refund": true, "urgency": 1}
+{"subject": "Charged after cancelling", "body": "I cancelled last week but you charged my card again today. I want this money back.", "department": "billing", "refund": true, "urgency": 2}
+{"subject": "Duplicate invoice", "body": "I received two invoices for the same month. Which one should I pay?", "department": "billing", "refund": false, "urgency": 1}
+{"subject": "Credit card expired", "body": "My card expired. Where do I enter the new one?", "department": "billing", "refund": false, "urgency": 1}
+{"subject": "Billing address", "body": "Please change the billing address on our invoices to our new office.", "department": "billing", "refund": false, "urgency": 0}
+{"subject": "Price increase", "body": "Why did my monthly price go up from 20 to 25 dollars?", "department": "billing", "refund": false, "urgency": 1}
+{"subject": "Payment overdue", "body": "We got a notice that our account will be suspended tomorrow because of an unpaid invoice.", "department": "billing", "refund": false, "urgency": 2}
+{"subject": "Wrong currency", "body": "I was billed in euros but my contract is in dollars. Please refund the difference.", "department": "billing", "refund": true, "urgency": 1}
+{"subject": "Purchase order", "body": "Our finance team needs the invoice to include our purchase order number.", "department": "billing", "refund": false, "urgency": 0}
+{"subject": "Refund request", "body": "The product did not work for us. We would like a full refund.", "department": "billing", "refund": true, "urgency": 1}
+{"subject": "Site outage", "body": "Your service is completely down for all our users right now.", "department": "support", "refund": false, "urgency": 3}
+{"subject": "Lost data", "body": "All projects in our workspace were deleted. We need them back immediately.", "department": "support", "refund": false, "urgency": 3}
+{"subject": "Upload fails", "body": "Uploading files larger than 10 MB always fails with an error.", "department": "support", "refund": false, "urgency": 1}
+{"subject": "Dark mode", "body": "Is there a way to switch the interface to dark mode?", "department": "support", "refund": false, "urgency": 0}
+{"subject": "Calendar sync", "body": "Events from Google Calendar show up one hour late.", "department": "support", "refund": false, "urgency": 1}
+{"subject": "Locked out", "body": "My account is locked after too many login attempts and I have a client meeting in an hour.", "department": "support", "refund": false, "urgency": 2}
+{"subject": "Search broken", "body": "Search returns no results even for files I can see.", "department": "support", "refund": false, "urgency": 1}
+{"subject": "Export question", "body": "Can I export a project as a PDF?", "department": "support", "refund": false, "urgency": 0}
+{"subject": "Security issue", "body": "I think someone else is logged into my account. I see sessions from another country.", "department": "support", "refund": false, "urgency": 3}
+{"subject": "Broken link", "body": "The help article about webhooks links to a page that does not exist.", "department": "support", "refund": false, "urgency": 0}
+{"subject": "Seat pricing", "body": "How much would 25 seats on the business plan cost per year?", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Enterprise demo", "body": "Our CTO wants to see a demo of the enterprise security features.", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Startup program", "body": "Do you have discounts for early-stage startups?", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Contract renewal", "body": "Our contract ends next month. We want to renew with more users.", "department": "sales", "refund": false, "urgency": 1}
+{"subject": "Compare plans", "body": "Which plan includes single sign-on?", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Bulk licenses", "body": "We are a school district and need licenses for 300 teachers.", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Sales contact", "body": "Can someone from your sales team call me this week?", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Add-on", "body": "We want to buy the analytics add-on for our team.", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Government", "body": "Do you sell to government agencies, and do you accept purchase orders?", "department": "sales", "refund": false, "urgency": 0}
+{"subject": "Pilot", "body": "We would like a three-month pilot for one department before a company-wide rollout.", "department": "sales", "refund": false, "urgency": 0}

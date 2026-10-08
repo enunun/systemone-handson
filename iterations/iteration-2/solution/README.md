@@ -4,13 +4,13 @@ Iteration 2の演習用パッケージ([../exercise/](../exercise/))を完成さ
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 $ pnpm start "Production down" "Since the last update the app crashes on login. Our whole company cannot work."
-department: support (0.82)
-urgency: urgent (2.4)
-refund: no (0.05)
+department: support (1.00)
+urgency: urgent (2.3)
+refund: no (0.27)
 ```
 
 ## 見どころ

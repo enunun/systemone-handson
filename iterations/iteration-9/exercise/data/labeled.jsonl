@@ -1,0 +1,30 @@
+{"subject": "Double charge", "body": "My card was charged twice for the same order.", "department": "billing"}
+{"subject": "Refund status", "body": "I returned the product three weeks ago. When will I get my money?", "department": "billing"}
+{"subject": "Invoice copy", "body": "Could you resend the invoice for August? I lost the email.", "department": "billing"}
+{"subject": "Payment method", "body": "How can I switch from credit card to bank transfer?", "department": "billing"}
+{"subject": "VAT", "body": "Our invoices are missing the VAT number of our company.", "department": "billing"}
+{"subject": "Unexpected fee", "body": "There is a 15 dollar fee on my statement that I do not understand.", "department": "billing"}
+{"subject": "Annual billing", "body": "Can I pay yearly instead of monthly to save money?", "department": "billing"}
+{"subject": "Failed payment", "body": "Your system says my payment failed but my bank shows it went through.", "department": "billing"}
+{"subject": "Receipt", "body": "I need a receipt for my expense report.", "department": "billing"}
+{"subject": "Overcharged", "body": "I downgraded last month but I am still paying the old price.", "department": "billing"}
+{"subject": "Cannot log in", "body": "The login page keeps saying my password is wrong even after resetting it.", "department": "support"}
+{"subject": "Bug in editor", "body": "The editor freezes when I paste a large table.", "department": "support"}
+{"subject": "Mobile app", "body": "The iPhone app shows a blank screen after the update.", "department": "support"}
+{"subject": "Two-factor", "body": "I lost my phone and cannot get the two-factor code.", "department": "support"}
+{"subject": "Slow dashboard", "body": "The dashboard takes more than a minute to load today.", "department": "support"}
+{"subject": "API error", "body": "Your API returns 500 errors for every request since this morning.", "department": "support"}
+{"subject": "How to share", "body": "How do I share a project with a colleague?", "department": "support"}
+{"subject": "Notifications", "body": "I do not receive any email notifications anymore.", "department": "support"}
+{"subject": "Data missing", "body": "Some of my reports disappeared after I renamed the folder.", "department": "support"}
+{"subject": "Integration", "body": "The Slack integration stopped posting messages to our channel.", "department": "support"}
+{"subject": "Pricing question", "body": "What is the difference between the pro and the business plan?", "department": "sales"}
+{"subject": "Quote request", "body": "Please send us a quote for 50 licenses.", "department": "sales"}
+{"subject": "Demo", "body": "Could we schedule a product demo for our team next week?", "department": "sales"}
+{"subject": "Volume discount", "body": "Is there a discount if we buy more than 100 seats?", "department": "sales"}
+{"subject": "Upgrade", "body": "We want to move from the starter plan to the business plan.", "department": "sales"}
+{"subject": "Partnership", "body": "We are a reseller and would like to offer your product to our customers.", "department": "sales"}
+{"subject": "Education", "body": "Do you have special prices for universities?", "department": "sales"}
+{"subject": "Trial", "body": "Can we try the enterprise features before signing a contract?", "department": "sales"}
+{"subject": "Account question", "body": "I have a question about my account.", "department": "support"}
+{"subject": "Cancel plan", "body": "I want to cancel my plan at the end of this month.", "department": "billing"}

@@ -77,3 +77,6 @@ node_modules/
 
 # tools/check-advanced.mjsが作る，発展課題を入れた版の一時ディレクトリ
 .solution-advanced/
+
+# 評価の記録(Iteration 9から)．測った環境で取り直すのでGitに入れない
+results/

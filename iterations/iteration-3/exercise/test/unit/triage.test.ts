@@ -5,11 +5,11 @@ import { triage } from "../../src/triage.ts";
 // 判断エンジンの代わりに，決まった答えを返すfetch．受け取ったリクエストの本文をrequestsに記録する．
 const fakeFetch = (answers: object, requests: unknown[]) => async (_url: string, init?: RequestInit) => {
   requests.push(JSON.parse(String(init?.body)));
-  return Response.json({ model: "laya", answers, usage: { input_tokens: 120, output_tokens: 0 } });
+  return Response.json({ model: "tev1:0.8b", answers, usage: { input_tokens: 120, output_tokens: 0 } });
 };
 
 const clientWith = (answers: object, requests: unknown[] = []) =>
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch(answers, requests) });
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch(answers, requests) });
 
 const ticket = { subject: "Refund not received", body: "Where is my refund?" };
 

@@ -61,7 +61,7 @@ Iteration 6の`isTicket`と同じく，本文を`unknown`として受け取り�
 
 ```console
 $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "Where is my refund?"}'
-{"department":"billing","departmentProbability":0.7253,"departmentConfidence":0.318,"needsReview":false,"urgency":1.4061,"refundProbability":0.8631}
+{"department":"billing","departmentProbability":0.8736835530882852,"departmentConfidence":0.653906619759055,"needsReview":false,"urgency":1.2259161755022923,"refundProbability":0.5204658538893784}
 ```
 
 - `-d 本文`を付けると，POSTで本文を送る．

@@ -9,15 +9,30 @@ services:
     working_dir: /workspaces
     command: ["sleep", "infinity"]
 
-  # Jev互換のAPIでLayaを公開するサーバ．初回の起動時にモデル(約1.7GB)をダウンロードする．
-  laya:
-    build:
-      context: ..
-      dockerfile: infra/laya-server/Dockerfile
+  # Jev互換のAPI(POST /v1/systemone)でSystem Oneのモデルを動かすOllama．
+  # 起動すると，モデルTev1 0.8B(約800MB)がなければダウンロードする．ダウンロードが終わるとhealthyになる．
+  ollama:
+    image: ollama/ollama:0.40.1
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        ollama serve &
+        until ollama list > /dev/null 2>&1; do sleep 1; done
+        ollama pull tev1:0.8b
+        wait
+    environment:
+      # tev1:4bとtev1:0.8bを同時に読み込むとメモリが足りなくなるので，1つずつ読み込む．
+      OLLAMA_MAX_LOADED_MODELS: "1"
     volumes:
-      - laya-models:/models
+      - ollama-models:/root/.ollama
     ports:
-      - "8080:8080"
+      - "11434:11434"
+    healthcheck:
+      test: ["CMD", "ollama", "show", "tev1:0.8b"]
+      interval: 10s
+      timeout: 5s
+      start_period: 10m
+      retries: 3
 
 volumes:
-  laya-models:
+  ollama-models:
