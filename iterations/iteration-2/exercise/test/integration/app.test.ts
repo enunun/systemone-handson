@@ -16,11 +16,11 @@ const answers = {
 // 判断エンジンの代わりに，決まった答えを返すfetch．受け取ったリクエストの本文をrequestsに記録する．
 const fakeFetch = (requests: unknown[]) => async (_url: string, init?: RequestInit) => {
   requests.push(JSON.parse(String(init?.body)));
-  return Response.json({ model: "laya", answers, usage: { input_tokens: 120, output_tokens: 0 } });
+  return Response.json({ model: "tev1:0.8b", answers, usage: { input_tokens: 120, output_tokens: 0 } });
 };
 
 const clientWith = (requests: unknown[] = []) =>
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch(requests) });
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch(requests) });
 
 describe("run", () => {
   test("件名と本文を判断エンジンに送り，担当部署と返金の判定を表示する", async () => {

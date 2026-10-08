@@ -16,7 +16,7 @@ const fakeFetch = async (_url: string, init?: RequestInit) => {
   const request = JSON.parse(String(init?.body)) as { state: { subject: string } };
   const decision = decisions[request.state.subject] ?? { choice: "support", confidence: 0 };
   return Response.json({
-    model: "laya",
+    model: "tev1:0.8b",
     answers: {
       department: { type: "choice", ...decision, probabilities: { [decision.choice]: 0.6 } },
       urgency: { type: "score", score: 1, confidence: 0.1, legend: {}, probabilities: { 0: 0, 1: 1, 2: 0, 3: 0 } },
@@ -27,7 +27,7 @@ const fakeFetch = async (_url: string, init?: RequestInit) => {
 };
 
 const engine = createSystemOneEngine(
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch }),
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch }),
 );
 
 let dir = "";

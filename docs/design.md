@@ -24,7 +24,7 @@ C4モデルは，ソフトウェアの構成を，地図を拡大するように
 | ファイル | 階層 | 描くもの | このハンズオンでの中身 |
 | --- | --- | --- | --- |
 | `design/01-context.md` | Context | システムと，それを使う人や外部のシステム | 利用者，`triage`，判断エンジン |
-| `design/02-container.md` | Container | システムを構成する，別々に動くもの・データの置き場所 | `triage`の実行ファイル，laya-server，ファイル |
+| `design/02-container.md` | Container | システムを構成する，別々に動くもの・データの置き場所 | `triage`の実行ファイル，Ollama，ファイル |
 | `design/03-component.md` | Component | 1つのコンテナの中の部品と，その依存関係 | `src/`のモジュールと，使う外部のパッケージ |
 | `design/04-code.md` | Code | 部品の中身 | 型と関数の流れ，主な型 |
 | `design/05-sequence.md` | シーケンス | 1つの使い方の中で，だれがだれをどの順に呼ぶか | 入口から判断エンジンまでの呼び出し |

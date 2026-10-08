@@ -7,9 +7,9 @@
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 判定の種類が3つになるので，先にモジュールを分け直す．
@@ -72,13 +72,13 @@ refund: yes (0.86)
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 $ pnpm start "Production down" "Since the last update the app crashes on login. Our whole company cannot work."
-department: support (0.82)
-urgency: urgent (2.4)
-refund: no (0.05)
+department: support (1.00)
+urgency: urgent (2.3)
+refund: no (0.27)
 ```
 
 ### 緊急度のために足すもの
@@ -133,10 +133,10 @@ refund: no (0.05)
 緊急度の行に，もっとも確率の高い段階を添える．
 
 ```console
-$ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4, most likely: urgent)
-refund: yes (0.86)
+$ pnpm start "Login problem" "I cannot log in since yesterday."
+department: support (1.00)
+urgency: urgent (1.6, most likely: somewhat urgent)
+refund: no (0.11)
 ```
 
 `Triage`に，もっとも確率の高い段階の番号を足す必要がある．

@@ -8,7 +8,7 @@
 ```console
 $ pnpm start batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 ```
 
 作りながら，ファイルの読み込み，JSON Lines，サブコマンド，`Promise.all`と同時に送る数の制限を学ぶ．
@@ -53,7 +53,7 @@ billing: 4, support: 6, sales: 0, needs review: 11
   - 空の行は飛ばす．
   - JSONとして読めない行や，`subject`と`body`が文字列でない行は，`line 21: skipped (not a JSON object with subject and body)`のように行番号とともに知らせて飛ばす．行番号は1から数える．
 - 判断エンジンには，同時に4件まで問い合わせる．
-- 最後に，自動で振り分けた件数を部署ごとに，人の確認に回した件数を`needs review`として，`billing: 4, support: 6, sales: 0, needs review: 11`のように1行で表示する．部署は，billing・support・salesの順に並べ，0件の部署も表示する．人の確認に回したものは，部署の件数に含めない．
+- 最後に，自動で振り分けた件数を部署ごとに，人の確認に回した件数を`needs review`として，`billing: 5, support: 11, sales: 3, needs review: 2`のように1行で表示する．部署は，billing・support・salesの順に並べ，0件の部署も表示する．人の確認に回したものは，部署の件数に含めない．
 - ファイルが読めなければ，`cannot read <ファイル>: <理由>`と表示し，終了コード1で終わる．
 - 引数の数が合わなければ，2行の使い方を表示し，終了コード2で終わる．
 
@@ -67,10 +67,10 @@ billing: 4, support: 6, sales: 0, needs review: 11
 ```console
 $ pnpm start batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 $ pnpm start batch --min-confidence 0.05 data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 5, support: 9, sales: 3, needs review: 4
+billing: 5, support: 13, sales: 3, needs review: 0
 ```
 
 ### 作るもの
@@ -115,7 +115,7 @@ billing: 5, support: 9, sales: 3, needs review: 4
 
 1. 自分の`TESTLIST.md`と，解答例の[TESTLIST.md](../../solution/TESTLIST.md)を比べる．
 2. 演習6-2の4で，`Promise.all`を使うと速くなった．`triage batch`でも，同時に送る数を増やすと速くなるか．`batchConcurrency`を1にして，かかる時間を比べる(`time pnpm start batch data/tickets.jsonl`)．
-3. `data/tickets.jsonl`の結果では，人の確認に回った件数が多かった．しきい値を変えると，集計はどう変わるか．
+3. しきい値を変えると，`data/tickets.jsonl`の集計はどう変わるか．
 4. 設計書と実装を見比べる．違う形になったところがあれば，設計書を実装に合わせて直す．
 
 ## 演習6-7(発展)：同時に送る数を指定する
@@ -126,11 +126,11 @@ billing: 5, support: 9, sales: 3, needs review: 4
 ```console
 $ time node --env-file-if-exists=.env src/main.ts batch --concurrency 1 data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 
-real    0m10.136s
-user    0m0.213s
-sys     0m0.075s
+real    0m18.930s
+user    0m0.384s
+sys     0m0.101s
 ```
 
 発展課題の解答の一例は，解答例のパッケージ(`../solution`)に`発展(演習6-7)`で始まるコメントとして書いてある．

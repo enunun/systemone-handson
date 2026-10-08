@@ -3,36 +3,36 @@
 このハンズオンでは，問い合わせを振り分けるコマンドラインプログラム`triage`を，Iteration 0から8までの9回に分けて少しずつ育てる．
 `triage`は，問い合わせの文章を読んで，担当部署・緊急度・返金の要否を判断する．
 判断はSystem One(文章を生成せず，型の決まった答えを確率つきで返すモデル)に任せる．
-手元ではOSSのLayaを，本番ではTypeSafe AIのJevを使う想定で，接続先を替えてもアプリのコードが変わらない設計を身につける．
+手元ではOllamaで動かすTev1を，本番ではTypeSafe AIのJevを使う想定で，接続先を替えてもアプリのコードが変わらない設計を身につける．
 
-完成すると，次のように使える(判断エンジンはlaya-server)．
+完成すると，次のように使える(判断エンジンはOllamaのTev1)．
 
 ```console
 $ triage "Refund not received" "I cancelled two weeks ago and still have no refund."
-department: billing (0.69)
-urgency: somewhat urgent (1.1)
-refund: yes (0.87)
-$ triage "Hello" "I have a question about my account."
-department: support (0.59) -> needs review
-urgency: somewhat urgent (1.1)
-refund: no (0.10)
+department: billing (0.87)
+urgency: urgent (1.6)
+refund: yes (0.83)
+$ triage "Discount" "Do you offer a discount for non-profit organizations?"
+department: support (0.53) -> needs review
+urgency: somewhat urgent (0.9)
+refund: no (0.17)
 $ triage batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 $ triage eval data/labeled.jsonl
-accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
 support                    0        11         0
-sales                      1         2         5
+sales                      0         2         6
 $ triage serve --port 3000
 listening on http://localhost:3000
 ```
 
 ```console
 $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "Where is my refund?"}'
-{"department":"billing","departmentProbability":0.7253,"departmentConfidence":0.318,"needsReview":false,"urgency":1.4061,"refundProbability":0.8631}
+{"department":"billing","departmentProbability":0.8736835530882852,"departmentConfidence":0.653906619759055,"needsReview":false,"urgency":1.2259161755022923,"refundProbability":0.5204658538893784}
 ```
 
 `triage`は，各Iterationのパッケージのディレクトリで`pnpm start`として実行する(`pnpm start batch data/tickets.jsonl`など)．
@@ -57,7 +57,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 各Iterationの演習用パッケージは，1つ前のIterationの解答例のコードと設計書から始まる．
 前のIterationを自分で書き終えていなくても，次のIterationに進める．
 
-判断を下すサーバ(laya-server)は，完成したものを`infra/laya-server`に用意してある．devcontainerを開くと，`http://laya:8080`で起動する．
+判断を下すサーバには，[Ollama](https://ollama.com/)とSystem Oneのモデル`tev1:0.8b`を使う．devcontainerを開くと，`http://ollama:11434`で起動する．
 
 ## テストの分け方
 
@@ -68,7 +68,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 | 単体テスト | `test/unit/` | 1つのモジュールの関数を，単独で呼んで確かめる．Iteration 3からは，判断エンジンを偽物(fake)に差し替えて確かめる． |
 | 結合テスト | `test/integration/` | プログラムの入口(`run`)を呼び，複数のモジュールを組み合わせた振る舞いを確かめる．判断エンジンとの通信は，SDKに偽の`fetch`を渡して差し替える． |
 
-モデルを読み込むテストはない．どのテストも，laya-serverを起動せずに実行できる．
+モデルを読み込むテストはない．どのテストも，Ollamaを起動せずに実行できる．
 
 ## Iterationの一覧
 
@@ -89,9 +89,9 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 - 要求：件名と本文を引数に渡すと，返金を求めているかを判定し，確率とともに表示する．確率が0.5以上なら`yes`とする．
 - 使い方：`triage "Refund not received" "Where is my refund?"`で`refund: yes (0.86)`と表示する．
 - モジュール：`refund`(`refundQuestion`，`formatRefund`)，`app`(`run`)，`main`(プログラムの入口)．
-- 設計書で更新するもの：5つの設計書を初めて書く．Contextは利用者・triage・laya-server，Containerはtriageの実行ファイルとlaya-server，Componentは3つのモジュール，Codeは型と関数の流れ，シーケンス図は`run`からlaya-serverへの1回の問い合わせ．
+- 設計書で更新するもの：5つの設計書を初めて書く．Contextは利用者・triage・Ollama，Containerはtriageの実行ファイルとOllama，Componentは3つのモジュール，Codeは型と関数の流れ，シーケンス図は`run`からOllamaへの1回の問い合わせ．
 - 学ぶこと：System Oneと大規模言語モデルの違い，noulの質問と答え，TypeSafeのSDK(`TypeSafeClient`，`systemOne`)，Vitest，TDDの1周．
-- 学習者が行う作業：`pnpm install`，テストの実行(すべて・単体テスト・結合テスト)，型検査，実行，curlでlaya-serverに直接問い合わせる．
+- 学習者が行う作業：`pnpm install`，テストの実行(すべて・単体テスト・結合テスト)，型検査，実行，curlでOllamaに直接問い合わせる．
 
 ## Iteration 1：担当部署を判定する
 
@@ -123,7 +123,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 ## Iteration 4：迷っている問い合わせを人の確認に回す
 
 - 要求：部署の判定の確信度がしきい値(既定0.2)を下回ったら，部署の行の末尾に`-> needs review`を付ける．しきい値は`--min-confidence`で変えられる．0から1の数でなければ，使い方を表示する．
-- 使い方：`triage --min-confidence 0.1 "Hello" "I have a question about my account."`
+- 使い方：`triage --min-confidence 0.1 "Plan" "What is the difference between your plans?"`
 - モジュール：`triage`の結果に`needsReview`を足し，`triage`がしきい値を受け取る．`format`の部署の行に印を付ける．`app`で引数を解析する．
 - 設計書で更新するもの：Codeに，確信度としきい値による分岐を足す．
 - 学ぶこと：確率と確信度の違い，しきい値の決め方，`util.parseArgs`．
@@ -131,15 +131,15 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 ## Iteration 5：接続先を環境変数で選ぶ
 
 - 要求：接続先のURL・モデル名・APIキーを，環境変数`SYSTEMONE_BASE_URL`・`SYSTEMONE_MODEL`・`SYSTEMONE_API_KEY`で指定する．`DECISION_ENGINE=fake`ならfakeを使う．必要な値がないときは，何が足りないかを表示して終了する．
-- 使い方：`.env`を書き換えるだけで，laya-serverから本家Jevに切り替わる．
+- 使い方：`.env`を書き換えるだけで，Ollamaから本家Jevに切り替わる．
 - モジュール：`config`(`loadConfig`)を足す．`main`で，設定からアダプタを選んで組み立てる．
 - 設計書で更新するもの：ContextとContainerにJevを足す．Componentに`config`を足す．
-- 学ぶこと：環境変数による設定，組み立ての場所(composition root)，`node --env-file`，LayaとJevの違い(モデル名，認証，料金)．
+- 学ぶこと：環境変数による設定，組み立ての場所(composition root)，`node --env-file`，OllamaとJevの違い(モデル名，認証，料金)．
 
 ## Iteration 6：ファイルの問い合わせをまとめて振り分ける
 
 - 要求：`triage batch <ファイル>`で，JSON Lines形式のファイルに並んだ問い合わせを振り分け，部署ごとの件数と，人の確認に回した件数を表示する．読めない行は，行番号とともに知らせて飛ばす．同時に送る問い合わせは4件までにする．
-- 使い方：`triage batch data/tickets.jsonl`で`billing: 4, support: 6, sales: 0, needs review: 11`．
+- 使い方：`triage batch data/tickets.jsonl`で`billing: 5, support: 11, sales: 3, needs review: 2`．
 - モジュール：`batch`(`parseTickets`，`mapWithConcurrency`，`summarize`)を足す．`format`に`formatSummary`を，`triage`に`departmentNames`を足す．`app`をサブコマンドに対応させ，ファイルを読む．
 - 設計書で更新するもの：Containerにファイルを足す．Componentに`batch`を足す．シーケンス図に，複数の問い合わせを並行して送る流れを足す．
 - 学ぶこと：`node:fs/promises`，JSON Linesと型ガード，サブコマンド，`Promise.all`と同時に送る数の制限，テストでの一時ファイル．
@@ -147,7 +147,7 @@ $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "
 ## Iteration 7：ラベル付きデータで精度を測る
 
 - 要求：`triage eval <ファイル>`で，正解の部署が付いた問い合わせを振り分け，自動で振り分けた件数とその正解率，人の確認に回した割合を表示する．`--sweep`を付けると，しきい値を0.1刻みで変えた結果を表で表示する．
-- 使い方：`triage eval data/labeled.jsonl`で`accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37`と混同行列を表示する．
+- 使い方：`triage eval data/labeled.jsonl`で`accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10`と混同行列を表示する．
 - モジュール：`evaluate`(`parseLabeledTickets`，`evaluate`，`confusionMatrix`，`sweep`)を足す．`triage`の結果に部署の確信度を足す．
 - リファクタリング：JSON Linesの読み方を`batch`の`parseJsonLines`にまとめ，`parseTickets`と`parseLabeledTickets`で使う．
 - 設計書で更新するもの：Componentに`evaluate`を足す．Codeに評価の流れを足す．

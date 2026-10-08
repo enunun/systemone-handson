@@ -45,7 +45,7 @@ flowchart LR
   text(["string<br/>ファイルの中身"]) -- "parseTickets" --> parsed(["ParsedTickets<br/>tickets・errors"])
   parsed -- "mapWithConcurrency(tickets, 4, triage)" --> results(["Triage[]"])
   results -- "summarize" --> summary(["Summary"])
-  summary -- "formatSummary" --> line(["billing: 4, support: 6, sales: 0, needs review: 11"])
+  summary -- "formatSummary" --> line(["billing: 5, support: 11, sales: 3, needs review: 2"])
   parsed -- "errors" --> errors(["line 21: skipped (…)"])
 ```
 
@@ -60,7 +60,7 @@ flowchart LR
   text(["string<br/>ファイルの中身"]) -- "parseLabeledTickets" --> labeled(["LabeledTicket[]"])
   labeled -- "mapWithConcurrency(…, 4, triage)" --> results(["LabeledResult[]<br/>正解の部署と振り分けの結果"])
   results -- "evaluate(results, minConfidence)" --> evaluation(["Evaluation"])
-  evaluation -- "formatEvaluation" --> line(["accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37"])
+  evaluation -- "formatEvaluation" --> line(["accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10"])
   results -- "confusionMatrix" --> matrix(["ConfusionMatrix"])
   matrix -- "formatConfusionMatrix" --> table(["混同行列の表"])
   results -- "sweep(--sweepのとき)" --> rows(["Evaluation[]<br/>しきい値0.0〜1.0"])

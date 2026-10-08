@@ -9,8 +9,8 @@ listening on http://localhost:3000
 ```
 
 ```console
-$ curl -s localhost:3000/triage -d '{"subject": "Team plan", "body": "We are 20 people and want to upgrade to the team plan. What does it cost?"}'
-{"department":"sales","departmentProbability":0.4394,"departmentConfidence":0.0229,"needsReview":true,"urgency":0.9847,"refundProbability":0.0692}
+$ curl -s localhost:3000/triage -d '{"subject": "Discount", "body": "Do you offer a discount for non-profit organizations?"}'
+{"department":"support","departmentProbability":0.5280386266197422,"departmentConfidence":0.08358112838899756,"needsReview":true,"urgency":0.8628479356656321,"refundProbability":0.16789652778882241}
 ```
 
 ## 見どころ

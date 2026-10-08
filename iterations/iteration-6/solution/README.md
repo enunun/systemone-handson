@@ -5,10 +5,10 @@ Iteration 6の演習用パッケージ([../exercise/](../exercise/))を完成さ
 ```console
 $ pnpm start batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 $ pnpm start batch --min-confidence 0.05 data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 5, support: 9, sales: 3, needs review: 4
+billing: 5, support: 13, sales: 3, needs review: 0
 ```
 
 ## 見どころ

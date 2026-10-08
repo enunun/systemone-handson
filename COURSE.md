@@ -20,7 +20,7 @@
 最終的な使い方は`docs/ROADMAP.md`の冒頭にある．
 
 判断は，TypeSafe Jevと同じHTTP API(`POST /v1/systemone`)を持つサーバに任せる．
-学習中は`infra/laya-server`(OSSのLayaをCPUで動かす)を使う．本家Jevへの切り替えはIteration 5で説明し，Jevの実行はしない．クラウドへのデプロイは扱わない．
+学習中は[Ollama](https://ollama.com/)で，System Oneのモデル`tev1:0.8b`(Together AIのTev1の0.8B版)をCPUで動かす．Ollamaは0.35から`/v1/systemone`を持つ．本家Jevへの切り替えはIteration 5で説明し，Jevの実行はしない．クラウドへのデプロイは扱わない．
 
 ## 設計書
 
@@ -28,8 +28,8 @@
 
 | ファイル | 図 | 示すもの |
 | --- | --- | --- |
-| `01-context.md` | C4Context | 利用者，triage，判断エンジン(laya-server，Iteration 5からJev)，Iteration 8からAPIの利用者 |
-| `02-container.md` | C4Container | triageの実行ファイル，laya-server，Iteration 6からファイル，Iteration 8からHTTP API |
+| `01-context.md` | C4Context | 利用者，triage，判断エンジン(Ollama，Iteration 5からJev)，Iteration 8からAPIの利用者 |
+| `02-container.md` | C4Container | triageの実行ファイル，Ollama，Iteration 6からファイル，Iteration 8からHTTP API |
 | `03-component.md` | C4Component | `src/`のモジュールと，その依存(`import`)．外部のパッケージは`Component_Ext`で描く |
 | `04-code.md` | flowchart・classDiagram | 型と関数の流れ，主な型 |
 | `05-sequence.md` | sequenceDiagram | 入口から判断エンジンまでの呼び出しの順序 |
@@ -40,7 +40,7 @@
 
 ## 開発環境
 
-- Dev Container：`.devcontainer/`．mise公式のイメージに，`mise.toml`の版のNode・pnpm・rtk・lefthookを入れる．`compose.yml`で`laya`サービス(laya-server)も起動し，アプリからは`http://laya:8080`で呼ぶ．VSCodeの拡張は`bierner.markdown-mermaid`など．
+- Dev Container：`.devcontainer/`．mise公式のイメージに，`mise.toml`の版のNode・pnpm・rtk・lefthookを入れる．`compose.yml`で`ollama`サービス(公式のイメージ`ollama/ollama`)も起動し，アプリからは`http://ollama:11434`で呼ぶ．`ollama`サービスは，起動時に`tev1:0.8b`がなければダウンロードする．VSCodeの拡張は`bierner.markdown-mermaid`など．
 - 言語とツール：TypeScript(ビルドせず，Nodeの型の除去で実行する)，`tsc`(型検査のみ)，Vitest(テスト)，oxlint(リント)，oxfmt(整形)．
 - 文書の検査：textlint，markdownlint，mermaidの構文検査(`tools/mermaid`)，Componentの照合(`tools/check-component.mjs`)．
 - 検証のコマンド：`mise run check`(整形の検査・リント・型検査・すべてのパッケージのテスト・発展課題の検査)．
@@ -57,11 +57,10 @@ docs/systemone/iteration-N.md    Iteration Nで初めて使う概念・API・ツ
 iterations/iteration-N/
   exercise/                      演習用パッケージ(triage-iteration-N)
   solution/                      解答例パッケージ(triage-solution-iteration-N)
-infra/laya-server/               Jev互換のAPIでLayaを公開するサーバ(完成品として配る)
 tools/                           mermaidの検査，Componentの照合，発展課題の検査
 ```
 
-- `pnpm-workspace.yaml`は，`infra/*`・`tools/*`・`iterations/*/*`をすべて含む．学習者がパッケージを登録する作業はない．
+- `pnpm-workspace.yaml`は，`tools/*`・`iterations/*/*`をすべて含む．学習者がパッケージを登録する作業はない．
 - パッケージの中身：`README.md`，`TESTLIST.md`，`design/`，`docs/iteration-N.md`，`package.json`，`tsconfig.json`，`vitest.config.ts`，`src/`，`test/unit/`，`test/integration/`．解答例には，発展課題で新しく作るファイルを置く`advanced/`を加えることがある．
 - 相対importには`.ts`を付ける(Nodeの型の除去で実行するため)．
 - 演習で使うデータのファイル(`data/`)は，それを初めて使うIterationの演習用パッケージに，解答例と同じものを置く．
@@ -72,7 +71,7 @@ tools/                           mermaidの検査，Componentの照合，発展�
 - 単体テスト(`test/unit/`)：1つのモジュールの関数を単独で呼ぶ．Iteration 3からは判断エンジンをfakeに差し替える．
 - 結合テスト(`test/integration/`)：`app`の`run`を呼ぶ．判断エンジンの通信は，SDKの`fetch`オプションに偽の関数を渡して差し替える．
 - テストファイルは機能(モジュール)ごとに1つで，Iterationの名前を付けない．
-- どのテストもlaya-serverやモデルを使わない．
+- どのテストもOllamaやモデルを使わない．
 
 ### コマンド(パッケージのディレクトリで実行する)
 
@@ -84,7 +83,7 @@ tools/                           mermaidの検査，Componentの照合，発展�
 | 1つのファイルのテスト | `pnpm test <ファイル>` | 1 |
 | 型検査 | `pnpm typecheck` | 0 |
 | 実行 | `pnpm start "<件名>" "<本文>"` | 0 |
-| 判断エンジンに直接問い合わせる | `curl http://laya:8080/v1/systemone ...` | 0 |
+| 判断エンジンに直接問い合わせる | `curl http://ollama:11434/v1/systemone ...` | 0 |
 
 初出のIterationではコマンドを全部書き，それ以降は「単体テストだけを実行する」のように，することだけを書く．
 
@@ -124,11 +123,12 @@ tools/                           mermaidの検査，Componentの照合，発展�
 
 ## 落とし穴
 
-- 環境によっては，Nodeの組み込みの`fetch`がプロキシの環境変数を読まない．プロキシ越しにlaya-serverがモデルを取得するときは，`NODE_USE_ENV_PROXY=1`を付ける(Node 22.21以降)．
-- onnxruntime-nodeのインストール時スクリプトはGPU用のバイナリを取得するだけで，CPUでは不要である．`pnpm-workspace.yaml`の`allowBuilds`で止めている．
-- Layaの確信度(`confidence`)は，1から答えの分布の正規化エントロピーを引いた値である．確率とは尺度が違い，低く出やすい(例：3択で，もっとも確からしい選択肢の確率が0.45のとき，確信度は0.03)．Iteration 4のしきい値は，この尺度に合わせて決める．
-- Layaの推論は，3問のリクエストで約0.55秒かかる(クラウドの開発環境のCPUで測った値)．
-- laya-serverは1件ずつ推論するので，同時に送る数を増やしても速くならない(Iteration 6で21件が約10秒)．教材では，同時に送る数の制限を「判断エンジンに送りすぎないため」と説明する．
+- Ollamaの`/v1/systemone`は，リクエストの`model`を必須とする．curlの例には`"model": "tev1:0.8b"`を書く．SDKは`defaultModel`を`model`として送る．
+- Ollamaの確信度(`confidence`)は，1から答えの分布の正規化エントロピー(自然対数)を引いた値である．確率とは尺度が違い，低く出やすい(例：3択で，もっとも確からしい選択肢の確率が0.56のとき，確信度は0.10)．Iteration 4のしきい値は，この尺度に合わせて決める．
+- Tev1の答えは，一緒に尋ねる質問によって変わる(例：返金の質問だけなら0.81，部署の質問と一緒なら0.61)．curlで1つの質問だけを送った値と，`triage`の出力の値は一致しない．教材の値を比べるときは，同じ質問の組み合わせで送る．
+- Tev1の0.8B版の推論は，3問のリクエストで約0.85秒かかる(クラウドの開発環境の4コアのCPUで測った値)．メモリは約1GB使う．
+- Ollamaは1件ずつ推論するので，同時に送る数を増やしてもほとんど速くならない(Iteration 6で21件が，1件ずつで約19秒，4件ずつで約17秒)．教材では，同時に送る数の制限を「判断エンジンに送りすぎないため」と説明する．
+- Ollamaは，`OLLAMA_HOST`を0.0.0.0にしないで起動すると，`Host`ヘッダが`localhost`などでないリクエストに403を返す．公式のイメージは0.0.0.0で待ち受けるので，devcontainerでは`http://ollama:11434`で呼べる．
 - 表の期待値を空白の数まで手で書くと，数え間違えやすい．実装の出力で列がそろっていることを確かめてから期待値にする．
-- 同じ問い合わせには，laya-serverは同じ確率を返す．教材の出力を作り直すときは，同じ問い合わせを使う．
+- 同じ問い合わせと同じ質問には，Ollamaは同じ確率を返す．教材の出力を作り直すときは，同じ問い合わせを使う．
 - Vitestは，テストが1つもないテストファイルを失敗にする．発展課題で新しく作るテストファイルは，全体をコメントにできないので，`advanced/`に置く．

@@ -8,12 +8,12 @@
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
 support                    0        11         0
-sales                      1         2         5
+sales                      0         2         6
 ```
 
 作りながら，評価用のデータ，正解率，混同行列，しきい値と人の確認に回る割合の関係を学ぶ．
@@ -49,7 +49,7 @@ sales                      1         2         5
 - `triage eval [--min-confidence <0-1> | --sweep] <ファイル>`で，正解の部署が付いた問い合わせを評価する．
 - ファイルは，1行に1件，`subject`・`body`と，正解の部署`department`(billing・support・salesのどれか)を持つJSONを書いたもの(JSON Lines)である．読めない行は，`line 4: skipped (not a JSON object with subject, body and a known department)`のように知らせて飛ばす．
 - すべての問い合わせを振り分け(同時に4件まで)，部署の確信度がしきい値以上のものを「自動で振り分けたもの」とみなす．しきい値は`--min-confidence`で指定し，指定しなければ0.2とする．
-- 1行目に，`accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37`のように，正解率(自動で振り分けたもののうち部署が正解だった割合)・自動で振り分けた件数・全体の件数・人の確認に回る割合を表示する．割合は小数第2位まで表示する．自動で振り分けたものがなければ，正解率は`n/a`とする．
+- 1行目に，`accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10`のように，正解率(自動で振り分けたもののうち部署が正解だった割合)・自動で振り分けた件数・全体の件数・人の確認に回る割合を表示する．割合は小数第2位まで表示する．自動で振り分けたものがなければ，正解率は`n/a`とする．
 - 空の行を挟んで，混同行列を表示する．行が正解の部署，列が判定した部署で，人の確認に回るものも含めて数える．列は右にそろえる．
 - `--sweep`を付けたときは，評価の1行と混同行列の代わりに，しきい値0.0〜1.0(0.1刻み)ごとの評価を表で表示する．
 - `--sweep`と`--min-confidence`は一緒に使えない．`--sweep`は`eval`でだけ使える．どちらも使い方を表示する．使い方には`triage eval`の行を足す．
@@ -59,10 +59,10 @@ sales                      1         2         5
 ```console
 $ pnpm start eval --sweep data/labeled.jsonl
 min-confidence  auto-routed  accuracy  review rate
-0.0                      30      0.87         0.00
-0.1                      25      0.92         0.17
-0.2                      19      0.95         0.37
-0.3                      17      1.00         0.43
+0.0                      30      0.90         0.00
+0.1                      29      0.90         0.03
+0.2                      27      0.93         0.10
+0.3                      26      0.96         0.13
 …
 1.0                       0       n/a         1.00
 ```
@@ -119,12 +119,12 @@ min-confidence  auto-routed  accuracy  review rate
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
 
 actual \ predicted   billing   support     sales    recall
 billing                   10         1         0      0.91
 support                    0        11         0      1.00
-sales                      1         2         5      0.63
+sales                      0         2         6      0.75
 ```
 
 発展課題の解答の一例は，解答例のパッケージ(`../solution`)に`発展(演習7-7)`で始まるコメントとして書いてある．

@@ -11,12 +11,12 @@ Iteration 6の解答例と同じコード・テスト・設計書から始まる
 
 ```console
 $ pnpm start eval data/labeled.jsonl
-accuracy: 0.95 (auto-routed 19 / 30), review rate: 0.37
+accuracy: 0.93 (auto-routed 27 / 30), review rate: 0.10
 
 actual \ predicted   billing   support     sales
 billing                   10         1         0
 support                    0        11         0
-sales                      1         2         5
+sales                      0         2         6
 ```
 
 作りながら，評価用のデータ，正解率，混同行列，しきい値と人の確認に回る割合の関係を学ぶ．

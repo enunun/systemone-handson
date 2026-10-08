@@ -11,7 +11,7 @@ sequenceDiagram
   participant format as format
   participant adapter as systemone-engine
   participant client as TypeSafeClient
-  participant engine as laya-server・Jev
+  participant engine as Ollama・Jev
   user->>main: triage "Refund not received" "Where is my refund?"
   main->>main: loadConfig(process.env)
   alt 設定が足りない
@@ -50,7 +50,7 @@ sequenceDiagram
   participant batch as batch
   participant triage as triage
   participant adapter as systemone-engine
-  participant engine as laya-server・Jev
+  participant engine as Ollama・Jev
   user->>app: triage batch data/tickets.jsonl
   app->>app: readFile(data/tickets.jsonl)
   app->>batch: parseTickets(text)
@@ -83,7 +83,7 @@ sequenceDiagram
   participant http as adapters/http-api
   participant triage as triage
   participant adapter as systemone-engine
-  participant engine as laya-server・Jev
+  participant engine as Ollama・Jev
   client->>http: POST /triage {"subject": …, "body": …}
   http->>http: readBody，parseTicket
   alt 本文が読めない

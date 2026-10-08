@@ -6,7 +6,7 @@ import { run } from "../../src/app.ts";
 // 判断エンジンの代わりに，決まった答えを返すfetch．
 const fakeFetch = async () =>
   Response.json({
-    model: "laya",
+    model: "tev1:0.8b",
     answers: {
       department: { type: "choice", choice: "billing", confidence: 0.1, probabilities: { billing: 0.7 } },
       urgency: { type: "score", score: 1.4, confidence: 0.1, legend: {}, probabilities: { 0: 0, 1: 1, 2: 0, 3: 0 } },
@@ -16,7 +16,7 @@ const fakeFetch = async () =>
   });
 
 const engine = createSystemOneEngine(
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch }),
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch }),
 );
 
 describe("run serve", () => {

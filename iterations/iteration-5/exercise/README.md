@@ -6,17 +6,17 @@ Iteration 4の解答例と同じコード・テスト・設計書から始まる
 ## このIterationで作るもの
 
 判断エンジンの接続先(URL・モデル名・APIキー)を，コードではなく環境変数で指定する．
-`.env`を書き換えるだけで，laya-serverから本家Jevへ切り替えられるようになる．
+`.env`を書き換えるだけで，Ollamaから本家Jevへ切り替えられるようになる．
 
 ```console
 $ cp .env.example .env
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
-作りながら，環境変数による設定，組み立ての場所(composition root)，`node --env-file`，laya-serverとJevの違いを学ぶ．
+作りながら，環境変数による設定，組み立ての場所(composition root)，`node --env-file`，OllamaとJevの違いを学ぶ．
 
 ## 進め方
 

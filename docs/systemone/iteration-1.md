@@ -21,11 +21,11 @@ Iteration 1で初めて使う概念・APIを説明する．
 ```
 
 長いリクエストは，JSONをファイルに書いて`curl`の`-d @ファイル名`で送ると楽である．
-上の質問を`questions`の`department`に入れた本文を`department.json`に保存して送ると，次の答えが返る．
+Iteration 0の`refund`の例と同じ`model`と`state`に，上の質問を`questions`の`department`として入れた本文を`department.json`に保存して送ると，次の答えが返る．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d @department.json
-{"model":"laya","answers":{"department":{"type":"choice","choice":"billing","confidence":0.318,"probabilities":{"billing":0.7253,"support":0.1994,"sales":0.0753}}},"usage":{"input_tokens":67,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d @department.json
+{"model":"tev1:0.8b","answers":{"department":{"type":"choice","choice":"billing","probabilities":{"billing":0.9365169959581124,"support":0.0633304256832058,"sales":0.00015257835868191845},"confidence":0.7838017545633793}},"usage":{"input_tokens":176,"output_tokens":1}}
 ```
 
 答えには，次の3つが入る．
@@ -44,19 +44,21 @@ LLMに「どの部署か」を文章で答えさせると，`Billing`・`billing
 説明文を`null`にして，ラベルだけを渡すと，同じ問い合わせでも確率が変わる．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d @department-no-descriptions.json
-{"model":"laya","answers":{"department":{"type":"choice","choice":"billing","confidence":0.144,"probabilities":{"billing":0.5122,"support":0.3877,"sales":0.1001}}},"usage":{"input_tokens":39,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d @department-no-descriptions.json
+{"model":"tev1:0.8b","answers":{"department":{"type":"choice","choice":"support","probabilities":{"billing":0.3497877941634086,"support":0.6482359232615378,"sales":0.001976282575053673},"confidence":0.3985656691436217}},"usage":{"input_tokens":157,"output_tokens":1}}
 ```
 
-`billing`の確率は0.7253から0.5122に下がった．
+`billing`の確率は0.9365から0.3498に下がり，選ばれる部署が`support`に変わった．
 「refunds」が`billing`の説明に含まれていることが，判断の手がかりになっていたからである．
 ラベルの名前だけでは意味が伝わりにくい選択肢ほど，説明文が効く．
 
-選択肢を増やすと，確率はほかの選択肢にも分かれる．
-配送を扱う`shipping`を足すと，`billing`の確率は0.6425になり，`shipping`に0.1464が割り振られた．
+選択肢を増やすと，確率は新しい選択肢にも分かれる．
+配送を扱う`shipping`(説明は`"deliveries, tracking and returns"`)を足すと，`shipping`には0.0006が割り振られた．
+返金の問い合わせは配送とは関係が薄いので，ほとんど確率が付かない．
+`billing`の確率は0.9642になった．確率の分かれ方は，選択肢の組み合わせによって少しずつ変わる．
 
 ```json
-{"billing":0.6425,"support":0.1471,"sales":0.064,"shipping":0.1464}
+{"billing":0.964235584753306,"support":0.035086389431413144,"sales":0.000057113248001382804,"shipping":0.0006209125672794299}
 ```
 
 ## SDKの型
@@ -85,13 +87,14 @@ const describe = (answer: ChoiceResponse): string => `${answer.choice}: ${answer
 `questions`に質問を並べると，判断エンジンは1回の計算ですべてに答える．
 
 ```console
-$ curl -s http://laya:8080/v1/systemone -H 'Content-Type: application/json' -d @department-and-refund.json
-{"model":"laya","answers":{"department":{"type":"choice","choice":"billing","confidence":0.318,"probabilities":{"billing":0.7253,"support":0.1994,"sales":0.0753}},"refund":{"type":"noul","noul":0.8631}},"usage":{"input_tokens":120,"output_tokens":0}}
+$ curl -s http://ollama:11434/v1/systemone -H 'Content-Type: application/json' -d @department-and-refund.json
+{"model":"tev1:0.8b","answers":{"department":{"type":"choice","choice":"billing","probabilities":{"billing":0.8162253116734451,"support":0.18367337004175932,"sales":0.00010131828479560951},"confidence":0.5649687096830311},"refund":{"type":"noul","noul":0.6121792760571444}},"usage":{"input_tokens":464,"output_tokens":3}}
 ```
 
-`department`の答えも`refund`の答えも，1つずつ尋ねたときと同じである．
-質問を同じリクエストにまとめても，互いの答えは変わらない．
+選ばれた部署と，返金を求めているかの判断は，1つずつ尋ねたときと同じである．
+確率は，1つずつ尋ねたとき(`billing`が0.9365，`refund`が0.8091)と少し違う．Iteration 0で見たとおり，Tev1の答えは一緒に尋ねる質問によって変わることがある．
 まとめて送ると，通信が1回で済み，すべての答えが同じ時点の同じ問い合わせについてのものになる．
+プログラムでは，いつも同じ質問の組み合わせで尋ねるようにすると，同じ問い合わせには同じ答えが返る．
 
 SDKでは，`questions`に質問を並べると，`result.answers`に同じ名前で答えが入る．
 答えの型は質問の型から決まるので，`result.answers.department`は`ChoiceResponse`，`result.answers.refund`は`NoulResponse`として扱える．

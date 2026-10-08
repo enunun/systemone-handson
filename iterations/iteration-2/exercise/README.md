@@ -10,9 +10,9 @@ Iteration 1の解答例と同じコード・テスト・設計書から始まる
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 作りながら，段階で評価する質問(`score`)と期待値，判断と表示を分ける設計，振る舞いを変えずに構造を変えるリファクタリングを学ぶ．

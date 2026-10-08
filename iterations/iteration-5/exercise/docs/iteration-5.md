@@ -8,15 +8,15 @@
 ```console
 $ cp .env.example .env
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 ```
 
 `DECISION_ENGINE=fake`にすると，判断エンジンを使わずに決まった答えを表示する．
 `.env`の3行を書き換えると，コードを変えずに本家Jevへ切り替えられる．
 
-作りながら，環境変数による設定，組み立ての場所(composition root)，`node --env-file`，laya-serverとJevの違いを学ぶ．
+作りながら，環境変数による設定，組み立ての場所(composition root)，`node --env-file`，OllamaとJevの違いを学ぶ．
 
 ## 進め方
 
@@ -60,9 +60,9 @@ $ pnpm start "Refund not received" "Where is my refund?"
 missing environment variables: SYSTEMONE_BASE_URL, SYSTEMONE_MODEL, SYSTEMONE_API_KEY
 $ cp .env.example .env
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 $ DECISION_ENGINE=fake pnpm start "Refund not received" "Where is my refund?"
 department: support (1.00)
 urgency: not urgent (0.0)
@@ -77,7 +77,7 @@ refund: no (0.00)
 | `src/config.ts` | `ConfigResult` | `{ ok: true; config: Config } \| { ok: false; message: string }` | 設定を読んだ結果． |
 | `src/config.ts` | `loadConfig` | `(env: Readonly<Record<string, string \| undefined>>) => ConfigResult` | 環境変数から設定を読む． |
 | `src/main.ts` | (入口) | | 設定を読み，設定に従ってアダプタを作り，`run`に渡す． |
-| `.env.example` | | | `.env`の見本．laya-serverの値と，Jevに切り替えるときの値をコメントで書く． |
+| `.env.example` | | | `.env`の見本．Ollamaの値と，Jevに切り替えるときの値をコメントで書く． |
 
 `package.json`の`start`は，`node --env-file-if-exists=.env src/main.ts`に変える．
 

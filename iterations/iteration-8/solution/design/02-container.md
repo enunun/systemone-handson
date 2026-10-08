@@ -13,18 +13,18 @@ C4Container
     ContainerDb(tickets, "問い合わせのファイル", "JSON Lines", "1行に1件，subjectとbodyを持つJSON")
     ContainerDb(labeled, "評価用のファイル", "JSON Lines", "問い合わせに，正解の部署(department)を加えたJSON")
   }
-  Container_Ext(laya, "laya-server", "Node.js，Laya", "http://laya:8080．POST /v1/systemoneで質問に答える")
+  Container_Ext(ollama, "Ollama", "Ollama，Tev1", "http://ollama:11434．POST /v1/systemoneで質問に答える")
   Container_Ext(jev, "TypeSafe Jev", "Web API", "https://api.typesafe.ai．POST /v1/systemoneで質問に答える")
   Rel(user, cli, "件名と本文を引数で渡す")
   System_Ext(client, "問い合わせを受け付けるシステム", "問い合わせフォームやチャットなど")
   Rel(client, api, "POST /triage", "HTTP，JSON")
   Rel(api, env, "起動時に読む")
-  Rel(api, laya, "POST /v1/systemone", "HTTP，JSON")
+  Rel(api, ollama, "POST /v1/systemone", "HTTP，JSON")
   Rel(api, jev, "POST /v1/systemone", "HTTPS，JSON")
   Rel(cli, env, "起動時に読む", "node --env-file-if-exists")
   Rel(cli, tickets, "triage batchで読む")
   Rel(cli, labeled, "triage evalで読む")
-  Rel(cli, laya, "POST /v1/systemone", "HTTP，JSON")
+  Rel(cli, ollama, "POST /v1/systemone", "HTTP，JSON")
   Rel(cli, jev, "POST /v1/systemone", "HTTPS，JSON")
 ```
 

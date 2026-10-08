@@ -7,8 +7,8 @@
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-refund: yes (0.86)
+department: billing (0.82)
+refund: yes (0.61)
 ```
 
 作りながら，選択肢から1つを選ぶ質問(`choice`)と確率の分布，選択肢の説明文の役割，1回の問い合わせで複数の質問に答えさせる方法を学ぶ．
@@ -42,8 +42,8 @@ refund: yes (0.86)
 1. 資料の`department.json`を作り，`Refund not received`の問い合わせを送る．`probabilities`の合計がほぼ1になることを確かめる．
 2. 本文を`"I cannot log in since yesterday."`に変えて送り，選ばれる部署と確率の分布を見る．
 3. 選択肢の説明文をすべて`null`にして，1と2をもう一度送る．確率の分布はどう変わるか．
-4. `refund`の`noul`の質問を`questions`に足し，2つの質問を1回で送る．それぞれの答えは，1つずつ送ったときと同じか．
-5. どの部署とも言い切れない問い合わせ(例：件名`"Hello"`，本文`"I have a question about my account."`)を送る．確率の分布と`confidence`は，1のときと比べてどうか．
+4. `refund`の`noul`の質問を`questions`に足し，2つの質問を1回で送る．それぞれの答えは，1つずつ送ったときと比べてどうか．
+5. どの部署とも言い切れない問い合わせ(例：件名`"Discount"`，本文`"Do you offer a discount for non-profit organizations?"`)を送る．確率の分布と`confidence`は，1のときと比べてどうか．
 
 ## 演習1-3：テストリストを書く
 
@@ -64,11 +64,11 @@ refund: yes (0.86)
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-refund: yes (0.86)
+department: billing (0.82)
+refund: yes (0.61)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-department: support (0.84)
-refund: no (0.08)
+department: support (1.00)
+refund: no (0.16)
 ```
 
 ### 作るもの
@@ -124,8 +124,8 @@ refund: no (0.08)
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73, next: support 0.20)
-refund: yes (0.86)
+department: billing (0.82, next: support 0.18)
+refund: yes (0.61)
 ```
 
 確率の分布を，確率の大きい順に並べる必要がある．

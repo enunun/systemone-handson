@@ -5,9 +5,9 @@ Iteration 5の演習用パッケージ([../exercise/](../exercise/))を完成さ
 ```console
 $ cp .env.example .env
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-urgency: somewhat urgent (1.4)
-refund: yes (0.86)
+department: billing (0.87)
+urgency: somewhat urgent (1.2)
+refund: yes (0.52)
 $ DECISION_ENGINE=fake pnpm start "Refund not received" "Where is my refund?"
 department: support (1.00)
 urgency: not urgent (0.0)

@@ -178,9 +178,9 @@ listening on http://localhost:3000
 
 ```console
 $ curl -s localhost:3000/triage -d '{"subject": "Refund not received", "body": "Where is my refund?"}'
-{"department":"billing","departmentProbability":0.7253,"departmentConfidence":0.318,"needsReview":false,"urgency":1.4061,"refundProbability":0.8631}
-$ curl -s localhost:3000/triage -d '{"subject": "Team plan", "body": "We are 20 people and want to upgrade to the team plan. What does it cost?"}'
-{"department":"sales","departmentProbability":0.4394,"departmentConfidence":0.0229,"needsReview":true,"urgency":0.9847,"refundProbability":0.0692}
+{"department":"billing","departmentProbability":0.8736835530882852,"departmentConfidence":0.653906619759055,"needsReview":false,"urgency":1.2259161755022923,"refundProbability":0.5204658538893784}
+$ curl -s localhost:3000/triage -d '{"subject": "Discount", "body": "Do you offer a discount for non-profit organizations?"}'
+{"department":"support","departmentProbability":0.5280386266197422,"departmentConfidence":0.08358112838899756,"needsReview":true,"urgency":0.8628479356656321,"refundProbability":0.16789652778882241}
 ```
 
 ## 演習8-6：振り返る
@@ -216,7 +216,7 @@ $ curl -s localhost:3001/healthz
 {"status":"ok"}
 ```
 
-判断エンジン(laya-server)にも`GET /healthz`がある．
+判断エンジン(Ollama)にも，モデルの一覧を返す`GET /v1/models`がある．
 `triage serve`の`/healthz`で，判断エンジンの準備ができているかまで確かめるかは，監視で何を知りたいかによって決める．
 
 解答例のパッケージでは，この実装とテストを`発展(演習8-7)`で始まるコメントとして書いている．

@@ -4,9 +4,9 @@ Iteration 0の演習用パッケージ([../exercise/](../exercise/))を完成さ
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-refund: yes (0.86)
+refund: yes (0.81)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-refund: no (0.08)
+refund: no (0.14)
 ```
 
 ## 見どころ

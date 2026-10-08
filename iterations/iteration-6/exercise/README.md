@@ -11,7 +11,7 @@ Iteration 5の解答例と同じコード・テスト・設計書から始まる
 ```console
 $ pnpm start batch data/tickets.jsonl
 line 21: skipped (not a JSON object with subject and body)
-billing: 4, support: 6, sales: 0, needs review: 11
+billing: 5, support: 11, sales: 3, needs review: 2
 ```
 
 作りながら，ファイルの読み込み，JSON Lines，サブコマンド，`Promise.all`と同時に送る数の制限を学ぶ．

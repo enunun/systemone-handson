@@ -42,17 +42,21 @@ Nodeは型の注釈を取り除いて実行するが，行と列の位置は元�
 
 | 手順 | 変えたところ | `refund`の確率 |
 | --- | --- | --- |
-| 2 | (資料の例のまま) | 0.8631 |
-| 3 | 本文を`"How do I change my password?"`にする | 0.0763 |
-| 4 | 本文を`"I am not happy with my purchase."`にする | 0.8236 |
-| 5 | 質問の文を`"Does the customer want their money back?"`にする | 0.7803 |
+| 2 | (資料の例のまま) | 0.8091 |
+| 3 | 本文を`"How do I change my password?"`にする | 0.3459 |
+| 4 | 本文を`"I am not happy with my purchase."`にする | 0.8995 |
+| 5 | 質問の文を`"Does the customer want their money back?"`にする | 0.6961 |
 
-手順6では，`{"error":{"message":"questions: at least one question is required"}}`が返る．
+手順6では，`{"error":"questions must contain 1–64 fields"}`が返る．
 
-手順4の本文は，返金を求めているとは言い切れない文だが，確率は0.82と高く出た．
+手順3の本文は返金と関係がないが，確率は0.35と，0に近くはならなかった．
 件名の`"Refund not received"`も判断の材料(`state`)に含まれているからである．
-件名を`"Order"`に変えて同じ本文を送ると，確率は0.3966まで下がる．
+件名を`"Order"`に変えて同じ本文を送ると，確率は0.1285まで下がる．
 System Oneは，渡した`state`の全体を読んで判断する．何を`state`に含めるかも，判断の結果を左右する．
+
+手順4の本文は，返金を求めているとは言い切れない文だが，確率は0.90と高く出た．
+件名を`"Order"`に変えても0.9227で，Tev1は購入への不満を返金の要求と読んでいる．
+モデルの判断が人の感覚と合わないこともある．どれくらい正しく判断できるかは，Iteration 7で測る．
 
 手順5では，同じことを尋ねる質問でも，文が変わると確率が変わった．
 質問の文は，モデルへの入力の一部である．
@@ -76,7 +80,7 @@ System Oneは，渡した`state`の全体を読んで判断する．何を`state
 | ファイル | 描いたもの |
 | --- | --- |
 | [01-context.md](../design/01-context.md) | サポート担当者・`triage`・判断エンジン(`System_Ext`)の関係 |
-| [02-container.md](../design/02-container.md) | `triage`の実行ファイルと，システムの外にあるlaya-server(`Container_Ext`)，その間のHTTP |
+| [02-container.md](../design/02-container.md) | `triage`の実行ファイルと，システムの外にあるOllama(`Container_Ext`)，その間のHTTP |
 | [03-component.md](../design/03-component.md) | `main`・`app`・`refund`とSDK(`Component_Ext`)の依存関係 |
 | [04-code.md](../design/04-code.md) | `string[]`から`RunResult`までの型と関数の流れ，`RunResult`と`NoulQuestion`の型 |
 | [05-sequence.md](../design/05-sequence.md) | 実行から表示までの呼び出しの順序と，引数が足りないときの分岐 |
@@ -197,14 +201,14 @@ import { run } from "../../src/app.ts";
 const fakeFetch = (noul: number, requests: unknown[]) => async (_url: string, init?: RequestInit) => {
   requests.push(JSON.parse(String(init?.body)));
   return Response.json({
-    model: "laya",
+    model: "tev1:0.8b",
     answers: { refund: { type: "noul", noul } },
     usage: { input_tokens: 53, output_tokens: 0 },
   });
 };
 
 const clientWith = (noul: number, requests: unknown[] = []) =>
-  new TypeSafeClient({ baseURL: "http://laya.test", apiKey: "test", fetch: fakeFetch(noul, requests) });
+  new TypeSafeClient({ baseURL: "http://ollama.test", apiKey: "test", fetch: fakeFetch(noul, requests) });
 
 describe("run", () => {
   test("件名と本文を判断エンジンに送り，返金の判定を表示する", async () => {
@@ -314,9 +318,9 @@ $ pnpm test
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-refund: yes (0.86)
+refund: yes (0.81)
 $ pnpm start "Login problem" "I cannot log in since yesterday."
-refund: no (0.08)
+refund: no (0.14)
 $ pnpm start "Refund not received"
 usage: triage "<subject>" "<body>"
 ```
@@ -349,10 +353,10 @@ export const formatRefund = (probability: number): string => {
 ```
 
 ```console
-$ pnpm start "Order" "The product arrived broken."
-refund: unsure (0.57)
+$ pnpm start "Order" "My package arrived late and the box was crushed."
+refund: unsure (0.43)
 $ pnpm start "Refund not received" "Where is my refund?"
-refund: yes (0.86)
+refund: yes (0.81)
 ```
 
 確率が0.5に近いときは判断を保留する．この考え方は，Iteration 4で「担当部署の判定を人の確認へ回す機能」として作る．

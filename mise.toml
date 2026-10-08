@@ -20,14 +20,9 @@ depends = ["install"]
 run = ["pnpm lint", "pnpm typecheck"]
 
 [tasks.test]
-description = "すべてのパッケージ(演習用・解答例・laya-server)のテストを実行する"
+description = "すべてのパッケージ(演習用・解答例)のテストを実行する"
 depends = ["install"]
 run = "pnpm test"
-
-[tasks.laya]
-description = "laya-serverをdevcontainerの外で起動する(教材の保守用)"
-depends = ["install"]
-run = "pnpm --filter @systemone-handson/laya-server start"
 
 [tasks.hooks]
 description = "Gitのフック(コミット時の検査)を設定する"

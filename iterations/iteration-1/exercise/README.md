@@ -9,8 +9,8 @@ Iteration 0の解答例と同じコード・テスト・設計書から始まる
 
 ```console
 $ pnpm start "Refund not received" "Where is my refund?"
-department: billing (0.73)
-refund: yes (0.86)
+department: billing (0.82)
+refund: yes (0.61)
 ```
 
 作りながら，選択肢から1つを選ぶ質問(`choice`)と確率の分布，選択肢の説明文の役割，1回の問い合わせで複数の質問に答えさせる方法を学ぶ．
